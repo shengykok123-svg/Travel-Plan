@@ -874,7 +874,7 @@ const START=TS('2026-10-09','23:55'),END=TS('2026-10-17','22:00');
 const SLO=TS('2026-10-09','20:00'),SHI=TS('2026-10-17','23:00');
 const bj=ts=>{const d=new Date(ts+8*3600e3);return (d.getUTCMonth()+1)+'/'+d.getUTCDate()+' '+pad(d.getUTCHours())+':'+pad(d.getUTCMinutes())};
 const short=n=>n.split(/[（(·]/)[0].trim();
-const xhsU=n=>'https://www.xiaohongshu.com/search_result?keyword='+enc(n.split(/[（(]/)[0].replace(/·/g,' ').trim());
+const xhsU=n=>'https://www.rednote.com/search_result?keyword='+enc(n.replace(/（[^）]*）|\([^)]*\)/g,' ').replace(/·/g,' ').replace(/\s+/g,' ').trim());
 const gmapU=n=>'https://www.google.com/maps/search/?api=1&query='+enc(n.replace(/[（）()·]/g,' ').trim());
 const MEAL_RE=/^(早午餐|早餐|午餐|晚餐|早茶|甜品|下午茶|最后一顿晚餐)[：:]\s*/;
 
@@ -928,7 +928,7 @@ function calc(){const s=trip.settings,ppl=Math.max(1,+s.people||1);const cat={ho
 function mealPrefix(i){const m=i.title.match(/^(早午餐|早餐|午餐|晚餐|早茶|下午茶|甜品|糖水|最后一顿晚餐)/);if(m)return m[1];if(i.kind==='sweet')return '甜品';const h=parseInt(i.t,10);return h<11?'早餐':h<14?'午餐':h<17?'下午小吃':'晚餐'}
 function curOpt(i){const L=MEAL_OPTS[i.id];if(!L)return -1;if(Number.isInteger(i.opt)&&L[i.opt])return i.opt;return L.findIndex(o=>o.pl?o.pl===i.place:!i.place)}
 const optName=o=>o.n||(o.pl&&PLACES[o.pl]?PLACES[o.pl].n:'');
-function links3(name,city){const q=name.replace(/[（）()·]/g,' ').replace(/\s+/g,' ').trim(),c=CITY[city].n;return `<div class="links"><a class="lk x" href="https://www.xiaohongshu.com/search_result?keyword=${enc(q+' '+c)}" target="_blank" rel="noopener">小红书评价</a><a class="lk g" href="https://www.google.com/maps/search/?api=1&query=${enc(q+' '+c)}" target="_blank" rel="noopener">Google 地图评价</a><a class="lk d" href="https://www.dianping.com/search/keyword/0/0_${enc(q)}" target="_blank" rel="noopener">大众点评</a></div>`}
+function links3(name,city){const q=name.replace(/[（）()·]/g,' ').replace(/\s+/g,' ').trim(),c=CITY[city].n;return `<div class="links"><a class="lk x" href="https://www.rednote.com/search_result?keyword=${enc(q+' '+c)}" target="_blank" rel="noopener">小红书评价</a><a class="lk g" href="https://www.google.com/maps/search/?api=1&query=${enc(q+' '+c)}" target="_blank" rel="noopener">Google 地图评价</a><a class="lk d" href="https://www.dianping.com/search/keyword/0/0_${enc(q)}" target="_blank" rel="noopener">大众点评</a></div>`}
 function chooseMeal(itemId,k){const o=MEAL_OPTS[itemId]&&MEAL_OPTS[itemId][k];if(!o)return;
   commit(t=>{for(const d of t.days){const i=d.items.find(x=>x.id===itemId);if(!i)continue;i.title=mealPrefix(i)+'：'+optName(o).replace(/（.*?）/,'')+'（'+o.dish+'）';i.place=o.pl;i.cost=o.cost;i.cur=o.cur;i.per='p';i.opt=k;return}},'已换成 '+short(optName(o)));
   if(o.pl){S.pick=o.pl;render()}}
