@@ -781,6 +781,8 @@ HOTELS.xa.push(
 HOTELS.xa.find(h=>h.id==='hs2').url='https://us.trip.com/hotels/xi-an-hotel-detail-116875155/tang-dynasty-seal-siheyuan-tang-style-homestay/';
 HOTELS.xa.find(h=>h.id==='hs2').src='Trip.com';
 Object.assign(HOTEL_BRAND,{hs1:'huimin',hs2:'huimin',hs3:'huimin',hs4:'beilin',hs5:'shuyuan',hs6:'huimin',hs7:'bell',hs8:'datang',hs9:'wall',hs10:'huimin',hs11:'huimin',hs12:'wall'});
+// platform scores out of 10, as shown on each listing page
+{const SC={hs1:9.7,hs2:9.6,hs3:9.6,hs4:9.8,hs5:9.3,hs6:9.3,hs7:9.6,hs8:9.4,hs9:9.8,hs10:8.6};HOTELS.xa.forEach(h=>{if(SC[h.id])h.sc=SC[h.id]})}
 
 Object.values(MEAL_OPTS).forEach(list=>list.forEach(o=>{if(o.pl&&o.gal&&!PLACE_GAL[o.pl])PLACE_GAL[o.pl]=o.gal}));
 
@@ -1160,9 +1162,9 @@ function pHotels(){const ppl=Math.max(1,+trip.settings.people||1);
   const cities=Object.keys(HOTELS).map(c=>{const ns=trip.days.filter(d=>d.stay===c);
     const card=(h,hk)=>{const sel=trip.settings.hotel[c]===h.id,nc=night(h),g=gal(HOTEL_BRAND[h.id]);
       return `<div class="hcard${sel?' sel':''}" style="--tilt:${[-1.2,.8,-.6,1][hk%4]}deg;--c:${CC[c]}"><div class="tp"></div>
-        <div class="pic">${g[0]?`<span class="im" style="background-image:url(${esc(g[0].f)})"></span>`:''}<span class="tier">${esc(h.tier)}</span></div>
+        <div class="pic">${g.length?`<span class="im" style="background-image:url(${esc(g[hk%g.length].f)})"></span>`:''}<span class="tier">${esc(h.tier)}</span></div>
         ${sel?'<span class="stampmark">已选 ✓</span>':''}
-        <div class="in"><div class="nm">${esc(h.n)}</div><div class="ar">${esc(h.area)} · <b>${h.r?'★ '+h.r.toFixed(1):'评分看页面'}</b>${h.rn?` <span>（${n0(h.rn)}条评价）</span>`:''}</div>${h.beds&&h.unit?`<div class="ar">房型：${esc(h.beds)}</div>`:''}<p>${esc(h.rv)}</p>
+        <div class="in"><div class="nm">${esc(h.n)}</div><div class="ar">${esc(h.area)} · <b>${h.sc?h.src+' '+h.sc.toFixed(1)+'/10':h.r?'★ '+h.r.toFixed(1):'评分看页面'}</b>${h.rn?` <span>（${n0(h.rn)}条评价）</span>`:''}</div>${h.beds&&h.unit?`<div class="ar">房型：${esc(h.beds)}</div>`:''}<p>${esc(h.rv)}</p>
           <div class="pc">${h.pro.map(x=>`<span class="p">＋ ${esc(x)}</span>`).join('')}${h.con.map(x=>`<span class="c">－ ${esc(x)}</span>`).join('')}</div>
           <div class="ft"><div><b>¥${n0(nc)}<small> /晚</small></b><div class="tot">合计 ¥${n0(nc*ns.length)} · 每人 ¥${n0(nc*ns.length/ppl)}</div></div><button type="button" class="sb" data-a="hotel" data-c="${c}" data-v="${h.id}" aria-pressed="${sel}">${sel?'✓ 已选择':'选这家'}</button></div>
           <div class="links">${h.url?`<a class="lk d" href="${esc(h.url)}" target="_blank" rel="noopener">${esc(h.src)} 看房型 / 订房</a>`:`<a class="lk d" href="https://www.google.com/search?q=${enc(h.n+' trip.com')}" target="_blank" rel="noopener">搜索订房页面</a>`}<a class="lk x" href="${xhsU(h.n.replace(/（.*?）/,'')+' 西安')}" target="_blank" rel="noopener">小红书评价</a><a class="lk g" href="${gmapU(h.n.replace(/（.*?）/,'')+' 西安')}" target="_blank" rel="noopener">地图</a></div></div></div>`};
