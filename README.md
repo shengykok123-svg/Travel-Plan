@@ -1,12 +1,12 @@
 # 粤港澳九日行 · Travel Plan
 
-A single-page trip planner for a 9-day trip to Shenzhen, Hong Kong, Macau, Zhuhai and Guangzhou (10/9 – 10/17, 2026), for 5 people.
+A single-page trip planner in a travel-journal style (postcards, polaroids, washi tape, notebook pages) for a 9-day trip to Shenzhen, Hong Kong, Macau, Zhuhai and Guangzhou (10/9 – 10/17, 2026), for 5 people.
 
 ## Features
 
 - **总览**: the whole trip at a glance, with per-person cost for each day
 - **每日行程**: hour-by-hour schedule you can edit, a "today at a glance" bar, and Xiaohongshu / Google Maps links for every stop
-- **现在 / 接下来**: during the trip, shows what's happening now and what's next (Beijing time); before the trip, a countdown and a time preview
+- **旅途中**: tear-off calendar countdown, a time slider to preview any moment, what is happening now and the next 6 stops (Beijing time)
 - **地图**: schematic map of the Pearl River Delta with every stop and the day's route
 - **美食**: swap restaurants for each meal (2–4 options with photos, ratings and links), plus a must-eat list with photo galleries
 - **住宿选择**: 3 hotel options per city, priced for a twin room + a triple room
