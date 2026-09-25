@@ -382,6 +382,7 @@ input[type=range]{accent-color:var(--acc)}
 
 .hs-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin:34px 0 12px}.hs-head h3{font-family:var(--disp);font-weight:700;font-synthesis:none;font-size:22px;margin:0}.hs-head span{font-size:13px;color:var(--mute)}
 .hs-warn{background:var(--acc1);border:1.5px dashed var(--acc);border-radius:22px;padding:14px 18px;font-size:13px;color:var(--mute2);margin-bottom:26px;text-wrap:pretty}.hs-warn b{color:var(--acc8)}
+.hcard .sb{border:0;cursor:pointer}.hcard .sb:hover{background:var(--acc2)}.hcard.sel .sb:hover{background:var(--sage6)}.hcard .links{margin-top:10px}.hcard .ar span{color:var(--mute);font-weight:400}
 /* P.07 tickets */
 .tk-sum{display:flex;flex-wrap:wrap;align-items:center;gap:24px;position:relative;background:var(--sage2);border-radius:30px;padding:20px 26px;margin-top:-8px;transform:rotate(-.6deg);box-shadow:0 3px 10px rgba(46,43,37,.12)}
 .ring{position:relative;width:110px;height:110px;flex:none}
@@ -759,13 +760,27 @@ const MEAL_SRC={
 const MEAL_OPTS={};
 DEFAULT_DAYS.forEach(d=>d.items.forEach(i=>{if(i.k&&MEAL_SRC[i.k])MEAL_OPTS[i.id]=MEAL_SRC[i.k];delete i.k}));
 
-/* ---------------- homestays (whole-unit, priced per unit not per room) ---------------- */
+/* ---------------- homestays: real listings (checked on Trip.com / Booking.com, Sep 2026) ----------------
+   p = estimated total per night for 4 people, from each listing's "from" price (USD × ~7.1);
+   the real price depends on room type and date. unit:true = the price is for the group, not per room. */
+const HS=(o)=>Object.assign({unit:true},o);
 HOTELS.xa.push(
-  {id:'hs1',unit:true,beds:'2室1厅',tier:'民宿 · 整套2室',n:'钟楼 / 回民街 两室公寓（民宿）',area:'城内 · 钟楼步行约10分钟',la:34.2640,ln:108.9480,p:420,r:4.5,rv:'老城区的整套两室公寓，4个人住一套，有客厅、厨房和洗衣机。这是房型参考，具体房源和评分以平台为准。',pro:['比两间酒店便宜','有洗衣机和厨房','4个人住在一起'],con:['要确认可接待外宾','没有前台','老小区可能没电梯']},
-  {id:'hs2',unit:true,beds:'2室1厅',tier:'民宿 · 景观公寓',n:'大雁塔 / 小寨 两室景观公寓（民宿）',area:'曲江 · 大雁塔一带',la:34.2170,ln:108.9610,p:480,r:4.5,rv:'高层公寓，部分房源能看到大雁塔。离陕历博、大唐不夜城近，但去回民街和华山要多坐几站地铁。',pro:['大雁塔景观','离陕历博近','空间大'],con:['离老城区远','要确认可接待外宾']},
-  {id:'hs3',unit:true,beds:'整院3室',tier:'民宿 · 特色院子',n:'城墙内 四合院民宿（整院）',area:'城内 · 城墙里的小巷',la:34.2560,ln:108.9420,p:850,r:4.6,rv:'城墙里的老院子改造，有中式庭院，拍照很好看。价格高，旺季要早订。',pro:['很有西安特色','有庭院','适合拍照'],con:['价格高','老房子隔音一般','要确认可接待外宾']}
+  HS({id:'hs1',tier:'民宿 · 院子 Loft',n:'Zenyard 禅院（钟楼站 · 回民街）',area:'回民街 · 麦苋街11号',la:34.2650,ln:108.9370,p:800,r:4.9,rn:762,beds:'两室院子 Loft（2张大床 + 客厅）',rv:'Trip.com 9.7 分（762条评价）。院子风格的民宿，“暖晴院子 Loft”有两间卧室和客厅，刚好住4个人。有公共厨房和免费洗衣、烘干。起价约 US$54/间。',pro:['两室 Loft 4人一套','公共厨房','免费洗衣烘干'],con:['Loft 价格比普通房高','旺季要早订'],url:'https://us.trip.com/hotels/xi-an-hotel-detail-127905552/zenyard-courtyard-accommodation/',src:'Trip.com'}),
+  HS({id:'hs2',tier:'民宿 · 唐风四合院',n:'大唐印 · 唐风四合院民宿（钟楼站）',area:'回民街 · 化觉巷102号',la:34.2632,ln:108.9410,p:1040,r:4.8,rn:818,beds:'2间家庭双床房（1大床 + 1单人床）',rv:'Trip.com 9.6 分（818条评价）。多层中式院子，就在清真大寺旁边。家庭房有大床加单人床，4个人订两间。起价约 US$73/间。',pro:['唐风院子很出片','就在回民街','家庭房空间大'],con:['价格偏高','在小巷里，拖行李要走一段']},{}),
+  HS({id:'hs3',tier:'民宿 · 精品',n:'关二姐精品民宿（钟楼 · 回民街）',area:'回民街 · 火药局巷21号',la:34.2665,ln:108.9430,p:800,r:4.8,rn:447,beds:'1间双床房 + 1间亲子帐篷家庭房',rv:'Trip.com 9.6 分（447条评价）。有双床房和家庭房，免费洗衣服务，有公共厨房。起价约 US$56/间。',pro:['免费洗衣','公共厨房','离钟楼近'],con:['房间风格各不相同，订前看照片'],url:'https://us.trip.com/hotels/xi-an-hotel-detail-1699815/guan-erjie-boutique-homestay/',src:'Trip.com'}),
+  HS({id:'hs4',tier:'民宿 · 高分平价',n:'远里民宿（钟鼓楼 · 碑林博物馆）',area:'碑林区 · 下马陵6号',la:34.2525,ln:108.9560,p:500,r:4.9,rn:831,beds:'2间双床房',rv:'Trip.com 9.8 分（831条评价），评分很高、价格实惠。离碑林和南门近，有免费洗衣房。起价约 US$35/间。',pro:['评分很高','价格实惠','免费洗衣房'],con:['离回民街要走一段','没有厨房'],url:'https://us.trip.com/hotels/xi-an-hotel-detail-120461169/yuanli-homestay/',src:'Trip.com'}),
+  HS({id:'hs5',tier:'民宿 · 书院门',n:'书院里民宿（永宁门站 · 书院门）',area:'碑林区 · 书院门103号',la:34.2545,ln:108.9500,p:650,r:4.7,rn:615,beds:'2间房（有家庭房：1大床 + 1单人床）',rv:'Trip.com 9.3 分（615条评价）。就在书院门老街上，走到南门城墙几分钟。有自助洗衣房。起价约 US$46/间。',pro:['书院门老街上','离南门城墙近','自助洗衣'],con:['没有厨房','老街晚上比较安静，吃饭要走出去'],url:'https://www.trip.com/hotels/xi-an-hotel-detail-34071231/xi-an-shuyuan-hotel/',src:'Trip.com'}),
+  HS({id:'hs6',tier:'民宿 · 最省',n:'婷婷客栈（回民街 · 广济街）',area:'回民街 · 北广济街74号',la:34.2640,ln:108.9395,p:300,r:4.7,rn:908,beds:'2间大床房（圆床 / 榻榻米）',rv:'Trip.com 9.3 分（908条评价），这几家里最便宜。房间是大床或榻榻米，适合情侣或好朋友同住。有的房间没有窗，订的时候看清楚。起价约 US$14/间。',pro:['最便宜','就在回民街','有洗衣机'],con:['只有大床，没有双床','部分房间无窗'],url:'https://us.trip.com/hotels/xi-an-hotel-detail-44218337/tingting-guesthouse/',src:'Trip.com'}),
+  HS({id:'hs7',tier:'民宿 · 高层一间住4人',n:'MEILIE 美列岭（钟楼 · 北大街）',area:'北大街188号 · 16楼',la:34.2680,ln:108.9470,p:1190,r:4.8,rn:1579,beds:'1间 60㎡ 双床房（2张双人床）',rv:'Trip.com 9.6 分（1,579条评价）。高层公寓式民宿，一间 60㎡ 的房有两张双人床，4个人住一间就够。有免费洗衣房。起价约 US$167/间。',pro:['4个人住一间','评价数量最多','免费洗衣房'],con:['价格最高之一','没有厨房'],url:'https://us.trip.com/hotels/xi-an-hotel-detail-127889312/xi-an-meilie-ling/',src:'Trip.com'}),
+  HS({id:'hs8',tier:'民宿 · 大雁塔',n:'千寻花园景观民宿（大雁塔 · 大唐不夜城）',area:'曲江 · 慈恩西路1073号',la:34.2175,ln:108.9585,p:470,r:4.7,rn:587,beds:'2间房（1大床 + 1单人床 / 沙发床）',rv:'Trip.com 9.4 分（587条评价）。走到大唐不夜城约490米、大雁塔约730米。离老城区远一些。起价约 US$33/间。',pro:['晚上逛大唐不夜城很方便','价格实惠','花园景观'],con:['离钟楼、回民街远','没有厨房和洗衣机'],url:'https://www.trip.com/hotels/xi-an-hotel-detail-70527990/qianxunyisu-homestay/',src:'Trip.com'}),
+  HS({id:'hs9',tier:'民宿 · 独栋别墅',n:'鹿鸣别院 · 独栋别墅民宿（皇城坊）',area:'新城区 · 皇城坊',la:34.2700,ln:108.9690,p:1480,r:4.9,rn:288,beds:'2间房（别墅共9间房）',rv:'Trip.com 9.8 分（288条评价）。独栋别墅改的民宿，有餐厅和咖啡吧，环境安静。起价约 US$104/间。',pro:['独栋别墅很安静','有餐厅咖啡吧','评分很高'],con:['价格最高','离回民街要坐车'],url:'https://us.trip.com/hotels/xi-an-hotel-detail-127356197/lu-ming-bieyuan-independent-villa-homestay/',src:'Trip.com'}),
+  HS({id:'hs10',tier:'民宿 · 一间住4人',n:'竹隐民宿（钟鼓楼 · 西羊市）',area:'回民街 · 西羊市东侧52号',la:34.2645,ln:108.9400,p:450,r:4.3,rn:58,beds:'1间“两室两床”精品房（2张大床）',rv:'Trip.com 8.6 分（58条评价，比较少）。有两张大床的精品房，4个人住一间。起价约 US$33/间。',pro:['4个人住一间','就在回民街','价格实惠'],con:['评价数量少','没有厨房'],url:'https://us.trip.com/hotels/xi-an-hotel-detail-55194862/xi-an-bamboo-hideaway-homestay/',src:'Trip.com'}),
+  HS({id:'hs11',tier:'整套公寓 · 两室',n:'XI\'AN Muslim Street Apartment（回民街两室公寓）',area:'回民街 · 走到钟鼓楼约5分钟',la:34.2660,ln:108.9420,p:450,r:null,rn:0,beds:'整套两室公寓（厨房 + 洗衣机）',rv:'Booking.com 上的整套两室公寓：有厨房、冰箱和洗衣机，走到回民街约2分钟、地铁站约5分钟。价格、评分和能否接待外宾请以页面为准。',pro:['真正的整套公寓','有厨房和洗衣机','就在回民街'],con:['评分和价格要自己看页面','没有前台'],url:'https://www.booking.com/hotel/cn/xi-39-an-muslim-street-apartment.html',src:'Booking.com'}),
+  HS({id:'hs12',tier:'整套公寓 · 南门',n:'Xi\'an Simple Palace（南门两室民宿）',area:'南门 · 永宁门旁',la:34.2520,ln:108.9450,p:500,r:null,rn:0,beds:'两室一厅（有花园和露台）',rv:'Booking.com 上的两室一厅民宿，有花园、露台和公共厨房，就在南门城墙旁。价格、评分和能否接待外宾请以页面为准。',pro:['两室一厅','有花园露台','离南门城墙近'],con:['评分和价格要自己看页面'],url:'https://www.booking.com/hotel/cn/xi-pu-min-su.html',src:'Booking.com'})
 );
-Object.assign(HOTEL_BRAND,{hs1:'bell',hs2:'dayanta',hs3:'shuyuan'});
+HOTELS.xa.find(h=>h.id==='hs2').url='https://us.trip.com/hotels/xi-an-hotel-detail-116875155/tang-dynasty-seal-siheyuan-tang-style-homestay/';
+HOTELS.xa.find(h=>h.id==='hs2').src='Trip.com';
+Object.assign(HOTEL_BRAND,{hs1:'huimin',hs2:'huimin',hs3:'huimin',hs4:'beilin',hs5:'shuyuan',hs6:'huimin',hs7:'bell',hs8:'datang',hs9:'wall',hs10:'huimin',hs11:'huimin',hs12:'wall'});
 
 Object.values(MEAL_OPTS).forEach(list=>list.forEach(o=>{if(o.pl&&o.gal&&!PLACE_GAL[o.pl])PLACE_GAL[o.pl]=o.gal}));
 
@@ -1144,15 +1159,16 @@ function pFood(){
 function pHotels(){const ppl=Math.max(1,+trip.settings.people||1);
   const cities=Object.keys(HOTELS).map(c=>{const ns=trip.days.filter(d=>d.stay===c);
     const card=(h,hk)=>{const sel=trip.settings.hotel[c]===h.id,nc=night(h),g=gal(HOTEL_BRAND[h.id]);
-      return `<button type="button" class="hcard${sel?' sel':''}" data-a="hotel" data-c="${c}" data-v="${h.id}" style="--tilt:${[-1.2,.8,-.6,1][hk%4]}deg;--c:${CC[c]}" aria-pressed="${sel}"><div class="tp"></div>
+      return `<div class="hcard${sel?' sel':''}" style="--tilt:${[-1.2,.8,-.6,1][hk%4]}deg;--c:${CC[c]}"><div class="tp"></div>
         <div class="pic">${g[0]?`<span class="im" style="background-image:url(${esc(g[0].f)})"></span>`:''}<span class="tier">${esc(h.tier)}</span></div>
         ${sel?'<span class="stampmark">已选 ✓</span>':''}
-        <div class="in"><div class="nm">${esc(h.n)}</div><div class="ar">${esc(h.area)} · <b>★ ${h.r.toFixed(1)}</b></div><p>${esc(h.rv)}</p>
+        <div class="in"><div class="nm">${esc(h.n)}</div><div class="ar">${esc(h.area)} · <b>${h.r?'★ '+h.r.toFixed(1):'评分看页面'}</b>${h.rn?` <span>（${n0(h.rn)}条评价）</span>`:''}</div>${h.beds&&h.unit?`<div class="ar">房型：${esc(h.beds)}</div>`:''}<p>${esc(h.rv)}</p>
           <div class="pc">${h.pro.map(x=>`<span class="p">＋ ${esc(x)}</span>`).join('')}${h.con.map(x=>`<span class="c">－ ${esc(x)}</span>`).join('')}</div>
-          <div class="ft"><div><b>¥${n0(nc)}<small> /晚</small></b><div class="tot">合计 ¥${n0(nc*ns.length)} · 每人 ¥${n0(nc*ns.length/ppl)}</div></div><span class="sb">${sel?'✓ 已选择':'选这家'}</span></div></div></button>`};
+          <div class="ft"><div><b>¥${n0(nc)}<small> /晚</small></b><div class="tot">合计 ¥${n0(nc*ns.length)} · 每人 ¥${n0(nc*ns.length/ppl)}</div></div><button type="button" class="sb" data-a="hotel" data-c="${c}" data-v="${h.id}" aria-pressed="${sel}">${sel?'✓ 已选择':'选这家'}</button></div>
+          <div class="links">${h.url?`<a class="lk d" href="${esc(h.url)}" target="_blank" rel="noopener">${esc(h.src)} 看房型 / 订房</a>`:`<a class="lk d" href="https://www.google.com/search?q=${enc(h.n+' trip.com')}" target="_blank" rel="noopener">搜索订房页面</a>`}<a class="lk x" href="${xhsU(h.n.replace(/（.*?）/,'')+' 西安')}" target="_blank" rel="noopener">小红书评价</a><a class="lk g" href="${gmapU(h.n.replace(/（.*?）/,'')+' 西安')}" target="_blank" rel="noopener">地图</a></div></div></div>`};
     const cards=HOTELS[c].filter(h=>!h.unit).map(card).join(''),stays=HOTELS[c].filter(h=>h.unit).map(card).join('');
-    return `<div><div class="hcity-h"><div class="hcode" style="--c:${CC[c]}">${CODE[c]}</div><h3>${CITY[c].n}</h3><span class="nw" style="font-size:13px;color:var(--mute)">${ns.length} 晚 · ${ns.length?dp(ns[0].date).md+' – '+dp(ns[ns.length-1].date).md+' 入住':''}</span></div><div class="hgrid">${cards}</div>${stays?`<div class="hs-head"><h3>或者住民宿 · 整套公寓</h3><span>4个人住一整套，价格按整套算，不按房间</span></div>
-      <div class="hs-warn"><b>订民宿前一定要确认：</b>① 房东能接待外国护照，并帮忙做住宿登记（外国人入住24小时内要登记，酒店会自动做，很多民宿做不了）；② 入住方式、押金和退订规则。Airbnb 已经不做中国大陆的房源，请用途家、携程民宿或美团民宿。卡片上的照片是所在区域的照片，不是房源照片。</div>
+    return `<div><div class="hcity-h"><div class="hcode" style="--c:${CC[c]}">${CODE[c]}</div><h3>${CITY[c].n}</h3><span class="nw" style="font-size:13px;color:var(--mute)">${ns.length} 晚 · ${ns.length?dp(ns[0].date).md+' – '+dp(ns[ns.length-1].date).md+' 入住':''}</span></div><div class="hgrid">${cards}</div>${stays?`<div class="hs-head"><h3>或者住民宿 · 12家真实房源</h3><span>价格是4个人每晚的总价估算，按评分和位置挑</span></div>
+      <div class="hs-warn"><b>这些是真实房源</b>（2026年9月在 Trip.com / Booking.com 上查的）。Trip.com 的10家页面都写明“接待所有国家/地区的客人”，Booking.com 的2家请在页面上自己确认。每晚价格是按页面“起价”估算的4个人总价（1间或2间房），实际要看房型和日期。订之前再确认：入住方式、押金、退订规则，以及房东会帮忙做外国人住宿登记。卡片上的照片是所在区域的照片，不是房源照片。</div>
       <div class="hgrid">${stays}</div>
       <div class="links" style="margin-top:16px"><a class="lk x" href="https://www.rednote.com/search_result?keyword=${enc('西安 钟楼 民宿 可接待外国人')}" target="_blank" rel="noopener">小红书：西安民宿推荐</a><a class="lk g" href="https://www.tujia.com/" target="_blank" rel="noopener">途家民宿</a><a class="lk d" href="https://www.google.com/search?q=${enc('西安 钟楼 民宿 可接待外宾 携程')}" target="_blank" rel="noopener">搜索：可接待外宾的民宿</a></div>`:''}</div>`}).join('');
   return `<section class="page" style="display:flex;flex-direction:column;gap:40px"><div>${ph('P.06','住宿选择','酒店或整套民宿二选一，价格为每晚估价，选好的会自动算进预算和订票清单。')}
