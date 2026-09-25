@@ -25,4 +25,4 @@ Prices, opening hours and ratings are estimates; check the booking pages and rev
 
 ## 西安版 · Xi'an
 
-A second planner in the same journal style lives in [`xian/`](xian/): 6 days, 5 nights in Xi'an for 4 people (10/11 – 10/17, 2026, AirAsia X), with 兵马俑, 华清宫《长恨歌》, 陕历博, 大雁塔 and a day on 华山. Open `xian/index.html`, or visit `/Travel-Plan/xian/` on GitHub Pages. Photo credits are in [xian/CREDITS.md](xian/CREDITS.md).
+A second planner in the same journal style lives in [`xian/`](xian/): 9 days, 8 nights in Xi'an for 4 people (Hainan Airlines via Haikou, 10/8 – 10/17, 2026), with 兵马俑, 华清宫《长恨歌》, 华山, 陕历博, 袁家村 and 大明宫. Open `xian/index.html`, or visit `/Travel-Plan/xian/` on GitHub Pages. Photo credits are in [xian/CREDITS.md](xian/CREDITS.md).

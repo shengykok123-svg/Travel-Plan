@@ -6,7 +6,7 @@
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
-<title>西安六日行</title>
+<title>西安九日行</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@700&display=swap" rel="stylesheet">
@@ -481,14 +481,14 @@ input[type=range]{accent-color:var(--acc)}
   <div class="dotbg"></div>
   <div class="shell">
     <header class="top">
-      <div class="brand"><div class="logo">秦</div><div class="brand-t">西安六日行 · 旅行手帐</div></div>
+      <div class="brand"><div class="logo">秦</div><div class="brand-t">西安九日行 · 旅行手帐</div></div>
       <span class="save" id="save" data-s="local"><i></i><span id="save-t">✎ 修改会自动保存在这台设备</span></span>
     </header>
     <section class="hero">
       <div class="hero-l">
-        <div class="pill-date">2026 · 10月11日 – 10月17日 · 6天5夜</div>
-        <h1>长安 · 西安<br><span class="hl">六日行</span></h1>
-        <p class="hero-sub">10/12 00:30 抵达咸阳机场 · 城墙骑行 · 兵马俑 · 华清宫《长恨歌》· 陕历博 · 华山 · 10/17 01:40 回吉隆坡</p>
+        <div class="pill-date">2026 · 10月8日出发 · 西安 9天8夜</div>
+        <h1>长安 · 西安<br><span class="hl">九日行</span></h1>
+        <p class="hero-sub">10/9 09:30 抵达西安 · 城墙骑行 · 兵马俑《长恨歌》· 华山 · 陕历博 · 袁家村 · 大明宫 · 10/17 09:05 回程</p>
         <div class="route" id="route"></div>
       </div>
       <div class="hero-r">
@@ -596,56 +596,81 @@ const HOTEL_BRAND={xa1:'hanting',xa2:'jihotel',xa3:'atour',xa4:'belltowerhotel'}
 
 function mo(pl,dish,cost,gal,cur,n){return {pl,dish,cost,gal,cur:cur||'CNY',n:n||''}}
 
-/* ---------------- itinerary ---------------- */
+const PLACE_GAL={zhonglou:'bell',gulou:'drum',huimin:'huimin',huimin_snack:['jingao','shizibing'],qingzhen:'huimin',nanmen:'wall',sajinqiao:'kaorou',yongxing:'yongxing',shuyuanmen:'shuyuan',beilin:['beilin','shuyuan'],xiaoyanta:'xiaoyanta',shm:'shm',dayanta:'dayanta',northsquare:'dayanta',tangparadise:'tangparadise',datang:'datang',terracotta:'terracotta',huaqing:'huaqing',huashan:'huashan',huashan_vc:'huashan'};
+/* ---------------- extra places for the 9-day plan ---------------- */
+CITY.yj={n:'袁家村 · 礼泉',q:'袁家村',cur:'CNY'};
+Object.assign(PLACES,{
+  xy3:{n:'西安咸阳国际机场 T3',c:'ap',la:34.4436,ln:108.7580,r:4.2,rv:'海南航空的国内段在T3。机场到钟楼约50分钟车程，地铁14号线转2号线约1小时15分。',h:'24小时'},
+  daming:{n:'大明宫国家遗址公园',c:'xa',la:34.2935,ln:108.9590,r:4.5,rv:'唐代皇宫遗址，丹凤门和含元殿遗址很壮观。园区很大，可以租电瓶车。',h:'约08:30–18:00'},
+  qujiangchi:{n:'曲江池遗址公园',c:'qj',la:34.2050,ln:108.9800,r:4.5,rv:'免费的湖景公园，人少安静，适合爬完华山后慢慢散步。'},
+  hanfu:{n:'汉服 / 唐装写真体验（大雁塔一带）',c:'qj',la:34.2180,ln:108.9620,r:4.3,rv:'换装加化妆，再到大雁塔、大唐不夜城拍照。价格按套餐不同，先在点评上看样片。'},
+  yuanjia:{n:'袁家村 · 关中印象体验地',c:'yj',la:34.6040,ln:108.4320,r:4.4,rv:'关中民俗小吃村，油泼面、酸奶、粉汤羊血都在一条街上。周末人很多，平日去比较舒服。'},
+  yuanjia_food:{n:'袁家村小吃街',c:'yj',la:34.6035,ln:108.4330,r:4.4,rv:'每家店只卖一两样小吃，价格便宜，4个人可以点很多样分着吃。'},
+  daming_food:{n:'大明宫附近餐馆',c:'xa',la:34.2880,ln:108.9600,r:4.0,rv:'遗址公园门口周边的面馆和陕菜馆，价格平。'}
+});
+Object.assign(PLACE_GAL,{daming:'wall',yuanjia:['liangpi','youpo'],yuanjia_food:['liangpi','youpo'],hanfu:'datang',qujiangchi:'tangparadise'});
+
+/* ---------------- itinerary (Hainan Airlines via Haikou) ---------------- */
 function it(t,kind,title,place,cost,cur,note,book,per){return {t,kind,title,place:place||'',cost:cost||0,cur:cur||'CNY',per:per||'p',note:note||'',book:book||''}}
+// k marks a swappable meal; its options live in MEAL_SRC under the same key
+const K=(k,x)=>{x.k=k;return x};
 const DEFAULT_DAYS=[
- {date:'2026-10-11',title:'出发 · 深夜抵达西安',cities:['ap','xa'],stay:'xa',items:[
-  it('16:00','move','到吉隆坡 KLIA 2 值机','',0,'CNY','国际航班提前3小时到机场。'),
-  it('19:05','move','AirAsia X 吉隆坡 → 西安（约5小时25分）','xy',0,'CNY','机票费用算在预算的“机票”里。'),
-  it('24:30','move','抵达西安咸阳机场 T5','xy',0),
-  it('24:45','move','入境、取行李，开通 eSIM、测试支付宝','xy',0,'CNY','深夜入境人少，大约20–40分钟。'),
-  it('25:20','move','滴滴 / 的士 → 钟楼酒店（约50分钟）','H:xa',160,'CNY','这个时间地铁已停运。4个人带行李叫一辆6座车，或者两辆的士。','','g'),
-  it('26:15','hotel','酒店入住，休息','H:xa',0,'CNY','订房时备注凌晨2点左右到，免得房间被取消。')
+ {date:'2026-10-08',title:'出发 · 海口转机',cities:['ap'],stay:'',items:[
+  it('18:05','move','到吉隆坡国际机场 T2 值机','',0,'CNY','国际航班提前3小时到机场。这张票含23kg托运行李。'),
+  it('21:05','move','海南航空 吉隆坡 → 海口','',0,'CNY','机票费用算在预算的“机票”里。'),
+  it('24:40','move','抵达海口美兰机场，办入境','',0,'CNY','中国的入境检查在海口办。行李要不要提出来过海关、再转国内段，按航司在值机时的说明。'),
+  it('25:30','rest','海口机场转机，候机休息（约5小时）','',30,'CNY','夜里转机时间长，带颈枕和外套，机场里可以买点吃的。')
  ]},
- {date:'2026-10-12',title:'城墙 · 钟鼓楼 · 回民街',cities:['xa'],stay:'xa',items:[
-  it('10:00','food','早午餐：樊记腊汁肉夹馍 + 凉皮','fanji',30,'CNY','前一晚睡得晚，睡饱再出发。肉夹馍配冰峰汽水是西安标配。'),
-  it('11:00','sight','钟楼','zhonglou',30,'CNY','钟鼓楼联票约 ¥50，也可以只买一个。今天周一，博物馆大多闭馆，所以先逛城内。'),
-  it('12:00','sight','鼓楼','gulou',30,'CNY','楼内有鼓乐表演，时间以现场为准。'),
-  it('12:45','food','午餐：贾三灌汤包子 + 回民街小吃','jiasan',60,'CNY','回民街偏游客，想吃地道的可以拐进大皮院。'),
-  it('14:00','sight','化觉巷清真大寺','qingzhen',25,'CNY','中式园林风格的清真寺，请穿着得体。'),
-  it('15:00','sweet','镜糕 · 柿子饼 · 酸梅汤','huimin_snack',15),
-  it('16:00','move','步行 / 地铁2号线 → 永宁门（南门）','nanmen',3),
-  it('16:30','sight','登西安城墙，南门租自行车骑一段','nanmen',100,'CNY','城墙门票约 ¥54，自行车约 ¥45/3小时。骑到西门看日落。'),
-  it('18:30','food','晚餐：同盛祥 牛羊肉泡馍','tongshengxiang',60,'CNY','自己掰馍，掰得越小越入味。'),
-  it('20:00','show','钟楼 · 南门夜景','zhonglou',0,'CNY','亮灯后的钟楼和南门城楼最好看。'),
+ {date:'2026-10-09',title:'抵达西安 · 钟鼓楼 · 回民街',cities:['ap','xa'],stay:'xa',items:[
+  it('06:30','move','海南航空 海口 → 西安','',0),
+  it('09:30','move','抵达西安咸阳机场 T3','xy3',0,'CNY','国内段到达，拿行李就可以走。'),
+  it('10:00','move','滴滴 / 的士 → 钟楼酒店（约50分钟）','H:xa',150,'CNY','4个人带行李叫一辆6座车。想省钱可以坐地铁14号线转2号线，约1小时15分、每人约 ¥7。','','g'),
+  it('11:00','rest','到酒店寄存行李','H:xa',0,'CNY','一般14:00以后才能入住，先寄存。'),
+  K('lunch1',it('11:45','food','午餐：樊记腊汁肉夹馍 + 凉皮','fanji',30,'CNY','肉夹馍配冰峰汽水是西安标配。')),
+  it('12:45','sight','钟楼','zhonglou',30,'CNY','钟鼓楼联票约 ¥50，也可以只买一个。'),
+  it('13:45','sight','鼓楼','gulou',30),
+  it('14:30','hotel','回酒店入住，补觉','H:xa',0,'CNY','夜里转机没睡好，下午好好休息。'),
+  it('17:00','sight','化觉巷清真大寺','qingzhen',25,'CNY','中式园林风格的清真寺，请穿着得体。'),
+  K('dinner1',it('18:00','food','晚餐：贾三灌汤包子 + 回民街小吃','jiasan',60,'CNY','回民街偏游客，想吃地道的可以拐进大皮院。')),
+  K('sweet1',it('19:30','sweet','镜糕 · 柿子饼 · 酸梅汤','huimin_snack',15)),
+  it('20:00','show','钟楼 · 鼓楼夜景','zhonglou',0,'CNY','亮灯后的钟鼓楼最好看。'),
   it('21:00','rest','回酒店','H:xa',0)
  ]},
- {date:'2026-10-13',title:'兵马俑 · 华清宫 · 《长恨歌》',cities:['lt'],stay:'xa',items:[
-  it('07:30','food','早餐：肉丸胡辣汤 + 包子','',15,'CNY','酒店附近的早餐店。'),
-  it('08:00','move','地铁 / 游5路 → 兵马俑（约1小时）','terracotta',10,'CNY','也可以4个人拼一辆滴滴，约 ¥120/车。'),
-  it('09:00','sight','秦始皇帝陵博物院（兵马俑）','terracotta',120,'CNY','一号坑最震撼，二号坑、三号坑和铜车马也要看。建议请讲解员或租讲解器。','官方公众号 / 携程实名预约，提前2–3天'),
-  it('12:30','food','午餐：兵马俑景区旁（biangbiang面、肉夹馍）','terracotta_food',45),
-  it('14:00','move','景区摆渡车 / 的士 → 华清宫（约15分钟）','huaqing',10),
-  it('14:30','sight','华清宫 · 骊山脚下','huaqing',120,'CNY','看贵妃池和西安事变旧址，约2–3小时。','官方公众号 / 携程，提前1–2天'),
-  it('17:30','food','晚餐：临潼陕菜馆','lintong_food',70,'CNY','临潼石榴有名，可以点石榴汁。'),
-  it('19:30','show','实景演出《长恨歌》','huaqing',298,'CNY','以骊山为背景的大型实景演出，约70分钟。价格按座位区不同，这里按普通座估算，场次以官方为准。','官方公众号 / 携程，提前3–7天'),
-  it('21:30','move','滴滴回市区（约50分钟）','H:xa',150,'CNY','','','g'),
-  it('22:30','rest','回酒店','H:xa',0)
+ {date:'2026-10-10',title:'城墙骑行 · 碑林 · 小雁塔',cities:['xa'],stay:'xa',items:[
+  K('bf2',it('08:30','food','早餐：肉丸胡辣汤 + 包子','',15,'CNY','酒店附近的早餐店。')),
+  it('09:15','move','步行 / 地铁2号线 → 永宁门（南门）','nanmen',3),
+  it('09:30','sight','登西安城墙，南门租自行车骑一圈','nanmen',100,'CNY','城墙门票约 ¥54，自行车约 ¥45/3小时。一圈约13.7公里，早上凉快人少。'),
+  K('lunch2',it('12:30','food','午餐：春发生葫芦头泡馍（南院门）','chunfasheng',40,'CNY','内脏类不是每个人都爱，不吃的可以换一家。')),
+  it('13:45','sight','书院门 · 碑林博物馆','beilin',65,'CNY','书院门是文房四宝老街，碑林看历代石碑和书法。'),
+  it('15:45','sight','小雁塔 · 西安博物院','xiaoyanta',0,'CNY','免费，要用护照预约。周二闭馆，这天是周六。','官方公众号免费预约'),
+  K('dinner2',it('18:30','food','晚餐：同盛祥 牛羊肉泡馍','tongshengxiang',60,'CNY','自己掰馍，掰得越小越入味。')),
+  it('20:00','show','永兴坊 夜游 · 摔碗酒','yongxing',30,'CNY','晚上的永兴坊灯笼很好看，摔碗酒约 ¥5/碗。'),
+  it('21:30','rest','回酒店','H:xa',0)
  ]},
- {date:'2026-10-14',title:'陕历博 · 大雁塔 · 大唐不夜城',cities:['qj'],stay:'xa',items:[
-  it('08:00','food','早餐：肉夹馍 + 豆腐脑','',20,'CNY','酒店附近的早餐店。'),
-  it('08:40','move','地铁2号线 → 小寨站，步行到陕历博','shm',4),
-  it('09:00','sight','陕西历史博物馆','shm',0,'CNY','免费，但要实名预约，名额很紧。珍宝馆另收费约 ¥30。周一闭馆，这天是周三。','官方公众号预约，约提前7天放票，一放票就抢'),
-  it('12:00','food','午餐：小寨一带面馆（油泼面、臊子面）','qj_noodle',35),
-  it('13:30','sight','大慈恩寺 · 大雁塔','dayanta',40,'CNY','门票约 ¥40，登塔另约 ¥25。'),
-  it('15:30','sight','大唐芙蓉园','tangparadise',120,'CNY','皇家园林，傍晚亮灯最漂亮。时间紧可以跳过，改去大雁塔北广场休息。','携程 / 官方公众号'),
-  it('18:00','food','晚餐：长安大牌档（大唐不夜城店）','changan_qj',90,'CNY','饭点要取号，4个人先线上排队。'),
-  it('19:30','show','大唐不夜城 夜景 · 街头表演','datang',0,'CNY','免费，晚上人很多，看好随身物品。'),
+ {date:'2026-10-11',title:'大雁塔 · 芙蓉园 · 大唐不夜城',cities:['qj'],stay:'xa',items:[
+  K('bf3',it('09:00','food','早午餐：子午路张记肉夹馍','zhangji',25,'CNY','周日可以睡晚一点。')),
+  it('10:00','sight','大慈恩寺 · 大雁塔','dayanta',40,'CNY','门票约 ¥40，登塔另约 ¥25。'),
+  K('lunch3',it('12:30','food','午餐：大雁塔一带面馆（油泼面、臊子面）','qj_noodle',35)),
+  it('14:00','sight','大唐芙蓉园','tangparadise',120,'CNY','仿唐皇家园林，一直待到亮灯最漂亮。','携程 / 官方公众号'),
+  K('dinner3',it('18:00','food','晚餐：长安大牌档（大唐不夜城店）','changan_qj',90,'CNY','周日晚上人多，4个人先线上取号。')),
+  it('19:30','show','大唐不夜城 夜景 · 街头表演','datang',0,'CNY','免费。周末晚上人山人海，看好随身物品。'),
   it('21:00','show','大雁塔北广场 音乐喷泉','northsquare',0,'CNY','喷泉场次以当天公告为准。'),
   it('21:45','move','地铁回钟楼','H:xa',4)
  ]},
- {date:'2026-10-15',title:'华山一日',cities:['hs'],stay:'xa',items:[
-  it('06:00','food','早餐：便利店 / 包子（带上路）','',15,'CNY','华山要走很多台阶：穿运动鞋，带水、充电宝和薄外套。'),
+ {date:'2026-10-12',title:'兵马俑 · 华清宫 · 《长恨歌》',cities:['lt'],stay:'xa',items:[
+  K('bf4',it('07:30','food','早餐：肉夹馍 + 豆腐脑','',20,'CNY','酒店附近的早餐店。')),
+  it('08:00','move','地铁 / 游5路 → 兵马俑（约1小时）','terracotta',10,'CNY','也可以4个人拼一辆滴滴，约 ¥120/车。'),
+  it('09:00','sight','秦始皇帝陵博物院（兵马俑）','terracotta',120,'CNY','一号坑最震撼，二号坑、三号坑和铜车马也要看。建议请讲解员或租讲解器。周一照常开放。','官方公众号 / 携程实名预约，提前2–3天'),
+  K('lunch4',it('12:30','food','午餐：兵马俑景区旁（biangbiang面、肉夹馍）','terracotta_food',45)),
+  it('14:00','move','景区摆渡车 / 的士 → 华清宫（约15分钟）','huaqing',10),
+  it('14:30','sight','华清宫 · 骊山脚下','huaqing',120,'CNY','看贵妃池和西安事变旧址，约2–3小时。','官方公众号 / 携程，提前1–2天'),
+  K('dinner4',it('17:30','food','晚餐：临潼陕菜馆','lintong_food',70,'CNY','临潼石榴有名，可以点石榴汁。')),
+  it('19:30','show','实景演出《长恨歌》','huaqing',298,'CNY','以骊山为背景的大型实景演出，约70分钟。价格按座位区不同，这里按普通座估算，场次以官方为准。','官方公众号 / 携程，提前3–7天'),
+  it('21:30','move','滴滴回市区（约50分钟）','H:xa',150,'CNY','','','g'),
+  it('22:30','rest','回酒店，早点睡（明天华山）','H:xa',0)
+ ]},
+ {date:'2026-10-13',title:'华山一日',cities:['hs'],stay:'xa',items:[
+  it('06:00','food','早餐：便利店 / 包子（带上路）','',15,'CNY','华山要走很多台阶：穿运动鞋，带水、充电宝和薄外套。周二是平日，人比周末少。'),
   it('06:30','move','地铁 → 西安北站','xianbei',5),
   it('07:10','move','高铁 西安北 → 华山北（约35分钟）','huashanbei',55,'CNY','','12306（护照注册），约提前15天开售'),
   it('08:00','move','接驳车 → 游客中心，换进山车到西峰索道','huashan_vc',40,'CNY','进山车单程约 ¥40。'),
@@ -655,45 +680,83 @@ const DEFAULT_DAYS=[
   it('16:00','sight','北峰索道下山','huashan',80,'CNY','北峰索道单程约 ¥80。'),
   it('17:00','move','进山车 / 接驳车回华山北站','huashanbei',40),
   it('18:10','move','高铁 华山北 → 西安北','xianbei',55,'CNY','班次以12306为准。','12306'),
-  it('19:30','food','晚餐：长安大牌档（钟楼店）','changan',90,'CNY','葫芦鸡、腊牛肉、摔碗酒。饭点要取号。'),
+  K('dinner5',it('19:30','food','晚餐：长安大牌档（钟楼店）','changan',90,'CNY','葫芦鸡、腊牛肉、摔碗酒。饭点要取号。')),
   it('21:00','rest','回酒店，泡脚休息','H:xa',0)
  ]},
- {date:'2026-10-16',title:'城内慢游 · 深夜回程',cities:['xa','ap'],stay:'',items:[
-  it('09:30','food','早午餐：刘纪孝 腊牛肉夹馍','liujixiao',35),
-  it('10:30','sight','小雁塔 · 西安博物院','xiaoyanta',0,'CNY','免费，要用护照预约。周二闭馆，这天是周五。','官方公众号免费预约'),
-  it('12:00','rest','回酒店退房，寄存行李','H:xa',0,'CNY','可以问酒店能不能延迟退房，晚上还要回来拿行李。'),
-  it('12:30','food','午餐：永兴坊 陕西非遗美食','yongxing',60,'CNY','摔碗酒、子长煎饼、臊子面，一条街吃遍陕西。'),
-  it('14:00','sight','书院门 · 碑林博物馆','beilin',65,'CNY','书院门是文房四宝老街，碑林看历代石碑和书法。'),
-  it('16:30','shop','回民街买手信：柿子饼、茶叶、糕点','huimin',150,'CNY','马来西亚海关一般不让旅客带肉类入境，腊牛肉就在西安吃掉吧。'),
-  it('18:00','food','最后一顿晚餐：德发长饺子宴','defachang',100,'CNY','一次吃十几种形状的饺子，适合4个人分。'),
-  it('19:30','show','钟鼓楼夜景 · 洒金桥夜市','sajinqiao',30),
-  it('21:30','move','回酒店拿行李','H:xa',0),
-  it('22:00','move','滴滴 → 咸阳机场 T5（约50分钟）','xy',160,'CNY','','','g'),
-  it('22:50','move','抵达机场，值机、托运、过安检','xy',0,'CNY','国际航班起飞前约3小时到机场。'),
-  it('25:40','move','AirAsia X 西安 → 吉隆坡（10/17 07:15 抵达）','xy',0,'CNY','起飞时间是10/17凌晨01:40，也就是10/16的深夜。')
+ {date:'2026-10-14',title:'陕历博 · 曲江池慢走',cities:['qj'],stay:'xa',items:[
+  K('bf6',it('08:00','food','早餐：肉丸胡辣汤','',15,'CNY','爬完华山腿会酸，今天安排得轻松。')),
+  it('08:40','move','地铁2号线 → 小寨站，步行到陕历博','shm',4),
+  it('09:00','sight','陕西历史博物馆','shm',0,'CNY','免费，但要实名预约，名额很紧。珍宝馆另收费约 ¥30。周一闭馆，这天是周三。','官方公众号预约，约提前7天放票，一放票就抢'),
+  K('lunch6',it('12:00','food','午餐：小寨一带面馆（油泼面、臊子面）','qj_noodle',35)),
+  it('13:30','sight','曲江池遗址公园 · 散步','qujiangchi',0,'CNY','免费的湖景公园，人少安静，腿酸就坐下看湖。'),
+  it('16:00','rest','回酒店休息','H:xa',4),
+  K('dinner6',it('18:30','food','晚餐：老孙家饭庄（泡馍 + 陕西菜）','laosunjia',70)),
+  it('20:00','show','洒金桥夜市','sajinqiao',30,'CNY','本地人去的回民美食街，比回民街地道。'),
+  it('21:30','rest','回酒店','H:xa',0)
+ ]},
+ {date:'2026-10-15',title:'袁家村 · 关中小吃一日游',cities:['yj'],stay:'xa',items:[
+  it('08:30','food','早餐：酒店附近简单吃','',15,'CNY','留着肚子去袁家村吃。'),
+  it('09:00','move','滴滴包车 / 旅游专线 → 袁家村（约1.5小时）','yuanjia',220,'CNY','4个人包一辆车来回比较方便，也可以在市区坐旅游专线大巴，班次以当天为准。','','g'),
+  it('10:30','sight','袁家村 · 关中民俗街','yuanjia',0,'CNY','免费进村。平日人比周末少很多。'),
+  K('lunch7',it('11:30','food','午餐：袁家村小吃街（油泼面、酸奶、粉汤羊血）','yuanjia_food',60,'CNY','每家店只卖一两样，4个人点很多样分着吃。')),
+  it('14:00','shop','逛作坊：油坊、醋坊、辣子坊','yuanjia',50,'CNY','可以买油泼辣子带回家，托运行李里放好。'),
+  it('15:30','move','包车回市区','H:xa',220,'CNY','','','g'),
+  it('17:30','rest','回酒店休息','H:xa',0),
+  K('dinner7',it('19:00','food','晚餐：马峰小炒泡馍 · 大皮院','mafeng',40)),
+  it('20:30','show','回民街夜景','huimin',0),
+  it('21:30','rest','回酒店','H:xa',0)
+ ]},
+ {date:'2026-10-16',title:'大明宫 · 汉服写真 · 告别晚餐',cities:['xa','qj'],stay:'xa',items:[
+  K('bf8',it('09:00','food','早午餐：刘纪孝 腊牛肉夹馍','liujixiao',35)),
+  it('10:00','sight','大明宫国家遗址公园','daming',60,'CNY','看丹凤门和含元殿遗址，园区很大，可以租电瓶车。门票以官方为准。'),
+  K('lunch8',it('12:30','food','午餐：大明宫附近面馆','daming_food',35)),
+  it('14:00','sight','汉服 / 唐装写真体验','hanfu',150,'CNY','换装加化妆，到大雁塔一带拍照。价格按套餐不同，先在点评上看样片。','大众点评 / 小红书，提前1–2天约时间'),
+  it('17:00','shop','回民街买手信：柿子饼、茶叶、糕点','huimin',150,'CNY','马来西亚海关一般不让旅客带肉类入境，腊牛肉就在西安吃掉吧。'),
+  K('dinner8',it('18:30','food','告别晚餐：德发长饺子宴','defachang',100,'CNY','一次吃十几种形状的饺子，适合4个人分。')),
+  it('20:00','show','钟楼夜景','zhonglou',0),
+  it('21:00','rest','回酒店收拾行李，早点睡','H:xa',0,'CNY','明天05:45就要出发去机场。')
+ ]},
+ {date:'2026-10-17',title:'回程 · 海口转机',cities:['ap'],stay:'',items:[
+  it('05:30','rest','起床，退房','H:xa',0,'CNY','前一晚先和前台说好早上退房。'),
+  it('05:45','move','滴滴 → 咸阳机场 T3（约50分钟）','xy3',150,'CNY','这个时间地铁还没开，提前一晚在App上预约车。','','g'),
+  it('06:40','move','抵达 T3，值机、托运','xy3',30,'CNY','这里预留了机场早餐的费用。'),
+  it('09:05','move','海南航空 西安 → 海口','xy3',0),
+  it('12:00','move','抵达海口，办出境，转机（约4.5小时）','',40,'CNY','中国的出境检查在海口办。这里预留了机场午餐的费用。'),
+  it('16:30','move','海南航空 海口 → 吉隆坡','',0),
+  it('20:00','move','抵达吉隆坡 KLIA T2','',0)
  ]}
 ];
 DEFAULT_DAYS.forEach((d,di)=>d.items.forEach((x,ii)=>x.id='d'+(di+1)+'-'+(ii+1)));
-const DEFAULT={v:1,settings:{people:4,rooms:2,myr:0.59,rates:{CNY:1,HKD:0.92,MOP:0.89},flight:1290,misc:500,hotel:{xa:'xa1'}},days:DEFAULT_DAYS,bookings:{},rev:'default'};
+const DEFAULT={v:1,settings:{people:4,rooms:2,myr:0.59,rates:{CNY:1,HKD:0.92,MOP:0.89},flight:1673,misc:500,hotel:{xa:'xa1'}},days:DEFAULT_DAYS,bookings:{},rev:'default'};
 
-/* ---------------- swappable meals (first option = default) ---------------- */
-const MEAL_OPTS={
-  'd2-1':[mo('fanji','腊汁肉夹馍 + 凉皮',30,['roujiamo','liangpi']),mo('qinyu','肉夹馍',28,'roujiamo'),mo('liujixiao','腊牛肉夹馍',35,'roujiamo'),mo('weijia','凉皮 + 肉夹馍',25,['liangpi','roujiamo']),mo('jiasan','灌汤包 + 八宝粥',45,'tangbao'),mo('','肉丸胡辣汤 + 包子',15,'hulatang','CNY','酒店附近早餐店')],
-  'd2-4':[mo('jiasan','灌汤包 + 回民街小吃',60,['tangbao','kaorou']),mo('dingjia','小酥肉 + 烤肉串',45,'kaorou'),mo('laomijia','羊肉泡馍',40,'paomo'),mo('mafeng','小炒泡馍',38,'paomo'),mo('liujixiao','腊牛肉夹馍 + 胡辣汤',40,['roujiamo','hulatang']),mo('fanji','肉夹馍 + 凉皮',30,['roujiamo','liangpi'])],
-  'd2-6':[mo('huimin_snack','镜糕 · 柿子饼 · 酸梅汤',15,['jingao','shizibing']),mo('','甑糕',10,'jingao','CNY','回民街甑糕摊'),mo('','冰峰汽水 + 酸梅汤',8,'bingfeng','CNY','路边小卖部'),mo('dingjia','小酥肉（咸口小吃）',25,null),mo('','石榴汁（当季）',15,null,'CNY','回民街鲜榨果汁摊')],
-  'd2-9':[mo('tongshengxiang','牛羊肉泡馍',60,'paomo'),mo('laomijia','羊肉泡馍',40,'paomo'),mo('laosunjia','泡馍 + 陕西菜',70,['paomo','shuipen']),mo('chunfasheng','葫芦头泡馍',40,'huluotou'),mo('changan','陕西菜合集',90,'biang'),mo('haidilao_xa','火锅（不吃辣也可以）',120,'hotpot')],
-  'd3-1':[mo('','肉丸胡辣汤 + 包子',15,'hulatang','CNY','酒店附近早餐店'),mo('fanji','肉夹馍',20,'roujiamo'),mo('weijia','凉皮 + 肉夹馍',25,['liangpi','roujiamo']),mo('','酒店自助早餐',40,null,'CNY','酒店早餐（如果房价含早就选这个）'),mo('','便利店面包 + 牛奶',15,null,'CNY','便利店，路上吃')],
-  'd3-4':[mo('terracotta_food','biangbiang面 + 肉夹馍',45,['biang','roujiamo']),mo('','景区游客中心快餐',50,null,'CNY','兵马俑游客中心餐厅'),mo('','自带干粮',15,null,'CNY','早上在市区买好，省时间'),mo('terracotta_food','油泼面 + 凉皮',35,['youpo','liangpi']),mo('terracotta_food','臊子面',30,'saozi')],
-  'd3-7':[mo('lintong_food','陕菜 + 石榴汁',70,'biang'),mo('lintong_food','水盆羊肉 + 饼',45,'shuipen'),mo('lintong_food','臊子面 + 凉菜',35,'saozi'),mo('','华清宫附近快餐',40,null,'CNY','演出前简单吃'),mo('','自带小吃，演出后回市区吃宵夜',20,'kaorou','CNY','回市区后在洒金桥吃宵夜')],
-  'd4-1':[mo('','肉夹馍 + 豆腐脑',20,'roujiamo','CNY','酒店附近早餐店'),mo('zhangji','子午路张记肉夹馍',25,'roujiamo'),mo('','肉丸胡辣汤',15,'hulatang','CNY','酒店附近早餐店'),mo('','酒店自助早餐',40,null,'CNY','酒店早餐（如果房价含早就选这个）'),mo('weijia','凉皮 + 肉夹馍',25,['liangpi','roujiamo'])],
-  'd4-4':[mo('qj_noodle','油泼面 · 臊子面',35,['youpo','saozi']),mo('qj_noodle','biangbiang面',30,'biang'),mo('zhangji','肉夹馍 + 凉皮',30,['roujiamo','liangpi']),mo('weijia','凉皮套餐',25,'liangpi'),mo('','陕历博附近商场快餐',50,null,'CNY','小寨赛格 / 商场美食区'),mo('qj_noodle','水盆羊肉',40,'shuipen')],
-  'd4-7':[mo('changan_qj','陕西菜合集',90,'biang'),mo('datang_food','葫芦头泡馍 · 水盆羊肉',60,['huluotou','shuipen']),mo('shansisan','冰淇淋（当甜品）',30,null),mo('','大雁塔附近火锅',110,'hotpot','CNY','大雁塔一带火锅店'),mo('datang_food','边走边吃小吃',50,['kaorou','roujiamo']),mo('qj_noodle','面馆简单吃',30,'biang')],
-  'd5-11':[mo('changan','陕西菜合集',90,'biang'),mo('defachang','饺子宴',100,'jiaozi'),mo('haidilao_xa','火锅',120,'hotpot'),mo('xiaolongkan_xa','麻辣火锅',110,'hotpot'),mo('tongshengxiang','牛羊肉泡馍',60,'paomo'),mo('sajinqiao','洒金桥烤肉 + 小吃',60,'kaorou')],
-  'd6-1':[mo('liujixiao','腊牛肉夹馍',35,'roujiamo'),mo('qinyu','肉夹馍',28,'roujiamo'),mo('fanji','腊汁肉夹馍 + 凉皮',30,['roujiamo','liangpi']),mo('jiasan','灌汤包',45,'tangbao'),mo('mafeng','小炒泡馍',38,'paomo'),mo('','酒店自助早餐',40,null,'CNY','酒店早餐（如果房价含早就选这个）')],
-  'd6-4':[mo('yongxing','陕西非遗小吃',60,['yongxing','biang']),mo('laosunjia','泡馍 + 陕西菜',70,'paomo'),mo('chunfasheng','葫芦头泡馍',40,'huluotou'),mo('weijia','凉皮 + 肉夹馍',25,['liangpi','roujiamo']),mo('changan','陕西菜合集',90,'biang')],
-  'd6-7':[mo('defachang','饺子宴',100,'jiaozi'),mo('changan','陕西菜合集',90,'biang'),mo('tongshengxiang','牛羊肉泡馍',60,'paomo'),mo('haidilao_xa','火锅',120,'hotpot'),mo('laomijia','羊肉泡馍',40,'paomo'),mo('sajinqiao','洒金桥烤肉 + 小吃',60,'kaorou')]
+/* ---------------- swappable meals, by slot key (first option = default) ---------------- */
+const BF=[mo('','肉丸胡辣汤 + 包子',15,'hulatang','CNY','酒店附近早餐店'),mo('fanji','肉夹馍',20,'roujiamo'),mo('weijia','凉皮 + 肉夹馍',25,['liangpi','roujiamo']),mo('zhangji','子午路张记肉夹馍',25,'roujiamo'),mo('','酒店自助早餐',40,null,'CNY','酒店早餐（如果房价含早就选这个）'),mo('','便利店面包 + 牛奶',15,null,'CNY','便利店')];
+const DINNER_CITY=[mo('changan','陕西菜合集',90,'biang'),mo('defachang','饺子宴',100,'jiaozi'),mo('haidilao_xa','火锅（不吃辣也可以）',120,'hotpot'),mo('xiaolongkan_xa','麻辣火锅',110,'hotpot'),mo('tongshengxiang','牛羊肉泡馍',60,'paomo'),mo('sajinqiao','洒金桥烤肉 + 小吃',60,'kaorou')];
+const firstAs=(o,list)=>[o,...list.filter(x=>x.pl!==o.pl||x.dish!==o.dish)].slice(0,6);
+const MEAL_SRC={
+  lunch1:[mo('fanji','腊汁肉夹馍 + 凉皮',30,['roujiamo','liangpi']),mo('qinyu','肉夹馍',28,'roujiamo'),mo('liujixiao','腊牛肉夹馍',35,'roujiamo'),mo('weijia','凉皮 + 肉夹馍',25,['liangpi','roujiamo']),mo('laomijia','羊肉泡馍',40,'paomo'),mo('tongshengxiang','牛羊肉泡馍',60,'paomo')],
+  dinner1:[mo('jiasan','灌汤包 + 回民街小吃',60,['tangbao','kaorou']),mo('dingjia','小酥肉 + 烤肉串',45,'kaorou'),mo('laomijia','羊肉泡馍',40,'paomo'),mo('mafeng','小炒泡馍',38,'paomo'),mo('liujixiao','腊牛肉夹馍 + 胡辣汤',40,['roujiamo','hulatang']),mo('sajinqiao','洒金桥烤肉 + 小吃',60,'kaorou')],
+  sweet1:[mo('huimin_snack','镜糕 · 柿子饼 · 酸梅汤',15,['jingao','shizibing']),mo('','甑糕',10,'jingao','CNY','回民街甑糕摊'),mo('','冰峰汽水 + 酸梅汤',8,'bingfeng','CNY','路边小卖部'),mo('dingjia','小酥肉（咸口小吃）',25,null),mo('','石榴汁（当季）',15,null,'CNY','回民街鲜榨果汁摊')],
+  bf2:BF,bf4:firstAs(mo('','肉夹馍 + 豆腐脑',20,'roujiamo','CNY','酒店附近早餐店'),BF),bf6:BF,
+  bf3:firstAs(mo('zhangji','子午路张记肉夹馍',25,'roujiamo'),BF),
+  lunch2:[mo('chunfasheng','葫芦头泡馍',40,'huluotou'),mo('weijia','凉皮 + 肉夹馍',25,['liangpi','roujiamo']),mo('qinyu','肉夹馍',28,'roujiamo'),mo('laosunjia','泡馍 + 陕西菜',70,['paomo','shuipen']),mo('','书院门附近面馆',30,'biang','CNY','书院门一带面馆')],
+  dinner2:[mo('tongshengxiang','牛羊肉泡馍',60,'paomo'),mo('laomijia','羊肉泡馍',40,'paomo'),mo('laosunjia','泡馍 + 陕西菜',70,['paomo','shuipen']),mo('changan','陕西菜合集',90,'biang'),mo('yongxing','永兴坊小吃',60,['yongxing','biang']),mo('haidilao_xa','火锅',120,'hotpot')],
+  lunch3:[mo('qj_noodle','油泼面 · 臊子面',35,['youpo','saozi']),mo('qj_noodle','biangbiang面',30,'biang'),mo('zhangji','肉夹馍 + 凉皮',30,['roujiamo','liangpi']),mo('weijia','凉皮套餐',25,'liangpi'),mo('qj_noodle','水盆羊肉',40,'shuipen')],
+  dinner3:[mo('changan_qj','陕西菜合集',90,'biang'),mo('datang_food','葫芦头泡馍 · 水盆羊肉',60,['huluotou','shuipen']),mo('shansisan','冰淇淋（当甜品）',30,null),mo('','大雁塔附近火锅',110,'hotpot','CNY','大雁塔一带火锅店'),mo('datang_food','边走边吃小吃',50,['kaorou','roujiamo']),mo('qj_noodle','面馆简单吃',30,'biang')],
+  lunch4:[mo('terracotta_food','biangbiang面 + 肉夹馍',45,['biang','roujiamo']),mo('','景区游客中心快餐',50,null,'CNY','兵马俑游客中心餐厅'),mo('','自带干粮',15,null,'CNY','早上在市区买好，省时间'),mo('terracotta_food','油泼面 + 凉皮',35,['youpo','liangpi']),mo('terracotta_food','臊子面',30,'saozi')],
+  dinner4:[mo('lintong_food','陕菜 + 石榴汁',70,'biang'),mo('lintong_food','水盆羊肉 + 饼',45,'shuipen'),mo('lintong_food','臊子面 + 凉菜',35,'saozi'),mo('','华清宫附近快餐',40,null,'CNY','演出前简单吃'),mo('','自带小吃，演出后回市区吃宵夜',20,'kaorou','CNY','回市区后在洒金桥吃宵夜')],
+  dinner5:DINNER_CITY,
+  lunch6:[mo('qj_noodle','油泼面 · 臊子面',35,['youpo','saozi']),mo('qj_noodle','biangbiang面',30,'biang'),mo('zhangji','肉夹馍 + 凉皮',30,['roujiamo','liangpi']),mo('','陕历博附近商场快餐',50,null,'CNY','小寨赛格 / 商场美食区'),mo('qj_noodle','水盆羊肉',40,'shuipen')],
+  dinner6:firstAs(mo('laosunjia','泡馍 + 陕西菜',70,['paomo','shuipen']),DINNER_CITY),
+  lunch7:[mo('yuanjia_food','油泼面、酸奶、粉汤羊血',60,['youpo','liangpi']),mo('yuanjia_food','凉皮 + 肉夹馍',35,['liangpi','roujiamo']),mo('yuanjia_food','臊子面 + 锅盔',35,'saozi'),mo('yuanjia_food','biangbiang面',30,'biang'),mo('yuanjia_food','羊肉泡馍',45,'paomo')],
+  dinner7:firstAs(mo('mafeng','小炒泡馍',40,'paomo'),[mo('laomijia','羊肉泡馍',40,'paomo'),mo('jiasan','灌汤包',45,'tangbao'),...DINNER_CITY]),
+  bf8:[mo('liujixiao','腊牛肉夹馍',35,'roujiamo'),mo('qinyu','肉夹馍',28,'roujiamo'),mo('fanji','腊汁肉夹馍 + 凉皮',30,['roujiamo','liangpi']),mo('jiasan','灌汤包',45,'tangbao'),mo('mafeng','小炒泡馍',38,'paomo'),mo('','酒店自助早餐',40,null,'CNY','酒店早餐（如果房价含早就选这个）')],
+  lunch8:[mo('daming_food','面馆：油泼面、臊子面',35,['youpo','saozi']),mo('daming_food','凉皮 + 肉夹馍',25,['liangpi','roujiamo']),mo('','大明宫附近商场快餐',50,null,'CNY','大明宫万达一带'),mo('daming_food','biangbiang面',30,'biang'),mo('daming_food','水盆羊肉',40,'shuipen')],
+  dinner8:firstAs(mo('defachang','饺子宴',100,'jiaozi'),DINNER_CITY)
 };
-const PLACE_GAL={zhonglou:'bell',gulou:'drum',huimin:'huimin',huimin_snack:['jingao','shizibing'],qingzhen:'huimin',nanmen:'wall',sajinqiao:'kaorou',yongxing:'yongxing',shuyuanmen:'shuyuan',beilin:['beilin','shuyuan'],xiaoyanta:'xiaoyanta',shm:'shm',dayanta:'dayanta',northsquare:'dayanta',tangparadise:'tangparadise',datang:'datang',terracotta:'terracotta',huaqing:'huaqing',huashan:'huashan',huashan_vc:'huashan'};
+const MEAL_OPTS={};
+DEFAULT_DAYS.forEach(d=>d.items.forEach(i=>{if(i.k&&MEAL_SRC[i.k])MEAL_OPTS[i.id]=MEAL_SRC[i.k];delete i.k}));
+
 Object.values(MEAL_OPTS).forEach(list=>list.forEach(o=>{if(o.pl&&o.gal&&!PLACE_GAL[o.pl])PLACE_GAL[o.pl]=o.gal}));
 
 /* ---------------- schematic map of Xi'an and around ---------------- */
@@ -707,12 +770,12 @@ const GEO={
   ],
   walls:[[[108.9285,34.2745],[108.9700,34.2745],[108.9700,34.2515],[108.9285,34.2515]]],
   hills:[{n:'骊山',ln:109.22,la:34.345,r:.05},{n:'秦岭 · 华山',ln:110.08,la:34.46,r:.07}],
-  labels:[['西安城墙',108.949,34.279],['曲江',108.972,34.200],['临潼',109.24,34.405],['华阴 · 华山',110.08,34.575],['咸阳机场',108.75,34.475],['渭河',109.62,34.545]]
+  labels:[['西安城墙',108.949,34.279],['曲江',108.972,34.200],['临潼',109.24,34.405],['华阴 · 华山',110.08,34.575],['咸阳机场',108.75,34.475],['袁家村',108.432,34.635],['渭河',109.62,34.545]]
 };
 
 /* ================= app (travel-journal UI) ================= */
-const CC={xa:'#c67139',qj:'#a8463f',lt:'#6f8150',hs:'#3f7f86',ap:'#82796a'};
-const CODE={xa:'城',qj:'塔',lt:'俑',hs:'华',ap:'XIY'};
+const CC={xa:'#c67139',qj:'#a8463f',lt:'#6f8150',hs:'#3f7f86',ap:'#82796a',yj:'#b08628'};
+const CODE={xa:'城',qj:'塔',lt:'俑',hs:'华',ap:'XIY',yj:'村'};
 const KC={move:'#82796a',sight:'#56633f',food:'#b2622d',sweet:'#a8506e',shop:'#4f6a8f',show:'#6b559a',hotel:'#3f7f86',rest:'#a19786'};
 const WD=['周日','周一','周二','周三','周四','周五','周六'];
 const TABS=[['overview','总览'],['itinerary','每日行程'],['now','旅途中'],['map','地图'],['food','美食'],['hotels','住宿'],['tickets','订票清单'],['budget','预算'],['settings','设置']];
@@ -727,8 +790,8 @@ const sortI=a=>a.slice().sort((x,y)=>tMin(x.t)-tMin(y.t));
 const dp=iso=>{const [y,m,d]=iso.split('-').map(Number);return {md:m+'/'+d,mmdd:pad(m)+'/'+pad(d),wd:WD[new Date(y,m-1,d).getDay()],dt:new Date(y,m-1,d)}};
 const n0=v=>Math.round(v).toLocaleString('en-US');
 const TS=(date,t)=>{const [y,m,d]=date.split('-').map(Number);return Date.UTC(y,m-1,d)-8*3600e3+tMin(t)*60e3};
-const START=TS('2026-10-11','24:30'),END=TS('2026-10-16','25:40');
-const SLO=TS('2026-10-11','16:00'),SHI=TS('2026-10-16','27:00');
+const START=TS('2026-10-09','09:30'),END=TS('2026-10-17','09:05');
+const SLO=TS('2026-10-08','17:00'),SHI=TS('2026-10-17','21:00');
 const bj=ts=>{const d=new Date(ts+8*3600e3);return (d.getUTCMonth()+1)+'/'+d.getUTCDate()+' '+pad(d.getUTCHours())+':'+pad(d.getUTCMinutes())};
 const short=n=>n.split(/[（(·]/)[0].trim();
 const xhsU=n=>'https://www.rednote.com/search_result?keyword='+enc(n.replace(/（[^）]*）|\([^)]*\)/g,' ').replace(/·/g,' ').replace(/\s+/g,' ').trim());
@@ -736,7 +799,7 @@ const gmapU=n=>'https://www.google.com/maps/search/?api=1&query='+enc(n.replace(
 const MEAL_RE=/^(早午餐|早餐|午餐|晚餐|早茶|甜品|下午茶|最后一顿晚餐)[：:]\s*/;
 
 /* ---------- state ---------- */
-const LS='xian-trip-2026-v1',LS_OLD='xian-trip-2026-v0';
+const LS='xian-trip-2026-v2',LS_OLD='xian-trip-2026-v0';
 function norm(o){const d=clone(DEFAULT),s=o.settings||{};return {v:1,rev:o.rev||'x',updatedAt:o.updatedAt||0,settings:{...d.settings,...s,rates:{...d.settings.rates,...(s.rates||{})},hotel:{...d.settings.hotel,...(s.hotel||{})}},days:Array.isArray(o.days)&&o.days.length?o.days:d.days,bookings:o.bookings||{}}}
 let trip=null;
 try{const s=localStorage.getItem(LS)||localStorage.getItem(LS_OLD);if(s){const o=JSON.parse(s);if(o&&o.days)trip=norm(o)}}catch(e){}
@@ -878,19 +941,19 @@ document.addEventListener('wheel',e=>{const el=e.target.closest('.map');if(!el)r
 /* ---------- hero + tabs ---------- */
 function renderHero(){
   const B=calc(),tk=tickets(),done=tk.filter(t=>trip.bookings[t.id]).length,t=Date.now();
-  const segs=[['xa','城墙','10/12',1,'城'],['lt','兵马俑','10/13',2,'俑'],['qj','大雁塔','10/14',3,'塔'],['hs','华山','10/15',4,'华'],['xa','回民街','10/16',5,'坊']];
-  $('#route').innerHTML=segs.map((s,k)=>`<div class="stop-wrap">${k?'<div class="stop-link"></div>':''}<button type="button" class="stop" data-a="openDay" data-v="${s[3]}" title="看这天的行程"><div class="stamp" style="--c:${CC[s[0]]};--tilt:${[-8,6,-4,9,-6,4][k]}deg">${s[4]}</div><b>${s[1]}</b><small>${s[2]}</small></button></div>`).join('');
+  const segs=[['xa','钟鼓楼','10/9',1,'楼'],['xa','城墙','10/10',2,'城'],['qj','大雁塔','10/11',3,'塔'],['lt','兵马俑','10/12',4,'俑'],['hs','华山','10/13',5,'华'],['qj','陕历博','10/14',6,'博'],['yj','袁家村','10/15',7,'村'],['xa','大明宫','10/16',8,'宫']];
+  $('#route').innerHTML=segs.map((s,k)=>`<div class="stop-wrap">${k?'<div class="stop-link"></div>':''}<button type="button" class="stop" data-a="openDay" data-v="${s[3]}" title="看这天的行程"><div class="stamp" style="--c:${CC[s[0]]};--tilt:${[-8,6,-4,9,-6,4,-7,5][k%8]}deg">${s[4]}</div><b>${s[1]}</b><small>${s[2]}</small></button></div>`).join('');
   let head,big,unit,sub;
   if(t<START){const ms=START-t;head='距离抵达西安还有';big=Math.floor(ms/864e5);unit='天';sub=`${Math.floor(ms/36e5)%24} 小时 ${Math.floor(ms/6e4)%60} 分`}
-  else if(t<=END){const di=Math.min(trip.days.length,Math.floor((t-TS('2026-10-11','00:00'))/864e5)+1);head='旅途进行中';big=di;unit='/ '+trip.days.length+' 天';sub='点“旅途中”看现在和接下来'}
+  else if(t<=END){const di=Math.min(trip.days.length,Math.floor((t-TS('2026-10-08','00:00'))/864e5)+1);head='旅途进行中';big=di;unit='/ '+trip.days.length+' 天';sub='点“旅途中”看现在和接下来'}
   else{head='旅程已经结束';big=trip.days.length;unit='天';sub='欢迎回家'}
   $('#postcard').innerHTML=`<div class="tape sage" style="top:-13px;left:50%;margin-left:-46px;transform:rotate(-4deg)"></div>
-    <div class="postmark"><div><b>XI'AN</b><span>2026.10.12</span></div></div>
+    <div class="postmark"><div><b>XI'AN</b><span>2026.10.09</span></div></div>
     <div style="font-size:13px;color:var(--mute)">${head}</div>
     <div class="cd-big"><b>${big}</b><span>${unit}</span></div>
     <div class="tab-num" style="font-size:14px;color:var(--mute)">${sub}</div>
     <div class="dash"></div>
-    <div class="pc-grid"><div><small>人数</small><b>${B.ppl} 人 · ${trip.settings.rooms} 间房</b></div><div><small>每人预算</small><b>RM ${n0(B.myr/B.ppl)}</b></div><div><small>订票进度</small><b>${done} / ${tk.length}</b></div><div><small>航班</small><b>AirAsia X</b></div></div>`;
+    <div class="pc-grid"><div><small>人数</small><b>${B.ppl} 人 · ${trip.settings.rooms} 间房</b></div><div><small>每人预算</small><b>RM ${n0(B.myr/B.ppl)}</b></div><div><small>订票进度</small><b>${done} / ${tk.length}</b></div><div><small>航班</small><b>海南航空</b></div></div>`;
   $('#tabs').innerHTML=TABS.map(([id,l])=>`<button type="button" class="tab" role="tab" data-a="tab" data-v="${id}" aria-selected="${S.tab===id}">${l}</button>`).join('');
 }
 
@@ -908,7 +971,7 @@ function pOverview(){
       <div class="cpills">${(d.cities||[]).map(c=>`<span class="cpill"><span class="cdot" style="--c:${CC[c]}"></span>${CITY[c].n}</span>`).join('')}</div>
       <div class="ov-hl">${hl}</div>
       <div class="ov-foot"><span><span style="color:var(--mute)">每人约 </span><b>¥${n0(pp)}</b></span><span>打开 →</span></div></button>`}).join('');
-  return `<section class="page">${ph('P.01','每日一览','六张明信片，一天一张。点开就是当天的详细行程。')}<div class="ov-hotels">${hotels}</div><div class="ov-grid">${cards}</div></section>`;
+  return `<section class="page">${ph('P.01','每日一览','十张明信片，一天一张（含出发和回程两天）。点开就是当天的详细行程。')}<div class="ov-hotels">${hotels}</div><div class="ov-grid">${cards}</div></section>`;
 }
 
 /* ---------- P.02 itinerary ---------- */
@@ -1078,7 +1141,7 @@ function pHotels(){const ppl=Math.max(1,+trip.settings.people||1);
           <div class="ft"><div><b>¥${n0(nc)}<small> /晚</small></b><div class="tot">合计 ¥${n0(nc*ns.length)} · 每人 ¥${n0(nc*ns.length/ppl)}</div></div><span class="sb">${sel?'✓ 已选择':'选这家'}</span></div></div></button>`}).join('');
     return `<div><div class="hcity-h"><div class="hcode" style="--c:${CC[c]}">${CODE[c]}</div><h3>${CITY[c].n}</h3><span class="nw" style="font-size:13px;color:var(--mute)">${ns.length} 晚 · ${ns.length?dp(ns[0].date).md+' – '+dp(ns[ns.length-1].date).md+' 入住':''}</span></div><div class="hgrid">${cards}</div></div>`}).join('');
   return `<section class="page" style="display:flex;flex-direction:column;gap:40px"><div>${ph('P.06','住宿选择','全程住钟楼附近，去哪儿都方便。价格为每晚估价，选好的酒店会自动算进预算和订票清单。')}
-    <div style="font-size:13px;color:var(--mute);margin-top:-8px">${ppl} 人住 ${roomText()} · 10/11 凌晨2点左右才到，那晚也要订房，订的时候备注晚到。钟楼站是地铁2号线和6号线的换乘站。</div></div>${cities}</section>`}
+    <div style="font-size:13px;color:var(--mute);margin-top:-8px">${ppl} 人住 ${roomText()} · 10/9 上午9:30到，酒店一般14:00才能入住，可以先寄存行李。10/17 早上05:45就要退房。钟楼站是地铁2号线和6号线的换乘站。</div></div>${cities}</section>`}
 
 /* ---------- P.07 tickets ---------- */
 function pTickets(){const tk=tickets(),done=tk.filter(t=>trip.bookings[t.id]).length,pct=tk.length?Math.round(done/tk.length*100):0;
@@ -1116,7 +1179,7 @@ function pBudget(){const B=calc(),myr=+trip.settings.myr||0,n=B.ppl;
   return `<section class="page">${ph('P.08','预算','拖动左边的便签，右边的账单会立刻重新算。金额按人民币和马币同时显示。')}
     <div class="bud"><div class="sliders"><div class="tape terra" style="top:-12px;left:50%;margin-left:-46px;transform:rotate(-3deg)"></div>
       ${SLIDERS.map(s=>{const v=s.get();return `<div class="srow"><div class="lr"><label for="n-${s.k}">${s.l}</label><span class="numwrap">${s.pre?`<i>${s.pre}</i>`:''}<input type="number" class="num" id="n-${s.k}" data-n="${s.k}" value="${fmtS(s,v)}" min="${s.int?s.min:0}" step="${s.dec?'0.001':s.step}" inputmode="decimal">${s.suf?`<i>${s.suf}</i>`:''}</span></div><input type="range" data-s="${s.k}" min="${s.min}" max="${s.max}" step="${s.step}" value="${v}" aria-label="${s.l}"></div>`}).join('')}
-      <p>汇率都以马币为准，可以直接在方框里输入，也可以拖动。杂费默认 ¥500/人，包含 eSIM 流量、手信和应急开销。机票按 AirAsia X 来回 RM 1,290/人计算。</p></div>
+      <p>汇率都以马币为准，可以直接在方框里输入，也可以拖动。杂费默认 ¥500/人，包含 eSIM 流量、手信和应急开销。机票按海南航空（海口转机）来回 RM 1,673/人计算，含23kg托运。</p></div>
     <div class="bud-r"><div class="receipt"><div class="rc-h">XI'AN TRIP · 预算账单</div>
       <div class="rc-tot"><div><small>每人</small><div class="big">RM ${n0(B.myr/n)}</div><div class="sub">¥${n0(B.cny/n)}</div></div>
         <div><small>${n} 人合计</small><div class="mid">RM ${n0(B.myr)}</div><div class="sub">¥${n0(B.cny)}</div></div>
@@ -1132,9 +1195,9 @@ function pSettings(){const synced=!!docRef;
   return `<section class="page">${ph('P.09','设置与备份',synced?'出发前确认一下这几件事。行程改动会同步给打开同一个 claude.ai 链接的同行者。':'出发前确认一下这几件事。行程改动只存在这台设备上，要分享给同行者就导出成文字。')}
     <div class="set"><div class="notebook nb"><div class="holes"></div><h3>待你确认的事</h3><ul>
       <li><b>4 人</b>住 <b>2 间双床房</b>，全程住钟楼附近。</li>
-      <li>去程 AirAsia X <b>10/11 19:05</b> 吉隆坡起飞，<b>10/12 00:30</b> 到西安咸阳 T5，凌晨叫车到酒店。10/11 那晚要订房，并备注凌晨到达。</li>
-      <li>回程 <b>10/17 01:40</b> 起飞，也就是 <b>10/16 的深夜</b>。10/16 白天在城内慢游，22:00 从酒店出发去机场。别把回程日期看错。</li>
-      <li>10/12 是周一，陕西历史博物馆周一闭馆，所以放在 10/14（周三）；小雁塔周二闭馆，放在 10/16（周五）。</li>
+      <li>去程海南航空 <b>10/8 21:05</b> 吉隆坡起飞，00:40 到海口转机（约5小时50分），<b>10/9 09:30</b> 到西安咸阳 T3。中国的入境检查在海口办。</li>
+      <li>回程 <b>10/17 09:05</b> 西安起飞，12:00 到海口转机（约4小时30分），<b>20:00</b> 回到吉隆坡。出境检查在海口办。当天 05:45 要从酒店出发。</li>
+      <li>10/12 是周一，陕西历史博物馆周一闭馆，所以放在 10/14（周三）；华山放在平日的 10/13（周二），人比周末少。</li>
       <li>机票按每人来回 <b>RM ${n0(trip.settings.flight)}</b>（AirAsia X）计算。</li>
       <li>价格是 2026 年的大致估算，评分是各平台的大致水平。实际以订票页面和链接里的最新评价为准。</li></ul></div>
     <div class="backup"><div class="tape sage" style="top:-12px;left:36px;transform:rotate(-5deg)"></div><h3>备份与分享</h3>
