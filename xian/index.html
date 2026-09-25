@@ -380,6 +380,8 @@ input[type=range]{accent-color:var(--acc)}
 .hcard .ft .sb{border-radius:999px;white-space:nowrap;padding:7px 14px;font-size:12px;font-weight:700;background:var(--surface);color:var(--ink)}
 .hcard.sel .ft .sb{background:var(--sage6);color:var(--paper)}
 
+.hs-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin:34px 0 12px}.hs-head h3{font-family:var(--disp);font-weight:700;font-synthesis:none;font-size:22px;margin:0}.hs-head span{font-size:13px;color:var(--mute)}
+.hs-warn{background:var(--acc1);border:1.5px dashed var(--acc);border-radius:22px;padding:14px 18px;font-size:13px;color:var(--mute2);margin-bottom:26px;text-wrap:pretty}.hs-warn b{color:var(--acc8)}
 /* P.07 tickets */
 .tk-sum{display:flex;flex-wrap:wrap;align-items:center;gap:24px;position:relative;background:var(--sage2);border-radius:30px;padding:20px 26px;margin-top:-8px;transform:rotate(-.6deg);box-shadow:0 3px 10px rgba(46,43,37,.12)}
 .ring{position:relative;width:110px;height:110px;flex:none}
@@ -757,6 +759,14 @@ const MEAL_SRC={
 const MEAL_OPTS={};
 DEFAULT_DAYS.forEach(d=>d.items.forEach(i=>{if(i.k&&MEAL_SRC[i.k])MEAL_OPTS[i.id]=MEAL_SRC[i.k];delete i.k}));
 
+/* ---------------- homestays (whole-unit, priced per unit not per room) ---------------- */
+HOTELS.xa.push(
+  {id:'hs1',unit:true,beds:'2室1厅',tier:'民宿 · 整套2室',n:'钟楼 / 回民街 两室公寓（民宿）',area:'城内 · 钟楼步行约10分钟',la:34.2640,ln:108.9480,p:420,r:4.5,rv:'老城区的整套两室公寓，4个人住一套，有客厅、厨房和洗衣机。这是房型参考，具体房源和评分以平台为准。',pro:['比两间酒店便宜','有洗衣机和厨房','4个人住在一起'],con:['要确认可接待外宾','没有前台','老小区可能没电梯']},
+  {id:'hs2',unit:true,beds:'2室1厅',tier:'民宿 · 景观公寓',n:'大雁塔 / 小寨 两室景观公寓（民宿）',area:'曲江 · 大雁塔一带',la:34.2170,ln:108.9610,p:480,r:4.5,rv:'高层公寓，部分房源能看到大雁塔。离陕历博、大唐不夜城近，但去回民街和华山要多坐几站地铁。',pro:['大雁塔景观','离陕历博近','空间大'],con:['离老城区远','要确认可接待外宾']},
+  {id:'hs3',unit:true,beds:'整院3室',tier:'民宿 · 特色院子',n:'城墙内 四合院民宿（整院）',area:'城内 · 城墙里的小巷',la:34.2560,ln:108.9420,p:850,r:4.6,rv:'城墙里的老院子改造，有中式庭院，拍照很好看。价格高，旺季要早订。',pro:['很有西安特色','有庭院','适合拍照'],con:['价格高','老房子隔音一般','要确认可接待外宾']}
+);
+Object.assign(HOTEL_BRAND,{hs1:'bell',hs2:'dayanta',hs3:'shuyuan'});
+
 Object.values(MEAL_OPTS).forEach(list=>list.forEach(o=>{if(o.pl&&o.gal&&!PLACE_GAL[o.pl])PLACE_GAL[o.pl]=o.gal}));
 
 /* ---------------- schematic map of Xi'an and around ---------------- */
@@ -838,7 +848,7 @@ async function flush(){
 /* ---------- domain helpers ---------- */
 const hotelFor=c=>{const l=HOTELS[c];if(!l)return null;return l.find(h=>h.id===trip.settings.hotel[c])||l[0]};
 function mix(){const p=Math.max(1,+trip.settings.people||1),r=Math.max(1,+trip.settings.rooms||1);const tri=Math.min(r,Math.max(0,p-r*2));return {twin:r-tri,tri,rooms:r}}
-const night=H=>{if(!H)return 0;const m=mix();return m.twin*H.p+m.tri*(H.p3||Math.round(H.p*1.35))};
+const night=H=>{if(!H)return 0;if(H.unit)return H.p;const m=mix();return m.twin*H.p+m.tri*(H.p3||Math.round(H.p*1.35))};
 function roomText(){const m=mix(),a=[];if(m.twin)a.push(m.twin+'间双床房');if(m.tri)a.push(m.tri+'间三人房');return a.join(' + ')}
 function place(pid){if(!pid)return null;if(pid.startsWith('H:')){const c=pid.slice(2),h=hotelFor(c);if(!h)return null;return {id:pid,n:h.n,c,la:h.la,ln:h.ln,r:h.r,rv:h.rv,hotel:true,hid:h.id,h:'入住一般14:00后，可以先寄存行李'}}const p=PLACES[pid];return p?{id:pid,...p}:null}
 const cny=(v,cur)=>(Number(v)||0)*(trip.settings.rates[cur]||1);
@@ -859,6 +869,7 @@ const GREG={};let greg=0;
 function regGal(imgs,title,note){const id='g'+(++greg);GREG[id]={imgs,title,note};return id}
 function urgency(t){
   const s=t.title+' '+t.how;
+  if(t.hotel&&/民宿/.test(t.title))return {must:true,why:'先和房东确认能接待外国护照并帮忙做住宿登记，再付款。注意押金、退订规则和入住方式（自助密码锁还是见面交钥匙）。'};
   if(t.hotel)return {must:true,why:'10月是西安旺季，钟楼附近的连锁酒店很抢手。现在就订，选可免费取消的房价，并备注凌晨到达。'};
   if(/12306/.test(t.how))return {must:true,why:'约提前15天开售，4个人要连座，去华山的早班高铁容易卖完。开售当天就买。'};
   if(/陕西历史博物馆/.test(s))return {must:true,why:'免费但名额非常紧，约提前7天放票，一放票就要抢，4个人要分别用护照登记。'};
@@ -869,7 +880,7 @@ function urgency(t){
 }
 function tickets(){const out=[],ppl=Math.max(1,+trip.settings.people||1);
   trip.days.forEach(d=>sortI(d.items).forEach(i=>{if(i.book)out.push({id:i.id,date:d.date,t:i.t,kind:i.kind,title:i.title,how:i.book,cost:+i.cost?(CUR[i.cur]||'')+n0(+i.cost)+(i.per==='g'?'/全组':'/人'):'免费'})}));
-  Object.keys(HOTELS).forEach(c=>{const ns=trip.days.filter(d=>d.stay===c);if(!ns.length)return;const h=hotelFor(c);out.push({id:'hotel-'+c,date:ns[0].date,t:'',title:'订酒店：'+h.n,how:ns.length+' 晚 · '+roomText()+' · 携程 / Trip.com / Agoda',cost:'¥'+n0(night(h)*ns.length),hotel:true})});
+  Object.keys(HOTELS).forEach(c=>{const ns=trip.days.filter(d=>d.stay===c);if(!ns.length)return;const h=hotelFor(c);out.push({id:'hotel-'+c,date:ns[0].date,t:'',title:(h.unit?'订民宿：':'订酒店：')+h.n,how:ns.length+' 晚 · '+(h.unit?'整套'+h.beds+' · 途家 / 携程民宿 / 美团民宿，确认可接待外宾':roomText()+' · 携程 / Trip.com / Agoda'),cost:'¥'+n0(night(h)*ns.length),hotel:true})});
   return out.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:tMin(a.t||'0:0')-tMin(b.t||'0:0'))}
 const nowTs=()=>S.sim!=null?S.sim:Date.now();
 function timeline(){const tl=[];trip.days.forEach((d,di)=>d.items.forEach(i=>tl.push({d,di,i,ts:TS(d.date,i.t)})));return tl.sort((a,b)=>a.ts-b.ts)}
@@ -1132,16 +1143,20 @@ function pFood(){
 /* ---------- P.06 hotels ---------- */
 function pHotels(){const ppl=Math.max(1,+trip.settings.people||1);
   const cities=Object.keys(HOTELS).map(c=>{const ns=trip.days.filter(d=>d.stay===c);
-    const cards=HOTELS[c].map((h,hk)=>{const sel=trip.settings.hotel[c]===h.id,nc=night(h),g=gal(HOTEL_BRAND[h.id]);
+    const card=(h,hk)=>{const sel=trip.settings.hotel[c]===h.id,nc=night(h),g=gal(HOTEL_BRAND[h.id]);
       return `<button type="button" class="hcard${sel?' sel':''}" data-a="hotel" data-c="${c}" data-v="${h.id}" style="--tilt:${[-1.2,.8,-.6,1][hk%4]}deg;--c:${CC[c]}" aria-pressed="${sel}"><div class="tp"></div>
         <div class="pic">${g[0]?`<span class="im" style="background-image:url(${esc(g[0].f)})"></span>`:''}<span class="tier">${esc(h.tier)}</span></div>
         ${sel?'<span class="stampmark">已选 ✓</span>':''}
         <div class="in"><div class="nm">${esc(h.n)}</div><div class="ar">${esc(h.area)} · <b>★ ${h.r.toFixed(1)}</b></div><p>${esc(h.rv)}</p>
           <div class="pc">${h.pro.map(x=>`<span class="p">＋ ${esc(x)}</span>`).join('')}${h.con.map(x=>`<span class="c">－ ${esc(x)}</span>`).join('')}</div>
-          <div class="ft"><div><b>¥${n0(nc)}<small> /晚</small></b><div class="tot">合计 ¥${n0(nc*ns.length)} · 每人 ¥${n0(nc*ns.length/ppl)}</div></div><span class="sb">${sel?'✓ 已选择':'选这家'}</span></div></div></button>`}).join('');
-    return `<div><div class="hcity-h"><div class="hcode" style="--c:${CC[c]}">${CODE[c]}</div><h3>${CITY[c].n}</h3><span class="nw" style="font-size:13px;color:var(--mute)">${ns.length} 晚 · ${ns.length?dp(ns[0].date).md+' – '+dp(ns[ns.length-1].date).md+' 入住':''}</span></div><div class="hgrid">${cards}</div></div>`}).join('');
-  return `<section class="page" style="display:flex;flex-direction:column;gap:40px"><div>${ph('P.06','住宿选择','全程住钟楼附近，去哪儿都方便。价格为每晚估价，选好的酒店会自动算进预算和订票清单。')}
-    <div style="font-size:13px;color:var(--mute);margin-top:-8px">${ppl} 人住 ${roomText()} · 10/9 上午9:30到，酒店一般14:00才能入住，可以先寄存行李。10/17 早上05:45就要退房。钟楼站是地铁2号线和6号线的换乘站。</div></div>${cities}</section>`}
+          <div class="ft"><div><b>¥${n0(nc)}<small> /晚</small></b><div class="tot">合计 ¥${n0(nc*ns.length)} · 每人 ¥${n0(nc*ns.length/ppl)}</div></div><span class="sb">${sel?'✓ 已选择':'选这家'}</span></div></div></button>`};
+    const cards=HOTELS[c].filter(h=>!h.unit).map(card).join(''),stays=HOTELS[c].filter(h=>h.unit).map(card).join('');
+    return `<div><div class="hcity-h"><div class="hcode" style="--c:${CC[c]}">${CODE[c]}</div><h3>${CITY[c].n}</h3><span class="nw" style="font-size:13px;color:var(--mute)">${ns.length} 晚 · ${ns.length?dp(ns[0].date).md+' – '+dp(ns[ns.length-1].date).md+' 入住':''}</span></div><div class="hgrid">${cards}</div>${stays?`<div class="hs-head"><h3>或者住民宿 · 整套公寓</h3><span>4个人住一整套，价格按整套算，不按房间</span></div>
+      <div class="hs-warn"><b>订民宿前一定要确认：</b>① 房东能接待外国护照，并帮忙做住宿登记（外国人入住24小时内要登记，酒店会自动做，很多民宿做不了）；② 入住方式、押金和退订规则。Airbnb 已经不做中国大陆的房源，请用途家、携程民宿或美团民宿。卡片上的照片是所在区域的照片，不是房源照片。</div>
+      <div class="hgrid">${stays}</div>
+      <div class="links" style="margin-top:16px"><a class="lk x" href="https://www.rednote.com/search_result?keyword=${enc('西安 钟楼 民宿 可接待外国人')}" target="_blank" rel="noopener">小红书：西安民宿推荐</a><a class="lk g" href="https://www.tujia.com/" target="_blank" rel="noopener">途家民宿</a><a class="lk d" href="https://www.google.com/search?q=${enc('西安 钟楼 民宿 可接待外宾 携程')}" target="_blank" rel="noopener">搜索：可接待外宾的民宿</a></div>`:''}</div>`}).join('');
+  return `<section class="page" style="display:flex;flex-direction:column;gap:40px"><div>${ph('P.06','住宿选择','酒店或整套民宿二选一，价格为每晚估价，选好的会自动算进预算和订票清单。')}
+    <div style="font-size:13px;color:var(--mute);margin-top:-8px">${ppl} 人住 ${hotelFor('xa')&&hotelFor('xa').unit?'整套民宿（'+hotelFor('xa').beds+'）':roomText()} · 10/9 上午9:30到，酒店一般14:00才能入住，可以先寄存行李。10/17 早上05:45就要退房。钟楼站是地铁2号线和6号线的换乘站。</div></div>${cities}</section>`}
 
 /* ---------- P.07 tickets ---------- */
 function pTickets(){const tk=tickets(),done=tk.filter(t=>trip.bookings[t.id]).length,pct=tk.length?Math.round(done/tk.length*100):0;
