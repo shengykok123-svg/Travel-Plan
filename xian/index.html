@@ -838,7 +838,7 @@ function mapPoints(scope){
   else{let last=null;sortI(trip.days[scope].items).forEach(i=>{const p=place(i.place);if(!p||p.id===last)return;last=p.id;route.push(p)});const m=new Map();route.forEach((p,k)=>{if(!m.has(p.id))m.set(p.id,{...p,nums:[]});m.get(p.id).nums.push(k+1)});pts=[...m.values()].map(p=>({...p,label:p.nums.length>2?p.nums[0]+'…':p.nums.join(',')}))}
   return {pts,route};
 }
-function fitVB(xy){if(!xy.length)return {x:0,y:0,w:1400,h:700};const xs=xy.map(p=>p[0]),ys=xy.map(p=>p[1]);const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);const w=Math.max(x1-x0,30),h=Math.max(y1-y0,30),pd=Math.max(w,h)*.22+12;return {x:(x0+x1)/2-w/2-pd,y:(y0+y1)/2-h/2-pd,w:w+pd*2,h:h+pd*2}}
+function fitVB(xy){if(!xy.length)return {x:0,y:0,w:1400,h:700};const xs=xy.map(p=>p[0]),ys=xy.map(p=>p[1]);const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);const w=Math.max(x1-x0,10),h=Math.max(y1-y0,10),pd=Math.max(w,h)*.22+12;return {x:(x0+x1)/2-w/2-pd,y:(y0+y1)/2-h/2-pd,w:w+pd*2,h:h+pd*2}}
 function mapSVG(key,scope){
   const {pts,route}=mapPoints(scope);const vk=key+'|'+scope;
   const vb=S.views[vk]||fitVB(pts.map(p=>[MX(p.ln),MY(p.la)]));
@@ -865,7 +865,7 @@ function mapSVG(key,scope){
 function mapHTML(key,scope,height){const vk=key+'|'+scope;const {svg}=mapSVG(key,scope);
   return `<div class="map" data-map="${esc(vk)}" data-key="${key}" data-scope="${scope}" style="height:${height}">${svg}
     <div class="map-ctl"><button type="button" data-a="mzoom" data-f="${1/1.4}" aria-label="放大">+</button><button type="button" data-a="mzoom" data-f="1.4" aria-label="缩小">−</button><button type="button" data-a="mreset" aria-label="重置视图">⟲</button></div>
-    <div class="map-cap">珠三角示意图 · 拖动 / 滚轮缩放</div></div>`}
+    <div class="map-cap">西安示意图 · 拖动 / 滚轮缩放</div></div>`}
 function curVB(el){const v=el.querySelector('svg').getAttribute('viewBox').split(/\s+/).map(Number);return {x:v[0],y:v[1],w:v[2],h:v[3]}}
 function redrawMap(el){const {svg}=mapSVG(el.dataset.key,el.dataset.scope==='all'?'all':+el.dataset.scope);el.querySelector('svg').outerHTML=svg}
 function zoomMap(el,f,fx,fy){const vb=curVB(el);fx=fx==null?.5:fx;fy=fy==null?.5:fy;const nw=Math.min(3000,Math.max(8,vb.w*f)),nh=vb.h*nw/vb.w;S.views[el.dataset.map]={x:vb.x+(vb.w-nw)*fx,y:vb.y+(vb.h-nh)*fy,w:nw,h:nh};redrawMap(el)}
@@ -908,7 +908,7 @@ function pOverview(){
       <div class="cpills">${(d.cities||[]).map(c=>`<span class="cpill"><span class="cdot" style="--c:${CC[c]}"></span>${CITY[c].n}</span>`).join('')}</div>
       <div class="ov-hl">${hl}</div>
       <div class="ov-foot"><span><span style="color:var(--mute)">每人约 </span><b>¥${n0(pp)}</b></span><span>打开 →</span></div></button>`}).join('');
-  return `<section class="page">${ph('P.01','每日一览','九张明信片，一天一张。点开就是当天的详细行程。')}<div class="ov-hotels">${hotels}</div><div class="ov-grid">${cards}</div></section>`;
+  return `<section class="page">${ph('P.01','每日一览','六张明信片，一天一张。点开就是当天的详细行程。')}<div class="ov-hotels">${hotels}</div><div class="ov-grid">${cards}</div></section>`;
 }
 
 /* ---------- P.02 itinerary ---------- */
@@ -1017,7 +1017,7 @@ function refreshNow(){if(S.tab!=='now')return;const D=nowDynamic();$('#now-cd').
 function pMap(){
   const chips=[['all','全部地点']].concat(trip.days.map((d,k)=>[k,dp(d.date).md+' '+d.title])).map(([k,l])=>`<button type="button" class="chip" data-a="mapDay" data-v="${k}" aria-pressed="${String(S.mapDay)===String(k)}">${esc(l)}</button>`).join('');
   const legend=Object.keys(CITY).map(c=>`<span><i style="--c:${CC[c]}"></i>${CITY[c].n}</span>`).join('')+`<span><i style="--c:#201e1d"></i>酒店</span>`;
-  return `<section class="page">${ph('P.04','地图','珠三角示意图。选一天看它的路线，编号就是当天的顺序。')}
+  return `<section class="page">${ph('P.04','地图','西安和周边示意图。选一天看它的路线，编号就是当天的顺序。城内的点很近，可以用 + 放大。')}
     <div class="chips">${chips}</div><div class="legend">${legend}</div>
     <div class="map-wrap"><div class="map-big"><div class="tape sage" style="top:-12px;left:30px;transform:rotate(-6deg)"></div><div class="tape terra" style="top:-12px;right:30px;transform:rotate(5deg)"></div>${mapHTML('full',S.mapDay,'min(640px,72vh)')}</div>
     <div style="flex:1 1 300px;min-width:0;padding-top:10px" id="pick-slot">${pickCard(true)}</div></div></section>`}
