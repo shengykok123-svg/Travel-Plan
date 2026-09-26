@@ -145,7 +145,7 @@ input[type=range]{accent-color:var(--acc)}
 /* P.02 itinerary */
 .daychips{display:flex;gap:12px;overflow-x:auto;padding:14px 4px;margin:0 -4px 12px;scrollbar-width:thin}
 /* phones: a day switcher that stays under the tabs while you read */
-.daybar{display:flex;position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--tabs-h,58px));z-index:25;align-items:center;gap:8px;margin:0 -20px 14px;padding:8px 14px;background:rgba(249,244,237,.96);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--div);box-shadow:0 6px 14px -10px rgba(46,43,37,.35)}
+.daybar{display:flex;position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--tabs-h,60px));z-index:25;align-items:center;gap:8px;margin:0 -20px 14px;padding:8px 14px;background:rgba(249,244,237,.96);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--div);box-shadow:0 6px 14px -10px rgba(46,43,37,.35)}
 @media (min-width:980px){.daybar{margin:0 0 18px;border:1px solid var(--div);border-radius:999px;padding:6px 10px;box-shadow:var(--sh-md)}.db-title{font-size:17px}.db-mid:hover .db-title{color:var(--acc7)}}
 .db-hint{display:none;font-size:11px;color:var(--mute);white-space:nowrap}
 @media (min-width:980px) and (hover:hover){.db-hint{display:inline}}
@@ -247,7 +247,7 @@ input[type=range]{accent-color:var(--acc)}
 .addbtn{border:2px dashed rgba(32,30,29,.22);background:transparent;border-radius:999px;padding:10px 20px;cursor:pointer;font-size:14px;font-weight:600;color:var(--mute2);white-space:nowrap}
 .addbtn:hover{border-color:var(--acc);color:var(--acc7)}
 .side{flex:1 1 340px;min-width:0;display:flex;flex-direction:column;gap:26px;padding-top:10px}
-@media (min-width:980px){.side.stick{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--tabs-h,58px) + 78px)}}
+@media (min-width:980px){.side.stick{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--tabs-h,60px) + 78px)}}
 .mapframe{position:relative;background:var(--paper);border-radius:30px;padding:10px;box-shadow:var(--sh-md);transform:rotate(-1deg)}
 .side-hint{font-size:12px;color:var(--mute);padding:0 6px}
 .pcard{position:relative;background:var(--paper);border-radius:22px;padding:12px 12px 18px;box-shadow:0 12px 32px rgba(46,43,37,.18);transform:rotate(1deg);animation:tpUp .3s ease;display:flex;flex-direction:column;gap:8px}
@@ -1526,7 +1526,7 @@ function setTab(id){S.tab=id;if(id!=='map'&&id!=='itinerary')S.pick=null;S.swap=
 function openDay(k){S.tab='itinerary';S.day=Math.max(0,Math.min(trip.days.length-1,k));S.edit=null;S.swap=null;S.pick=null;S.delArm=null;render();scrollTo({top:$('.tabs').offsetTop,behavior:'smooth'})}
 function goDay(k,noScroll){if(k<0||k>=trip.days.length)return;S.day=k;S.edit=null;S.swap=null;S.pick=null;S.delArm=null;S.active=null;render();if(!noScroll)toDayTop()}
 // scroll so the day's heading sits just under the sticky tabs + day bar
-function toDayTop(){const nb=$('#nb');if(!nb)return;const off=($('.tabs')?$('.tabs').offsetHeight:0)+($('.daybar')&&getComputedStyle($('.daybar')).display!=='none'?$('.daybar').offsetHeight:0)+8;const y=nb.getBoundingClientRect().top+scrollY-off;if(Math.abs(scrollY-y)>40)scrollTo({top:y,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
+function toDayTop(){const nb=$('#nb');if(!nb)return;const off=($('.tabs')?$('.tabs').offsetHeight:0)+($('.daybar')&&getComputedStyle($('.daybar')).display!=='none'?$('.daybar').offsetHeight:0)+8;const y=nb.getBoundingClientRect().top+scrollY-off;if(Math.abs(scrollY-y)>40)scrollTo({top:y,behavior:'auto'})}
 function dayBar(di){const d=trip.days[di],p=dp(d.date),n=trip.days.length;
   return `<div class="daybar" role="navigation" aria-label="切换天数"><button type="button" class="db-arrow" data-a="goDay" data-v="${di-1}" aria-label="前一天"${di===0?' disabled':''}>‹</button>
     <label class="db-mid"><span class="db-day">DAY ${di+1} · ${p.md} ${p.wd}</span><span class="db-title">${esc(d.title)}</span><span class="db-caret" aria-hidden="true">▾</span><span class="db-hint">也可以按键盘 ← →</span>

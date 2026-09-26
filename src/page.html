@@ -137,7 +137,7 @@ input[type=range]{accent-color:var(--acc)}
 /* P.02 itinerary */
 .daychips{display:flex;gap:12px;overflow-x:auto;padding:14px 4px;margin:0 -4px 12px;scrollbar-width:thin}
 /* phones: a day switcher that stays under the tabs while you read */
-.daybar{display:flex;position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--tabs-h,58px));z-index:25;align-items:center;gap:8px;margin:0 -20px 14px;padding:8px 14px;background:rgba(249,244,237,.96);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--div);box-shadow:0 6px 14px -10px rgba(46,43,37,.35)}
+.daybar{display:flex;position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--tabs-h,60px));z-index:25;align-items:center;gap:8px;margin:0 -20px 14px;padding:8px 14px;background:rgba(249,244,237,.96);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--div);box-shadow:0 6px 14px -10px rgba(46,43,37,.35)}
 @media (min-width:980px){.daybar{margin:0 0 18px;border:1px solid var(--div);border-radius:999px;padding:6px 10px;box-shadow:var(--sh-md)}.db-title{font-size:17px}.db-mid:hover .db-title{color:var(--acc7)}}
 .db-hint{display:none;font-size:11px;color:var(--mute);white-space:nowrap}
 @media (min-width:980px) and (hover:hover){.db-hint{display:inline}}
@@ -239,7 +239,7 @@ input[type=range]{accent-color:var(--acc)}
 .addbtn{border:2px dashed rgba(32,30,29,.22);background:transparent;border-radius:999px;padding:10px 20px;cursor:pointer;font-size:14px;font-weight:600;color:var(--mute2);white-space:nowrap}
 .addbtn:hover{border-color:var(--acc);color:var(--acc7)}
 .side{flex:1 1 340px;min-width:0;display:flex;flex-direction:column;gap:26px;padding-top:10px}
-@media (min-width:980px){.side.stick{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--tabs-h,58px) + 78px)}}
+@media (min-width:980px){.side.stick{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--tabs-h,60px) + 78px)}}
 .mapframe{position:relative;background:var(--paper);border-radius:30px;padding:10px;box-shadow:var(--sh-md);transform:rotate(-1deg)}
 .side-hint{font-size:12px;color:var(--mute);padding:0 6px}
 .pcard{position:relative;background:var(--paper);border-radius:22px;padding:12px 12px 18px;box-shadow:0 12px 32px rgba(46,43,37,.18);transform:rotate(1deg);animation:tpUp .3s ease;display:flex;flex-direction:column;gap:8px}

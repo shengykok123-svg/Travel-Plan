@@ -464,7 +464,7 @@ function setTab(id){S.tab=id;if(id!=='map'&&id!=='itinerary')S.pick=null;S.swap=
 function openDay(k){S.tab='itinerary';S.day=Math.max(0,Math.min(trip.days.length-1,k));S.edit=null;S.swap=null;S.pick=null;S.delArm=null;render();scrollTo({top:$('.tabs').offsetTop,behavior:'smooth'})}
 function goDay(k,noScroll){if(k<0||k>=trip.days.length)return;S.day=k;S.edit=null;S.swap=null;S.pick=null;S.delArm=null;S.active=null;render();if(!noScroll)toDayTop()}
 // scroll so the day's heading sits just under the sticky tabs + day bar
-function toDayTop(){const nb=$('#nb');if(!nb)return;const off=($('.tabs')?$('.tabs').offsetHeight:0)+($('.daybar')&&getComputedStyle($('.daybar')).display!=='none'?$('.daybar').offsetHeight:0)+8;const y=nb.getBoundingClientRect().top+scrollY-off;if(Math.abs(scrollY-y)>40)scrollTo({top:y,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
+function toDayTop(){const nb=$('#nb');if(!nb)return;const off=($('.tabs')?$('.tabs').offsetHeight:0)+($('.daybar')&&getComputedStyle($('.daybar')).display!=='none'?$('.daybar').offsetHeight:0)+8;const y=nb.getBoundingClientRect().top+scrollY-off;if(Math.abs(scrollY-y)>40)scrollTo({top:y,behavior:'auto'})}
 function dayBar(di){const d=trip.days[di],p=dp(d.date),n=trip.days.length;
   return `<div class="daybar" role="navigation" aria-label="切换天数"><button type="button" class="db-arrow" data-a="goDay" data-v="${di-1}" aria-label="前一天"${di===0?' disabled':''}>‹</button>
     <label class="db-mid"><span class="db-day">DAY ${di+1} · ${p.md} ${p.wd}</span><span class="db-title">${esc(d.title)}</span><span class="db-caret" aria-hidden="true">▾</span><span class="db-hint">也可以按键盘 ← →</span>
