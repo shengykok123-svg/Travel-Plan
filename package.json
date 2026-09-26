@@ -3,9 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node scripts/build.mjs",
-    "dev": "node scripts/build.mjs && wrangler d1 migrations apply travel-plan --local && wrangler pages dev public --binding DEV_MODE=1 --binding DEV_EMAIL=me@example.com",
-    "deploy": "node scripts/build.mjs && wrangler d1 migrations apply travel-plan --remote && wrangler pages deploy public"
+    "page": "node scripts/build-page.mjs",
+    "build": "node scripts/build-page.mjs && node scripts/build.mjs",
+    "dev": "npm run build && wrangler d1 migrations apply travel-plan --local && wrangler pages dev public --binding DEV_MODE=1 --binding DEV_EMAIL=me@example.com",
+    "deploy": "npm run build && wrangler d1 migrations apply travel-plan --remote && wrangler pages deploy public --project-name travel-plan --branch main --commit-dirty=true"
   },
   "devDependencies": {
     "wrangler": "^4.0.0"

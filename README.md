@@ -13,6 +13,10 @@ A single-page trip planner in a travel-journal style (postcards, polaroids, wash
 - **订票清单**: split into "must book in advance" and "can book on the day"
 - **预算**: per-person and total budget in RMB and MYR, adjustable exchange rates
 
+## Editing
+
+`index.html` is generated. Edit the files in `src/` (`page.html` markup + styles, `data.js` trip data, `meal-options.js` extra meal choices, `app.js` UI, `cloud.js` accounts and sync), then run `npm run page` to rebuild it. Every change should be committed to GitHub and deployed with `npm run deploy`.
+
 ## Run it
 
 Open `index.html` in a browser, or enable GitHub Pages on this repo. No build step.
