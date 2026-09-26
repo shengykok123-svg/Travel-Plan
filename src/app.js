@@ -32,11 +32,11 @@ const MEAL_RE=/^(早午餐|早餐|午餐|晚餐|早茶|甜品|下午茶|最后�
 
 /* ---------- state ---------- */
 const LS='gba-trip-redesign-v1',LS_OLD='gba-trip-2026-v3';
-function norm(o){const d=clone(DEFAULT),s=o.settings||{};return {v:1,rev:o.rev||'x',updatedAt:o.updatedAt||0,settings:{...d.settings,...s,rates:{...d.settings.rates,...(s.rates||{})},hotel:{...d.settings.hotel,...(s.hotel||{})}},days:Array.isArray(o.days)&&o.days.length?o.days:d.days,bookings:o.bookings||{},assign:o.assign||{},bookedBy:o.bookedBy||{}}}
+function norm(o){const d=clone(DEFAULT),s=o.settings||{};return {v:1,rev:o.rev||'x',updatedAt:o.updatedAt||0,settings:{...d.settings,...s,rates:{...d.settings.rates,...(s.rates||{})},hotel:{...d.settings.hotel,...(s.hotel||{})}},days:Array.isArray(o.days)&&o.days.length?o.days:d.days,bookings:o.bookings||{},assign:o.assign||{},bookedBy:o.bookedBy||{},customOpts:o.customOpts||{},customOrig:o.customOrig||{},actual:o.actual||{}}}
 let trip=null;
 try{const s=localStorage.getItem(LS)||localStorage.getItem(LS_OLD);if(s){const o=JSON.parse(s);if(o&&o.days)trip=norm(o)}}catch(e){}
 if(!trip)trip=norm(clone(DEFAULT));
-const S={budView:'pp',tab:'overview',day:0,edit:null,swap:null,pick:null,mapDay:'all',foodCity:'all',foodDay:'all',lb:null,sim:null,delArm:null,resetArm:false,views:{},active:null,json:''};
+const S={picker:false,addOpt:null,formPhotos:[],delOpt:null,budView:'pp',tab:'overview',day:0,edit:null,swap:null,pick:null,mapDay:'all',foodCity:'all',foodDay:'all',lb:null,sim:null,delArm:null,resetArm:false,views:{},active:null,json:''};
 
 /* ---------- shared sync (claude.ai) ---------- */
 let docRef=null,writing=false,dirty=false,saveTimer=null,readOnly=false,pending=false;
@@ -79,10 +79,12 @@ function roomText(){const m=mix(),a=[];if(m.twin)a.push(m.twin+'间双床房');i
 function place(pid){if(!pid)return null;if(pid.startsWith('H:')){const c=pid.slice(2),h=hotelFor(c);if(!h)return null;return {id:pid,n:h.n,c,la:h.la,ln:h.ln,r:h.r,rv:h.rv,hotel:true,hid:h.id,h:'入住一般14:00后，可以先寄存行李'}}const p=PLACES[pid];return p?{id:pid,...p}:null}
 const cny=(v,cur)=>(Number(v)||0)*(trip.settings.rates[cur]||1);
 function calc(){const s=trip.settings,ppl=Math.max(1,+s.people||1);const cat={hotel:0,move:0,food:0,ticket:0,other:0,misc:0,flight:0},perDay=[],cash={HKD:0,MOP:0};
-  trip.days.forEach(d=>{let act=0;d.items.forEach(i=>{const m=i.per==='g'?1:ppl,c=cny(i.cost,i.cur)*m;cat[CAT_OF[i.kind]||'other']+=c;act+=c;if(cash[i.cur]!=null)cash[i.cur]+=(+i.cost||0)*m});const h=d.stay?night(hotelFor(d.stay)):0;cat.hotel+=h;perDay.push({act,h})});
+  const nights={};trip.days.forEach(d=>{if(d.stay)nights[d.stay]=(nights[d.stay]||0)+1});
+  trip.days.forEach(d=>{let act=0;d.items.forEach(i=>{const a=actualOf(i.id),amt=a?a.amt:i.cost,cur=a?a.cur:i.cur,per=a?a.per:i.per;const m=per==='g'?1:ppl,c=cny(amt,cur)*m;cat[CAT_OF[i.kind]||'other']+=c;act+=c;if(cash[cur]!=null)cash[cur]+=(+amt||0)*m});
+    let h=0;if(d.stay){const ah=actualOf('hotel-'+d.stay);h=ah?cny(ah.amt,ah.cur)*(ah.per==='g'?1:ppl)/nights[d.stay]:night(hotelFor(d.stay))}cat.hotel+=h;perDay.push({act,h})});
   cat.misc=(+s.misc||0)*ppl;cat.flight=(+s.flight||0)*ppl/(s.myr||1);const c=Object.values(cat).reduce((a,b)=>a+b,0);return {cat,perDay,cny:c,myr:c*(+s.myr||0),ppl,cash}}
 function mealPrefix(i){const m=i.title.match(/^(早午餐|早餐|午餐|晚餐|早茶|下午茶|甜品|糖水|最后一顿晚餐)/);if(m)return m[1];if(i.kind==='sweet')return '甜品';const h=parseInt(i.t,10);return h<11?'早餐':h<14?'午餐':h<17?'下午小吃':'晚餐'}
-function curOpt(i){const L=MEAL_OPTS[i.id];if(!L)return -1;if(Number.isInteger(i.opt)&&L[i.opt])return i.opt;return L.findIndex(o=>o.pl?o.pl===i.place:!i.place)}
+function curOpt(i){const L=MEAL_OPTS[i.id];if(!L)return -1;if(typeof i.opt==='string')return -1;if(Number.isInteger(i.opt)&&L[i.opt])return i.opt;return L.findIndex(o=>o.pl?o.pl===i.place:!i.place)}
 const optName=o=>o.n||(o.pl&&PLACES[o.pl]?PLACES[o.pl].n:'');
 function links3(name,city){const q=name.replace(/[（）()·]/g,' ').replace(/\s+/g,' ').trim(),c=CITY[city].n;return `<div class="links"><a class="lk x" href="https://www.rednote.com/search_result?keyword=${enc(q+' '+c)}" target="_blank" rel="noopener">小红书评价</a><a class="lk g" href="https://www.google.com/maps/search/?api=1&query=${enc(q+' '+c)}" target="_blank" rel="noopener">Google 地图评价</a><a class="lk d" href="https://www.dianping.com/search/keyword/0/0_${enc(q)}" target="_blank" rel="noopener">大众点评</a></div>`}
 function chooseMeal(itemId,k){const o=MEAL_OPTS[itemId]&&MEAL_OPTS[itemId][k];if(!o)return;
@@ -104,8 +106,8 @@ function urgency(t){
   return {must:false,why:'当天或前一天在 App 上买就可以，先看天气再决定。'};
 }
 function tickets(){const out=[],ppl=Math.max(1,+trip.settings.people||1);
-  trip.days.forEach(d=>sortI(d.items).forEach(i=>{if(i.book)out.push({id:i.id,date:d.date,t:i.t,kind:i.kind,title:i.title,how:i.book,cost:+i.cost?(CUR[i.cur]||'')+n0(+i.cost)+(i.per==='g'?'/全组':'/人'):'免费'})}));
-  ['sz','zh','gz'].forEach(c=>{const ns=trip.days.filter(d=>d.stay===c);if(!ns.length)return;const h=hotelFor(c);out.push({id:'hotel-'+c,date:ns[0].date,t:'',title:'订酒店：'+h.n,how:ns.length+' 晚 · '+roomText()+' · 携程 / Trip.com / Agoda'+(c==='gz'?'（广交会期间，最先订）':''),cost:'¥'+n0(night(h)*ns.length),hotel:true})});
+  trip.days.forEach(d=>sortI(d.items).forEach(i=>{if(i.book)out.push({id:i.id,date:d.date,t:i.t,kind:i.kind,title:i.title,how:i.book,estAmt:+i.cost||0,estCur:i.cur,estPer:i.per,cost:+i.cost?(CUR[i.cur]||'')+n0(+i.cost)+(i.per==='g'?'/全组':'/人'):'免费'})}));
+  ['sz','zh','gz'].forEach(c=>{const ns=trip.days.filter(d=>d.stay===c);if(!ns.length)return;const h=hotelFor(c);out.push({id:'hotel-'+c,estCny:night(h)*ns.length,date:ns[0].date,t:'',title:'订酒店：'+h.n,how:ns.length+' 晚 · '+roomText()+' · 携程 / Trip.com / Agoda'+(c==='gz'?'（广交会期间，最先订）':''),cost:'¥'+n0(night(h)*ns.length),hotel:true})});
   return out.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:tMin(a.t||'0:0')-tMin(b.t||'0:0'))}
 const nowTs=()=>S.sim!=null?S.sim:Date.now();
 function timeline(){const tl=[];trip.days.forEach((d,di)=>d.items.forEach(i=>tl.push({d,di,i,ts:TS(d.date,i.t)})));return tl.sort((a,b)=>a.ts-b.ts)}
@@ -211,11 +213,12 @@ function pOverview(){
 }
 
 /* ---------- P.02 itinerary ---------- */
-function optMini(item,cities){const L=MEAL_OPTS[item.id]||[],cur=curOpt(item);
-  return `<div class="optmini-grid">${L.map((o,k)=>{const imgs=gal(o.gal),sel=k===cur;return `<button type="button" class="optmini${sel?' sel':''}" data-a="choose" data-id="${esc(item.id)}" data-k="${k}" style="--tilt:${[-1.2,1,-.7,1.3][k%4]}deg">
+function optMini(item,cities){const L=MEAL_OPTS[item.id]||[],cur=curOpt(item),key=optKey(item),A=allOpts(item);
+  const extra=A.filter(o=>o.custom||o.orig).map(o=>o.orig?origCard(item,o,key==='orig',true):customCard(item,o,key===o.key,cities,true)).join('')+addOptTile(item,true);
+  return `<div class="optmini-grid">${A.some(o=>o.orig)?'':''}${L.map((o,k)=>{const imgs=gal(o.gal),sel=k===cur;return `<button type="button" class="optmini${sel?' sel':''}" data-a="choose" data-id="${esc(item.id)}" data-k="${k}" style="--tilt:${[-1.2,1,-.7,1.3][k%4]}deg">
     ${imgs.length?`<span class="ph-img" style="background-image:url(${esc(imgs[0].f)})"></span>`:'<span class="ph-none"></span>'}
     <b>${esc(short(optName(o)))}</b><small>${esc(o.dish)} · ${CUR[o.cur]||''}${o.cost}/人</small>
-    ${sel?'<span class="stampmark">已选 ✓</span>':''}</button>`}).join('')}</div>`}
+    ${sel?'<span class="stampmark">已选 ✓</span>':''}</button>`}).join('')}${extra}</div>`}
 function editPanel(i){const o=(obj,v)=>Object.entries(obj).map(([k,n])=>`<option value="${k}"${k===v?' selected':''}>${n}</option>`).join('');
   return `<form class="edit-panel" id="edit-form" data-id="${esc(i.id)}">
     <label>时间（次日写 24:xx）<input name="t" value="${esc(i.t)}" pattern="[0-2][0-9]:[0-5][0-9]" required></label>
@@ -226,13 +229,15 @@ function editPanel(i){const o=(obj,v)=>Object.entries(obj).map(([k,n])=>`<option
     <label class="full">标题<input name="title" value="${esc(i.title)}" required></label>
     <label class="full">备注<textarea name="note">${esc(i.note)}</textarea></label>
     <label class="full">订票方式（留空 = 不需要预订）<input name="book" value="${esc(i.book)}"></label>
+    <label class="full">参考链接（小红书、地图、官网都可以）<input name="link" type="url" value="${esc(i.link||'')}" placeholder="https://"></label>
+    ${photoField(S.formPhotos)}
     <div class="acts"><button type="button" class="btn ghost" data-a="cancelEdit">取消</button><button type="submit" class="btn">保存</button></div></form>`}
 function pItinerary(){
   const di=Math.min(S.day,trip.days.length-1),d=trip.days[di],p=dp(d.date),H=d.stay?hotelFor(d.stay):null,B=calc();
   const chips=trip.days.map((x,k)=>{const q=dp(x.date);return `<button type="button" class="dchip" data-a="goDay" data-v="${k}" aria-pressed="${k===di}" style="--tilt:${[-2,1.5,-1,2,-1.5,1,-2,1.5,-1][k%9]}deg;--c:${CC[(x.cities||['sz'])[0]]}"><div class="tp"></div><small>DAY ${k+1} · ${q.wd}</small><b>${q.md}</b><span class="dots">${(x.cities||[]).map(c=>`<span class="cdot" style="--c:${CC[c]}"></span>`).join('')}</span></button>`}).join('');
   const nid=nowItemId();
   const rows=sortI(d.items).map(i=>{
-    const pl=place(i.place),opts=MEAL_OPTS[i.id],imgs=gal(placeGal(pl)),kc=KC[i.kind]||'#645c50',booked=trip.bookings[i.id];
+    const pl=place(i.place),opts=(MEAL_OPTS[i.id]||customList(i.id).length||canAddOpts(i))?allOpts(i):null,imgs=gal(placeGal(pl)),kc=KC[i.kind]||'#645c50',booked=trip.bookings[i.id];
     const gid=imgs.length?regGal(imgs,pl?short(pl.n):i.title,pl&&pl.hotel?'同品牌其他分店的照片，只用来参考品牌风格，不是这家分店。':''):'';
     return `<div class="ev${S.active===i.id?' active':''}${nid===i.id?' now':''}" data-ev="${esc(i.id)}" style="--kc:${kc}">
       <div class="ev-time"><b>${fmtT(i.t)}</b>${parseInt(i.t,10)>=24?'<small>次日</small>':''}</div>
@@ -244,23 +249,24 @@ function pItinerary(){
           ${pl?`<button type="button" class="ev-place" data-a="pick" data-v="${esc(pl.id)}">⌖ ${esc(short(pl.n))}</button>`:''}
         </div>
         ${gid?`<button type="button" class="ev-thumb" data-a="lb" data-g="${gid}" data-i="0" aria-label="看照片"><i></i><span style="background-image:url(${esc(imgs[0].f)})"></span></button>`:''}
-        <div class="ev-cost">${+i.cost?(CUR[i.cur]||'')+n0(+i.cost):''}<small>${+i.cost?(i.per==='g'?'全组':'每人'):''}</small></div></div>
+        <div class="ev-cost">${(()=>{const a=actualOf(i.id);if(a)return `${CUR[a.cur]||''}${n0(a.amt)}<small>实付 · ${a.per==='g'?'全组':'每人'}</small>${+i.cost?`<small class="was">预估 ${CUR[i.cur]||''}${n0(+i.cost)}</small>`:''}`;return `${+i.cost?(CUR[i.cur]||'')+n0(+i.cost):''}<small>${+i.cost?(i.per==='g'?'全组':'每人'):''}</small>`})()}</div></div>
         ${i.note?`<p class="ev-note">${esc(i.note)}</p>`:''}
+        ${itemMedia(i)}
         ${i.book?`<p class="ev-book">订票：${esc(i.book)}</p>`:''}
         <div class="ev-acts">
-          ${opts?`<button type="button" class="swapbtn" data-a="swap" data-id="${esc(i.id)}" aria-expanded="${S.swap===i.id}">⇄ 换一家（${opts.length} 选 1）</button>`:''}
+          ${opts?`<button type="button" class="swapbtn" data-a="swap" data-id="${esc(i.id)}" aria-expanded="${S.swap===i.id}">${opts.length>1?`⇄ 换一家（${opts.length} 选 1）`:'＋ 加其他选择'}</button>`:''}
           ${xhsQuery(i,pl,d)?`<a class="lk x" href="${xhsU(xhsQuery(i,pl,d))}" target="_blank" rel="noopener" title="在小红书搜：${esc(xhsQuery(i,pl,d))}">小红书</a>`:''}
           ${pl?`<a class="lk g" href="${gmapU(pl.n+' '+CITY[pl.c].n)}" target="_blank" rel="noopener">地图导航</a>`:''}
           <span class="sp"></span>
           <button type="button" class="mini-btn" data-a="edit" data-id="${esc(i.id)}">✎ 编辑</button>
           <button type="button" class="mini-btn${S.delArm===i.id?' armed':''}" data-a="del" data-id="${esc(i.id)}">${S.delArm===i.id?'确定删除？':'删除'}</button>
         </div>
-        ${S.swap===i.id&&opts?optMini(i,d.cities):''}
+        ${S.swap===i.id&&opts?optMini(i,d.cities)+(S.addOpt===i.id?addOptForm(i):''):''}
         ${S.edit===i.id?editPanel(i):''}
       </div></div></div>`}).join('');
   const pp=(B.perDay[di].act+B.perDay[di].h)/B.ppl;
   return `<section class="page">
-    <div class="daychips">${chips}</div>
+    <div class="chipwrap"><div class="daychips" id="daychips">${chips}</div>${chipRail(di)}</div>
     ${dayBar(di)}
     <div class="it-wrap">
       <div class="notebook nb-page" id="nb">
@@ -341,8 +347,8 @@ function pFood(){
   const rows=trip.days.map((d,k)=>{const m={b:[],l:[],d:[],s:[]};sortI(d.items).filter(i=>i.kind==='food'||i.kind==='sweet').forEach(i=>m[bucket(i)].push({t:i.title.replace(MEAL_RE,''),c:+i.cost?(CUR[i.cur]||'')+n0(+i.cost):''}));const p=dp(d.date);
     return `<div class="mrow body" data-a="openDay" data-v="${k}"><div class="d"><b>${p.md}</b><small>${p.wd}</small></div>${cell(m.b)}${cell(m.l)}${cell(m.d)}${cell(m.s)}</div>`}).join('');
   const fdChips=[['all','全部']].concat(trip.days.map((d,k)=>[k,dp(d.date).md+' '+d.title])).map(([k,l])=>`<button type="button" class="chip" data-a="foodDay" data-v="${k}" aria-pressed="${String(S.foodDay)===String(k)}">${esc(l)}</button>`).join('');
-  const slotDays=trip.days.map((d,di)=>({d,di})).filter(({di})=>S.foodDay==='all'||+S.foodDay===di).map(({d})=>{const its=sortI(d.items).filter(i=>MEAL_OPTS[i.id]);if(!its.length)return '';const p=dp(d.date);
-    return `<div><h3 class="slot-dh"><span>${p.md} ${p.wd}</span><span>${esc(d.title)}</span></h3><div class="slots">${its.map(i=>{const c=curOpt(i);return `<div class="slot"><div class="slot-h"><span class="t">${fmtT(i.t)}</span><b class="nw">${mealPrefix(i)}</b><small>现在选的：${c<0?'你自定义的安排 · '+esc(i.title):esc(optName(MEAL_OPTS[i.id][c]))}</small></div><div class="optgrid">${optCard(i,d.cities)}</div></div>`}).join('')}</div></div>`}).join('');
+  const slotDays=trip.days.map((d,di)=>({d,di})).filter(({di})=>S.foodDay==='all'||+S.foodDay===di).map(({d})=>{const its=sortI(d.items).filter(i=>MEAL_OPTS[i.id]||customList(i.id).length||canAddOpts(i));if(!its.length)return '';const p=dp(d.date);
+    return `<div><h3 class="slot-dh"><span>${p.md} ${p.wd}</span><span>${esc(d.title)}</span></h3><div class="slots">${its.map(i=>{const key=optKey(i),A=allOpts(i),cur=A.find(o=>String(o.key)===String(key));return `<div class="slot"><div class="slot-h"><span class="t">${fmtT(i.t)}</span><b class="nw">${mealPrefix(i)}</b><small>现在选的：${cur?esc(cur.orig?i.title.replace(MEAL_RE,''):(cur.custom?cur.n:optName(cur))):'你自定义的安排 · '+esc(i.title)}</small></div><div class="optgrid">${optCard(i,d.cities)}${A.filter(o=>o.custom||o.orig).map(o=>o.orig?origCard(i,o,key==='orig',false):customCard(i,o,key===o.key,d.cities,false)).join('')}${S.addOpt===i.id?'':addOptTile(i,false)}</div>${S.addOpt===i.id?addOptForm(i):''}</div>`}).join('')}</div></div>`}).join('');
   const fChips=[['all','全部','#201e1d'],...Object.keys(CITY).map(c=>[c,CITY[c].n,CC[c]])].map(([k,l,c])=>`<button type="button" class="chip" data-a="foodCity" data-v="${k}" aria-pressed="${S.foodCity===k}"><span class="cdot" style="--c:${c}"></span>${l}</button>`).join('');
   const foods=FOODS.map((f,k)=>({f,k})).filter(({f})=>S.foodCity==='all'||f.c===S.foodCity).map(({f,k})=>{const imgs=gal(f.g),p=f.w?place(f.w):null,gid=imgs.length?regGal(imgs,f.n):'';
     return `<div class="fwrap" style="--tilt:${[-1.5,1,-.7,1.6,-1.1,.8][k%6]}deg;--c:${CC[f.c]}"><div class="flip" data-a="flip">
@@ -357,7 +363,7 @@ function pFood(){
   return `<section class="page food-page">
     <div>${ph('P.05','每日餐单','人均价格 · 在下面换餐厅，这里和行程都会跟着变。点一行打开那天的行程。',1)}
       <div class="notebook meal-tbl"><div class="meal-in"><div class="mrow head"><span>日期</span><span>早餐（人均）</span><span>午餐（人均）</span><span>晚餐（人均）</span><span>甜品 · 小吃（人均）</span></div>${rows}</div></div></div>
-    <div>${ph('P.05·2','换餐厅','每一餐有 2–4 个选择，点「选这家」就会更新行程和预算。',1)}
+    <div>${ph('P.05·2','换餐厅','每一餐都有好几个选择，也可以自己加（附上链接和照片）。点「选这家」就会更新行程和预算。',1)}
       <div class="chips" style="margin-bottom:18px">${fdChips}</div>
       ${slotDays?`<div class="slot-days">${slotDays}</div>`:'<p class="ph-note">这一天没有可以换的餐。</p>'}</div>
     <div>${ph('P.05·3','必吃清单','点卡片翻面看做法、推荐店和评价链接。评分是各平台的大致水平。',1)}
@@ -377,7 +383,7 @@ function pHotels(){const ppl=Math.max(1,+trip.settings.people||1);
         <div class="in"><div class="nm">${esc(h.n)}</div><div class="ar">${esc(h.area)} · <b>★ ${h.r.toFixed(1)}</b></div><p>${esc(h.rv)}</p>
           <div class="pc">${h.pro.map(x=>`<span class="p">＋ ${esc(x)}</span>`).join('')}${h.con.map(x=>`<span class="c">－ ${esc(x)}</span>`).join('')}</div>
           <div class="ft"><div><b>¥${n0(nc)}<small> /晚</small></b><div class="tot">合计 ¥${n0(nc*ns.length)} · 每人 ¥${n0(nc*ns.length/ppl)}</div></div><span class="sb">${sel?'✓ 已选择':'选这家'}</span></div></div></button>`}).join('');
-    return `<div><div class="hcity-h"><div class="hcode" style="--c:${CC[c]}">${CODE[c]}</div><h3>${CITY[c].n}</h3><span class="nw" style="font-size:13px;color:var(--mute)">${ns.length} 晚 · ${ns.length?dp(ns[0].date).md+' – '+dp(ns[ns.length-1].date).md+' 入住':''}</span></div><div class="hgrid">${cards}</div></div>`}).join('');
+    return `<div><div class="hcity-h"><div class="hcode" style="--c:${CC[c]}">${CODE[c]}</div><h3>${CITY[c].n}</h3><span class="nw" style="font-size:13px;color:var(--mute)">${ns.length} 晚 · ${ns.length?dp(ns[0].date).md+' – '+dp(ns[ns.length-1].date).md+' 入住':''}</span>${CLOUD.on&&CLOUD.me?(()=>{const rs=CLOUD.members.filter(m=>(m.roomInfo||{})[c]);return rs.length?`<span class="roomlist">房号：${rs.map(m=>esc(m.name)+' '+esc(m.roomInfo[c])).join(' · ')}</span>`:''})():''}</div><div class="hgrid">${cards}</div></div>`}).join('');
   return `<section class="page" style="display:flex;flex-direction:column;gap:40px"><div>${ph('P.06','住宿选择','每座城市三家可选，价格为每晚估价。选好的酒店会自动算进预算和订票清单。')}
     <div style="font-size:13px;color:var(--mute);margin-top:-8px">${ppl} 人住 ${roomText()}${mix().tri?' · 三人房数量少，订之前在携程上筛选“三人间 / 家庭房”或打电话问酒店。':''}广州那两晚碰上广交会，已按上涨后的价格估算。</div></div>${cities}</section>`}
 
@@ -385,7 +391,7 @@ function pHotels(){const ppl=Math.max(1,+trip.settings.people||1);
 function pTickets(){const tk=tickets(),done=tk.filter(t=>trip.bookings[t.id]).length,pct=tk.length?Math.round(done/tk.length*100):0;
   const row=t=>{const on=!!trip.bookings[t.id],p=dp(t.date),u=urgency(t);let sale='';if(/12306/.test(t.how)){const s=new Date(p.dt);s.setDate(s.getDate()-14);sale=`约 ${s.getMonth()+1}/${s.getDate()} 开售`}
     return `<button type="button" class="tkr${on?' done':''}" data-a="book" data-v="${esc(t.id)}" aria-pressed="${on}"><span class="box">${on?'✓':''}</span><span class="w">${p.md}${t.t?' '+fmtT(t.t):''}</span>
-      <span class="m"><b>${esc(t.title)}</b><small>${esc(t.how)}${sale?` · <span class="sale">${sale}</span>`:''}</small><small class="why">${esc(u.why)}</small></span><span class="c">${esc(t.cost)}</span>${on?`<span class="stampmark terra">已订 ✓${trip.bookedBy&&trip.bookedBy[t.id]?' · '+esc(memberName(trip.bookedBy[t.id])):''}</span>`:''}</button>${CLOUD.on&&CLOUD.me?ownerLine(t):''}`};
+      <span class="m"><b>${esc(t.title)}</b><small>${esc(t.how)}${sale?` · <span class="sale">${sale}</span>`:''}</small><small class="why">${esc(u.why)}</small></span><span class="c">${esc(t.cost)}</span>${on?`<span class="stampmark terra">已订 ✓${trip.bookedBy&&trip.bookedBy[t.id]?' · '+esc(memberName(trip.bookedBy[t.id])):''}</span>`:''}</button>${priceLine(t)}${CLOUD.on&&CLOUD.me?ownerLine(t):''}`};
   const groups=[['必须提前订','酒店、高铁、热门门票和订位',tk.filter(t=>urgency(t).must)],['当天或前一天订也可以','视天气和体力决定',tk.filter(t=>!urgency(t).must)]].filter(g=>g[2].length).map(([ti,sub,list])=>`<div><div class="tk-gh"><h3>${ti}</h3><span>${sub} · ${list.filter(t=>trip.bookings[t.id]).length}/${list.length}</span></div><div class="notebook tk-page"><div class="holes"></div>${list.map(row).join('')}</div></div>`).join('');
   return `<section class="page" style="display:flex;flex-direction:column;gap:30px">${ph('P.07','订票清单','点一下标记为已订，会盖上一个印章。酒店按你在「住宿」里选的那家计算。')}
     <div class="tk-sum"><div class="tape terra" style="top:-12px;right:40px;transform:rotate(6deg)"></div>
@@ -457,8 +463,8 @@ function render(){
   renderHero();
   const P={overview:pOverview,itinerary:pItinerary,now:pNow,map:pMap,food:pFood,hotels:pHotels,tickets:pTickets,budget:pBudget,settings:pSettings,team:pTeam,split:pSplit,accounts:pAccounts}[['team','split','accounts'].includes(S.tab)&&!(CLOUD.on&&CLOUD.me)?'overview':S.tab]||pOverview;
   $('#main').innerHTML=P();
-  renderLb();
-  if(S.tab==='itinerary')onScroll();
+  renderLb();renderPicker();
+  if(S.tab==='itinerary'){onScroll();initChipRail()}
 }
 function setTab(id){S.tab=id;if(id!=='map'&&id!=='itinerary')S.pick=null;S.swap=null;S.edit=null;render();try{history.replaceState(null,'','#'+id)}catch(e){}}
 function openDay(k){S.tab='itinerary';S.day=Math.max(0,Math.min(trip.days.length-1,k));S.edit=null;S.swap=null;S.pick=null;S.delArm=null;render();scrollTo({top:$('.tabs').offsetTop,behavior:'smooth'})}
@@ -467,8 +473,7 @@ function goDay(k,noScroll){if(k<0||k>=trip.days.length)return;S.day=k;S.edit=nul
 function toDayTop(){const nb=$('#nb');if(!nb)return;const off=($('.tabs')?$('.tabs').offsetHeight:0)+($('.daybar')&&getComputedStyle($('.daybar')).display!=='none'?$('.daybar').offsetHeight:0)+8;const y=nb.getBoundingClientRect().top+scrollY-off;if(Math.abs(scrollY-y)>40)scrollTo({top:y,behavior:'auto'})}
 function dayBar(di){const d=trip.days[di],p=dp(d.date),n=trip.days.length;
   return `<div class="daybar" role="navigation" aria-label="切换天数"><button type="button" class="db-arrow" data-a="goDay" data-v="${di-1}" aria-label="前一天"${di===0?' disabled':''}>‹</button>
-    <label class="db-mid"><span class="db-day">DAY ${di+1} · ${p.md} ${p.wd}</span><span class="db-title">${esc(d.title)}</span><span class="db-caret" aria-hidden="true">▾</span><span class="db-hint">也可以按键盘 ← →</span>
-      <select id="db-select" aria-label="跳到某一天">${trip.days.map((x,k)=>{const q=dp(x.date);return `<option value="${k}"${k===di?' selected':''}>第${k+1}天 · ${q.md} ${q.wd} · ${esc(x.title)}</option>`}).join('')}</select></label>
+    <button type="button" class="db-mid" data-a="dayPicker" aria-haspopup="dialog"><span class="db-day">DAY ${di+1} · ${p.md} ${p.wd}</span><span class="db-title">${esc(d.title)}</span><span class="db-caret" aria-hidden="true">▾</span><span class="db-hint">也可以按键盘 ← →</span></button>
     <button type="button" class="db-arrow go" data-a="goDay" data-v="${di+1}" aria-label="后一天"${di===n-1?' disabled':''}>›</button></div>`}
 function dayFoot(di){const n=trip.days.length,nx=trip.days[di+1],pv=trip.days[di-1];
   return `<div class="dayfoot">${nx?`<button type="button" class="df-next" data-a="goDay" data-v="${di+1}" style="--c:${CC[(nx.cities||['sz'])[0]]}"><span class="df-lab">下一天 · DAY ${di+2} · ${dp(nx.date).md} ${dp(nx.date).wd}</span><span class="df-title">${esc(nx.title)}</span><span class="df-go" aria-hidden="true">→</span></button>`:'<div class="df-end">这是最后一天 · 一路平安 ✈</div>'}
@@ -486,10 +491,19 @@ document.addEventListener('click',e=>{
     case 'openDay':openDay(+v);break;
     case 'goDay':goDay(+v);break;
     case 'dayTop':toDayTop();break;
+    case 'dayPicker':openPicker();break;
+    case 'pickClose':closePicker();break;
+    case 'pickDay':S.picker=false;renderPicker();goDay(+v);break;
+    case 'chooseAny':{if(el.disabled)break;chooseAny(el.dataset.id,el.dataset.k);break}
+    case 'addOpt':S.addOpt=el.dataset.id;S.formPhotos=[];if(S.tab==='itinerary')S.swap=el.dataset.id;render();{const f=$('#addopt-form');if(f){f.scrollIntoView({block:'center'});f.querySelector('input').focus({preventScroll:true})}}break;
+    case 'addOptCancel':S.addOpt=null;S.formPhotos=[];render();break;
+    case 'delOpt':{const oid=v;if(S.delOpt===oid){S.delOpt=null;delCustom(el.dataset.id,oid)}else{S.delOpt=oid;render();setTimeout(()=>{if(S.delOpt===oid){S.delOpt=null;render()}},2500)}break}
+    case 'rmPhoto':S.formPhotos=(S.formPhotos||[]).filter(x=>x!==v);{const u=$('.upl');if(u){const h=document.createElement('div');h.innerHTML=photoField(S.formPhotos);u.replaceWith(h.firstElementChild)}}break;
+    case 'clearActual':commit(t=>{if(t.actual)delete t.actual[v]},'已清除实付价格','清除了实付价格');break;
     case 'pick':S.pick=v;updPick();break;
     case 'swap':S.swap=S.swap===el.dataset.id?null:el.dataset.id;S.edit=null;render();break;
     case 'choose':{const id=el.dataset.id,k=+el.dataset.k,it=trip.days.flatMap(d=>d.items).find(x=>x.id===id);if(it&&k!==curOpt(it))chooseMeal(id,k);break}
-    case 'edit':S.edit=S.edit===el.dataset.id?null:el.dataset.id;S.swap=null;render();break;
+    case 'edit':S.edit=S.edit===el.dataset.id?null:el.dataset.id;{const it0=trip.days.flatMap(d=>d.items).find(x=>x.id===el.dataset.id);S.formPhotos=it0&&it0.photos?it0.photos.slice():[]}S.swap=null;render();break;
     case 'cancelEdit':{const di=S.day,it=trip.days[di].items.find(x=>x.id===S.edit);S.edit=null;if(it&&it._new){commit(t=>{t.days[di].items=t.days[di].items.filter(x=>x.id!==it.id)},null,null)}else render();break}
     case 'del':{const id=el.dataset.id;if(S.delArm===id){S.delArm=null;const di0=S.day,gone=trip.days[di0].items.find(x=>x.id===id);commit(t=>{t.days[di0].items=t.days[di0].items.filter(x=>x.id!==id);delete t.bookings[id]},'已删除',gone?'删除了 '+dp(trip.days[di0].date).md+'：'+gone.title:null)}else{S.delArm=id;render();clearTimeout(pDel);pDel=setTimeout(()=>{if(S.delArm===id){S.delArm=null;render()}},2500)}break}
     case 'add':{const d=trip.days[S.day],s=sortI(d.items),last=s.length?s[s.length-1].t:'09:00';const [hh,mm]=last.split(':').map(Number);const n={id:'x'+Date.now().toString(36),t:pad(Math.min(27,hh+1))+':'+pad(mm||0),kind:'sight',title:'新的安排',place:'',cost:0,cur:CITY[(d.cities||['sz'])[0]].cur,per:'p',note:'',book:'',_new:true};S.edit=n.id;const di1=S.day;commit(t=>t.days[di1].items.push(n),null,null);break}
@@ -519,9 +533,8 @@ let pDel=null;
 document.addEventListener('click',e=>{const g=e.target.closest('.mk');if(!g||mapMoved)return;S.pick=g.dataset.pid;updPick();if(S.tab==='itinerary'){const ev=[...document.querySelectorAll('[data-ev]')].find(x=>{const it=trip.days[S.day].items.find(i=>i.id===x.dataset.ev);return it&&it.place===S.pick});if(ev)ev.scrollIntoView({block:'center',behavior:'smooth'})}});
 document.addEventListener('submit',e=>{if(e.target.id!=='edit-form')return;e.preventDefault();const f=new FormData(e.target),id=e.target.dataset.id;
   const t=String(f.get('t')||'').trim(),title=String(f.get('title')||'').trim();if(!title)return;
-  S.edit=null;commit(x=>{for(const d of x.days){const it=d.items.find(i=>i.id===id);if(!it)continue;Object.assign(it,{t:/^\d{2}:\d{2}$/.test(t)?t:it.t,kind:f.get('kind'),title,cost:Math.max(0,+f.get('cost')||0),cur:f.get('cur'),per:f.get('per'),note:String(f.get('note')||'').trim(),book:String(f.get('book')||'').trim()});delete it._new}},'已保存','修改了 '+(()=>{const d=trip.days.find(d=>d.items.some(i=>i.id===id));return d?dp(d.date).md:''})()+' '+(/^d{2}:d{2}$/.test(t)?fmtT(t):'')+'：'+title);
+  S.edit=null;commit(x=>{for(const d of x.days){const it=d.items.find(i=>i.id===id);if(!it)continue;Object.assign(it,{t:/^\d{2}:\d{2}$/.test(t)?t:it.t,kind:f.get('kind'),title,cost:Math.max(0,+f.get('cost')||0),cur:f.get('cur'),per:f.get('per'),note:String(f.get('note')||'').trim(),book:String(f.get('book')||'').trim(),link:/^https?:\/\//i.test(String(f.get('link')||'').trim())?String(f.get('link')).trim():'',photos:(S.formPhotos||[]).slice(0,4)});delete it._new}},'已保存','修改了 '+(()=>{const d=trip.days.find(d=>d.items.some(i=>i.id===id));return d?dp(d.date).md:''})()+' '+(/^d{2}:d{2}$/.test(t)?fmtT(t):'')+'：'+title);
   if(pending)render()});
-document.addEventListener('change',e=>{if(e.target.id==='db-select')goDay(+e.target.value)});
 document.addEventListener('input',e=>{
   if(e.target.id==='sim-range'){S.sim=SLO+(+e.target.value)*6e4;refreshNow();return}
   const ds=e.target.dataset||{};

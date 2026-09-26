@@ -56,7 +56,8 @@ async function whoAmI(request, env) {
 
 /* ---------- db helpers ---------- */
 const bump = (db, k) => db.prepare('INSERT INTO meta(k,v) VALUES(?,1) ON CONFLICT(k) DO UPDATE SET v=v+1').bind(k);
-const memberRow = (m, full) => m && ({ email: m.email, name: m.name, phone: m.phone, color: m.color, room: m.room, diet: m.diet, role: m.role || 'editor', isAdmin: isAdminRole(m.role), ...(full ? { createdAt: m.created_at, lastLogin: m.last_login || 0, locked: (m.locked_until || 0) > now() } : {}) });
+const parseRoomInfo = (t) => { try { const o = JSON.parse(t || '{}'); return o && typeof o === 'object' ? o : {}; } catch { return {}; } };
+const memberRow = (m, full) => m && ({ email: m.email, name: m.name, phone: m.phone, cnPhone: m.cn_phone || '', roomInfo: parseRoomInfo(m.room_info), color: m.color, room: m.room, diet: m.diet, role: m.role || 'editor', isAdmin: isAdminRole(m.role), ...(full ? { createdAt: m.created_at, lastLogin: m.last_login || 0, locked: (m.locked_until || 0) > now() } : {}) });
 async function defaultRole(db) { const r = await db.prepare("SELECT v FROM kv WHERE k='default_role'").first(); return r && ['editor', 'viewer'].includes(r.v) ? r.v : 'editor'; }
 const getMember = (db, id) => db.prepare('SELECT * FROM members WHERE email=?').bind(id).first();
 const addLog = (db, id, texts) => (Array.isArray(texts) ? texts : [texts]).map((t) => clip(t, 200)).filter(Boolean).slice(0, 8)
@@ -72,7 +73,11 @@ function profileFields(body) {
   const name = clip(body.name, 40), phone = clip(body.phone, 24).replace(/\s+/g, ' ');
   if (!name) return { error: '请填写名字' };
   if (!PHONE_RE.test(phone) || !phoneId(phone)) return { error: '电话号码格式不对，例子：+60 12-345 6789 或 012-345 6789' };
-  return { name, phone, color: COLOR_RE.test(body.color || '') ? body.color : '#c67139', room: ROOMS.includes(body.room) ? body.room : '', diet: clip(body.diet, 100) };
+  const cnPhone = clip(body.cnPhone, 24).replace(/\s+/g, ' ');
+  if (cnPhone && !/^(\+?86[\s-]?)?1[3-9]\d[\s-]?\d{4}[\s-]?\d{4}$/.test(cnPhone)) return { error: '中国电话号码格式不对，例子：+86 138 1234 5678（留空也可以）' };
+  const ri = body.roomInfo && typeof body.roomInfo === 'object' ? body.roomInfo : {};
+  const roomInfo = JSON.stringify({ sz: clip(ri.sz, 30), zh: clip(ri.zh, 30), gz: clip(ri.gz, 30), note: clip(ri.note, 120) });
+  return { name, phone, cnPhone, roomInfo, color: COLOR_RE.test(body.color || '') ? body.color : '#c67139', room: ROOMS.includes(body.room) ? body.room : '', diet: clip(body.diet, 100) };
 }
 
 /* ---------- auth endpoints (no session needed) ---------- */
@@ -93,8 +98,8 @@ async function handleAuth(request, env, action) {
     if (await getMember(db, id)) return json({ error: '这个电话号码已经注册过了，请直接登录' }, 409);
     const salt = randHex(16), hash = await hashPassword(pw, salt);
     await db.batch([
-      db.prepare('INSERT INTO members(email,name,phone,color,room,diet,is_admin,role,created_at,updated_at,last_login,pw_hash,pw_salt) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)')
-        .bind(id, p.name, p.phone, p.color, p.room, p.diet, n === 0 ? 1 : 0, n === 0 ? 'super' : await defaultRole(db), now(), now(), now(), hash, salt),
+      db.prepare('INSERT INTO members(email,name,phone,cn_phone,room_info,color,room,diet,is_admin,role,created_at,updated_at,last_login,pw_hash,pw_salt) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)')
+        .bind(id, p.name, p.phone, p.cnPhone, p.roomInfo, p.color, p.room, p.diet, n === 0 ? 1 : 0, n === 0 ? 'super' : await defaultRole(db), now(), now(), now(), hash, salt),
       bump(db, 'members'),
       ...addLog(db, id, `${p.name} 加入了行程`),
     ]);
@@ -123,6 +128,39 @@ async function handleAuth(request, env, action) {
   return json({ error: 'not found' }, 404);
 }
 
+/* ---------- photo uploads ---------- */
+const IMG_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const MAX_UPLOAD = 1500000;
+async function handleUploads(request, db, me, who, method, id) {
+  if (method === 'GET' && id) {
+    if (!/^[0-9a-f]{24}$/.test(id)) return json({ error: 'not found' }, 404);
+    const u = await db.prepare('SELECT mime,data FROM uploads WHERE id=?').bind(id).first();
+    if (!u) return json({ error: 'not found' }, 404);
+    return new Response(new Uint8Array(u.data), { headers: { 'content-type': u.mime, 'cache-control': 'private, max-age=31536000, immutable', 'x-content-type-options': 'nosniff' } });
+  }
+  if (method === 'POST') {
+    if (!canWrite(me.role)) return json({ error: '你只有查看权限，不能上传' }, 403);
+    const mime = (request.headers.get('content-type') || '').split(';')[0].trim();
+    if (!IMG_TYPES.includes(mime)) return json({ error: '只能上传 JPG / PNG / WebP 图片' }, 415);
+    const buf = await request.arrayBuffer();
+    if (!buf.byteLength) return json({ error: '图片是空的' }, 400);
+    if (buf.byteLength > MAX_UPLOAD) return json({ error: '图片太大（上限 1.5MB）' }, 413);
+    const n = (await db.prepare('SELECT COUNT(*) AS n, COALESCE(SUM(size),0) AS s FROM uploads').first());
+    if (n.s + buf.byteLength > 400 * 1024 * 1024) return json({ error: '照片空间已满，请管理员清理' }, 507);
+    const uid = randHex(12);
+    await db.prepare('INSERT INTO uploads(id,owner,mime,size,data,created_at) VALUES(?,?,?,?,?,?)').bind(uid, who, mime, buf.byteLength, buf, now()).run();
+    return json({ id: uid, url: '/api/uploads/' + uid });
+  }
+  if (method === 'DELETE' && id) {
+    const u = await db.prepare('SELECT owner FROM uploads WHERE id=?').bind(id).first();
+    if (!u) return json({ ok: true });
+    if (u.owner !== who && !isAdminRole(me.role)) return json({ error: '只能删除自己上传的照片' }, 403);
+    await db.prepare('DELETE FROM uploads WHERE id=?').bind(id).run();
+    return json({ ok: true });
+  }
+  return json({ error: 'not found' }, 404);
+}
+
 /* ---------- everything else needs a session ---------- */
 async function handle(request, env, parts) {
   const db = env.DB;
@@ -136,6 +174,7 @@ async function handle(request, env, parts) {
   const me = await getMember(db, who);
   if (!me) return json({ error: 'login', firstUser: false }, 401, { 'set-cookie': sessionCookie(request, '', 0) });
   const method = request.method;
+  if (res === 'uploads') return handleUploads(request, db, me, who, method, id);
   const body = method === 'PUT' || method === 'POST' ? await request.json().catch(() => ({})) : {};
 
   if (res === 'me') {
@@ -143,7 +182,7 @@ async function handle(request, env, parts) {
     if (method === 'PUT') {
       const p = profileFields(body); if (p.error) return json({ error: p.error }, 400);
       if (phoneId(p.phone) !== who) return json({ error: '电话号码是登录账号，不能在这里改。要换号码请重新注册。' }, 400);
-      const stmts = [db.prepare('UPDATE members SET name=?,phone=?,color=?,room=?,diet=?,updated_at=? WHERE email=?').bind(p.name, p.phone, p.color, p.room, p.diet, now(), who), bump(db, 'members'), ...addLog(db, who, '更新了个人资料')];
+      const stmts = [db.prepare('UPDATE members SET name=?,phone=?,cn_phone=?,room_info=?,color=?,room=?,diet=?,updated_at=? WHERE email=?').bind(p.name, p.phone, p.cnPhone, p.roomInfo, p.color, p.room, p.diet, now(), who), bump(db, 'members'), ...addLog(db, who, '更新了个人资料')];
       if (body.newPassword) {
         if (String(body.newPassword).length < 6) return json({ error: '新密码至少 6 位' }, 400);
         const salt = randHex(16);
