@@ -6,7 +6,9 @@ const WD=['周日','周一','周二','周三','周四','周五','周六'];
 const TABS=[['overview','总览'],['itinerary','每日行程'],['now','旅途中'],['map','地图'],['food','美食'],['hotels','住宿'],['tickets','订票清单'],['budget','预算'],['settings','设置']];
 // Cloud mode = served from Cloudflare Pages with the /api backend (accounts, profiles, expenses)
 const CLOUD={on:false,email:'',me:null,members:[],log:[],expenses:[],rev:0,ver:{},err:''};
-const tabsList=()=>CLOUD.on&&CLOUD.me?TABS.slice(0,8).concat([['team','同伴'],['split','分账'],['settings','设置']]):TABS;
+const tabsList=()=>CLOUD.on&&CLOUD.me?TABS.slice(0,8).concat([['team','同伴'],['split','分账']],CLOUD.me.isAdmin?[['accounts','账号']]:[],[['settings','设置']]):TABS;
+// viewers (只能查看) can read everything but not change shared data
+const viewerOnly=()=>!!(CLOUD.on&&CLOUD.me&&CLOUD.me.role==='viewer');
 const $=s=>document.querySelector(s);
 const clone=o=>JSON.parse(JSON.stringify(o));
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -24,6 +26,8 @@ const bj=ts=>{const d=new Date(ts+8*3600e3);return (d.getUTCMonth()+1)+'/'+d.get
 const short=n=>n.split(/[（(·]/)[0].trim();
 const xhsU=n=>'https://www.rednote.com/search_result?keyword='+enc(n.replace(/（[^）]*）|\([^)]*\)/g,' ').replace(/·/g,' ').replace(/\s+/g,' ').trim());
 const gmapU=n=>'https://www.google.com/maps/search/?api=1&query='+enc(n.replace(/[（）()·]/g,' ').trim());
+// what to search on rednote for an itinerary item: the venue if there is one, otherwise the item itself
+function xhsQuery(i,pl,d){if(i.kind==='move'&&!/船|缆车|天星|城际|高铁/.test(i.title))return '';if(i.kind==='rest')return '';const city=CITY[pl?pl.c:((d&&d.cities)||['sz'])[0]].n;if(pl)return pl.n+' '+city;const t=i.title.replace(MEAL_RE,'').replace(/（[^）]*）|([^)]*)/g,' ').trim();return t?t+' '+city:''}
 const MEAL_RE=/^(早午餐|早餐|午餐|晚餐|早茶|甜品|下午茶|最后一顿晚餐)[：:]\s*/;
 
 /* ---------- state ---------- */
@@ -40,6 +44,7 @@ const SAVE_TXT={local:'✎ 修改会自动保存在这台设备',ok:'✓ 已同�
 function setSync(s){const el=$('#save');el.dataset.s=s==='cloud'?'ok':s==='cloudErr'?'err':s;$('#save-t').textContent=SAVE_TXT[s]}
 // fn mutates the plan; msg is the toast; log is the line written to the shared change log (cloud mode)
 function commit(fn,msg,log){
+  if(viewerOnly()){toast('你只有查看权限，改不了。需要编辑请找管理员');render();return}
   fn(trip);trip.rev=Math.random().toString(36).slice(2);trip.updatedAt=Date.now();
   try{localStorage.setItem(LS,JSON.stringify(trip))}catch(e){}
   if(CLOUD.on&&CLOUD.me){cloudQueue.push({fn,log:log===undefined?msg:log});cloudPump()}
@@ -90,12 +95,12 @@ const GREG={};let greg=0;
 function regGal(imgs,title,note){const id='g'+(++greg);GREG[id]={imgs,title,note};return id}
 function urgency(t){
   const s=t.title+' '+t.how;
-  if(t.hotel)return {must:true,why:'5个人要三人房，房型少；广州碰上广交会更紧张。现在就订，选可免费取消。'};
-  if(/12306/.test(t.how))return {must:true,why:'约提前15天开售，5个人要连座，周末和热门班次容易卖完。开售当天就买。'};
+  if(t.hotel)return {must:true,why:'4个人订2间双床房；广州碰上广交会，房间紧张。现在就订，选可免费取消。'};
+  if(/12306/.test(t.how))return {must:true,why:'约提前15天开售，4个人要连座，周末和热门班次容易卖完。开售当天就买。'};
   if(/博物馆/.test(s))return {must:true,why:'免费但要实名预约，名额有限，提前3–7天。'};
   if(/长隆/.test(s))return {must:true,why:'网上买比现场便宜，入园直接刷护照，不用排队买票。提前1–3天。'};
-  if(/船|邮轮/.test(s))return {must:true,why:'班次不多，5个人要同一班，提前1–2天买。'};
-  if(t.kind==='food'||t.kind==='sweet')return {must:true,why:'5个人要订位，提前1–2天打电话或在点评上订。'};
+  if(/船|邮轮/.test(s))return {must:true,why:'班次不多，4个人要同一班，提前1–2天买。'};
+  if(t.kind==='food'||t.kind==='sweet')return {must:true,why:'热门店饭点排队久，提前1–2天打电话或在点评上订位。'};
   return {must:false,why:'当天或前一天在 App 上买就可以，先看天气再决定。'};
 }
 function tickets(){const out=[],ppl=Math.max(1,+trip.settings.people||1);
@@ -244,7 +249,7 @@ function pItinerary(){
         ${i.book?`<p class="ev-book">订票：${esc(i.book)}</p>`:''}
         <div class="ev-acts">
           ${opts?`<button type="button" class="swapbtn" data-a="swap" data-id="${esc(i.id)}" aria-expanded="${S.swap===i.id}">⇄ 换一家（${opts.length} 选 1）</button>`:''}
-          ${pl&&!pl.hotel&&i.kind!=='move'&&i.kind!=='rest'?`<a class="lk x" href="${xhsU(pl.n+' '+CITY[pl.c].n)}" target="_blank" rel="noopener">小红书</a>`:''}
+          ${xhsQuery(i,pl,d)?`<a class="lk x" href="${xhsU(xhsQuery(i,pl,d))}" target="_blank" rel="noopener" title="在小红书搜：${esc(xhsQuery(i,pl,d))}">小红书</a>`:''}
           ${pl?`<a class="lk g" href="${gmapU(pl.n+' '+CITY[pl.c].n)}" target="_blank" rel="noopener">地图导航</a>`:''}
           <span class="sp"></span>
           <button type="button" class="mini-btn" data-a="edit" data-id="${esc(i.id)}">✎ 编辑</button>
@@ -372,7 +377,7 @@ function pHotels(){const ppl=Math.max(1,+trip.settings.people||1);
           <div class="ft"><div><b>¥${n0(nc)}<small> /晚</small></b><div class="tot">合计 ¥${n0(nc*ns.length)} · 每人 ¥${n0(nc*ns.length/ppl)}</div></div><span class="sb">${sel?'✓ 已选择':'选这家'}</span></div></div></button>`}).join('');
     return `<div><div class="hcity-h"><div class="hcode" style="--c:${CC[c]}">${CODE[c]}</div><h3>${CITY[c].n}</h3><span class="nw" style="font-size:13px;color:var(--mute)">${ns.length} 晚 · ${ns.length?dp(ns[0].date).md+' – '+dp(ns[ns.length-1].date).md+' 入住':''}</span></div><div class="hgrid">${cards}</div></div>`}).join('');
   return `<section class="page" style="display:flex;flex-direction:column;gap:40px"><div>${ph('P.06','住宿选择','每座城市三家可选，价格为每晚估价。选好的酒店会自动算进预算和订票清单。')}
-    <div style="font-size:13px;color:var(--mute);margin-top:-8px">${ppl} 人住 ${roomText()} · 三人房数量少，订之前在携程上筛选“三人间 / 家庭房”或打电话问酒店。广州那两晚碰上广交会，已按上涨后的价格估算。</div></div>${cities}</section>`}
+    <div style="font-size:13px;color:var(--mute);margin-top:-8px">${ppl} 人住 ${roomText()}${mix().tri?' · 三人房数量少，订之前在携程上筛选“三人间 / 家庭房”或打电话问酒店。':''}广州那两晚碰上广交会，已按上涨后的价格估算。</div></div>${cities}</section>`}
 
 /* ---------- P.07 tickets ---------- */
 function pTickets(){const tk=tickets(),done=tk.filter(t=>trip.bookings[t.id]).length,pct=tk.length?Math.round(done/tk.length*100):0;
@@ -426,7 +431,7 @@ function pBudget(){const B=calc(),myr=+trip.settings.myr||0,n=B.ppl;
 function pSettings(){const synced=!!docRef||CLOUD.on;
   return `<section class="page">${ph('P.09','设置与备份',synced?'出发前确认一下这几件事。行程改动会同步给打开同一个 claude.ai 链接的同行者。':'出发前确认一下这几件事。行程改动只存在这台设备上，要分享给同行者就导出成文字。')}
     <div class="set"><div class="notebook nb"><div class="holes"></div><h3>待你确认的事</h3><ul>
-      <li><b>5 人（2男3女）</b>住 <b>2 间房</b>：男生住双床房，女生住三人房。</li>
+      <li><b>4 人（2男2女）</b>住 <b>2 间双床房</b>：男生一间，女生一间。</li>
       <li>10/9 <b>23:55</b> 抵达深圳宝安机场，凌晨叫车到福田酒店。10/9 那晚的房间还是要订，订房时备注凌晨到达。</li>
       <li>10/17 <b>22:00</b> 从深圳宝安机场起飞：上午留在广州，中午坐城际到机场寄存行李，下午去附近的欢乐港湾，19:15 回机场值机。</li>
       <li>机票按每人来回约 <b>RM ${n0(trip.settings.flight)}</b> 计算。</li>
@@ -448,7 +453,7 @@ function render(){
   pending=false;
   for(const k in GREG)delete GREG[k];
   renderHero();
-  const P={overview:pOverview,itinerary:pItinerary,now:pNow,map:pMap,food:pFood,hotels:pHotels,tickets:pTickets,budget:pBudget,settings:pSettings,team:pTeam,split:pSplit}[S.tab]||pOverview;
+  const P={overview:pOverview,itinerary:pItinerary,now:pNow,map:pMap,food:pFood,hotels:pHotels,tickets:pTickets,budget:pBudget,settings:pSettings,team:pTeam,split:pSplit,accounts:pAccounts}[['team','split','accounts'].includes(S.tab)&&!(CLOUD.on&&CLOUD.me)?'overview':S.tab]||pOverview;
   $('#main').innerHTML=P();
   renderLb();
   if(S.tab==='itinerary')onScroll();
@@ -530,6 +535,6 @@ setInterval(()=>{if(S.tab==='now')refreshNow()},1000);
 setInterval(()=>{renderHero()},30000);
 
 /* ---------- boot ---------- */
-(function(){const h=(location.hash||'').slice(1);if(TABS.some(t=>t[0]===h)||h==='team'||h==='split')S.tab=h;
+(function(){const h=(location.hash||'').slice(1);if(TABS.some(t=>t[0]===h)||['team','split','accounts'].includes(h))S.tab=h;
   const t=Date.now();if(t>=START-3600e3&&t<=END+3600e3){const id=nowItemId();trip.days.forEach((d,k)=>{if(d.items.some(i=>i.id===id))S.day=k})}
   render()})();

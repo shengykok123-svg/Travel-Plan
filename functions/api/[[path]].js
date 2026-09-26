@@ -7,6 +7,10 @@ const CURS = ['MYR', 'CNY', 'HKD', 'MOP'];
 const PHONE_RE = /^\+?[0-9][0-9\s-]{6,19}$/;
 const COLOR_RE = /^#[0-9a-fA-F]{6}$/;
 const SESSION_DAYS = 60;
+const ROLES = ['super', 'admin', 'editor', 'viewer'];
+const RANK = { super: 3, admin: 2, editor: 1, viewer: 0 };
+const isAdminRole = (r) => r === 'super' || r === 'admin';
+const canWrite = (r) => r !== 'viewer';
 const COOKIE = 'tp_session';
 
 const now = () => Date.now();
@@ -52,7 +56,8 @@ async function whoAmI(request, env) {
 
 /* ---------- db helpers ---------- */
 const bump = (db, k) => db.prepare('INSERT INTO meta(k,v) VALUES(?,1) ON CONFLICT(k) DO UPDATE SET v=v+1').bind(k);
-const memberRow = (m) => m && ({ email: m.email, name: m.name, phone: m.phone, color: m.color, room: m.room, diet: m.diet, isAdmin: !!m.is_admin });
+const memberRow = (m, full) => m && ({ email: m.email, name: m.name, phone: m.phone, color: m.color, room: m.room, diet: m.diet, role: m.role || 'editor', isAdmin: isAdminRole(m.role), ...(full ? { createdAt: m.created_at, lastLogin: m.last_login || 0, locked: (m.locked_until || 0) > now() } : {}) });
+async function defaultRole(db) { const r = await db.prepare("SELECT v FROM kv WHERE k='default_role'").first(); return r && ['editor', 'viewer'].includes(r.v) ? r.v : 'editor'; }
 const getMember = (db, id) => db.prepare('SELECT * FROM members WHERE email=?').bind(id).first();
 const addLog = (db, id, texts) => (Array.isArray(texts) ? texts : [texts]).map((t) => clip(t, 200)).filter(Boolean).slice(0, 8)
   .map((t) => db.prepare('INSERT INTO log(at,email,text) VALUES(?,?,?)').bind(now(), id, t));
@@ -88,8 +93,8 @@ async function handleAuth(request, env, action) {
     if (await getMember(db, id)) return json({ error: '这个电话号码已经注册过了，请直接登录' }, 409);
     const salt = randHex(16), hash = await hashPassword(pw, salt);
     await db.batch([
-      db.prepare('INSERT INTO members(email,name,phone,color,room,diet,is_admin,created_at,updated_at,pw_hash,pw_salt) VALUES(?,?,?,?,?,?,?,?,?,?,?)')
-        .bind(id, p.name, p.phone, p.color, p.room, p.diet, n === 0 ? 1 : 0, now(), now(), hash, salt),
+      db.prepare('INSERT INTO members(email,name,phone,color,room,diet,is_admin,role,created_at,updated_at,last_login,pw_hash,pw_salt) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)')
+        .bind(id, p.name, p.phone, p.color, p.room, p.diet, n === 0 ? 1 : 0, n === 0 ? 'super' : await defaultRole(db), now(), now(), now(), hash, salt),
       bump(db, 'members'),
       ...addLog(db, id, `${p.name} 加入了行程`),
     ]);
@@ -107,7 +112,7 @@ async function handleAuth(request, env, action) {
       await db.prepare('UPDATE members SET fails=?, locked_until=? WHERE email=?').bind(fails >= 8 ? 0 : fails, fails >= 8 ? now() + 15 * 60000 : 0, id).run();
       return json({ error: '电话号码或密码不对' }, 401);
     }
-    await db.prepare('UPDATE members SET fails=0, locked_until=0 WHERE email=?').bind(id).run();
+    await db.prepare('UPDATE members SET fails=0, locked_until=0, last_login=? WHERE email=?').bind(now(), id).run();
     return json({ ok: true }, 200, { 'set-cookie': await newSession(db, request, id) });
   }
   if (action === 'logout') {
@@ -150,26 +155,56 @@ async function handle(request, env, parts) {
   }
 
   if (res === 'invite') {
-    if (!me.is_admin) return json({ error: '只有管理员可以看邀请码' }, 403);
+    if (!isAdminRole(me.role)) return json({ error: '只有管理员可以看邀请码' }, 403);
     if (method === 'GET') return json({ code: await getInvite(db) });
     if (method === 'POST') { const code = inviteCode(); await db.prepare("INSERT INTO kv(k,v) VALUES('invite',?) ON CONFLICT(k) DO UPDATE SET v=excluded.v").bind(code).run(); return json({ code }); }
   }
 
   if (res === 'members') {
-    if (method === 'GET') { const { results } = await db.prepare('SELECT * FROM members ORDER BY created_at').all(); return json({ members: results.map(memberRow) }); }
+    if (method === 'GET') { const { results } = await db.prepare('SELECT * FROM members ORDER BY created_at').all(); return json({ members: results.map((m) => memberRow(m, isAdminRole(me.role))) }); }
     const target = id ? decodeURIComponent(id) : '';
-    if (!me.is_admin) return json({ error: '只有管理员可以这样做' }, 403);
+    if (!isAdminRole(me.role)) return json({ error: '只有管理员可以管理账号' }, 403);
     const t = target && await getMember(db, target);
-    if (!t) return json({ error: '找不到这个同伴' }, 404);
+    if (!t) return json({ error: '找不到这个账号' }, 404);
+    if (target === who) return json({ error: '不能对自己这样做' }, 400);
+    // admins manage editors and viewers; only the super admin touches admins
+    if (me.role !== 'super' && RANK[t.role] >= RANK.admin) return json({ error: '只有超级管理员可以管理管理员' }, 403);
+    if (method === 'PUT' && sub === 'role') {
+      const role = String(body.role || '');
+      if (!ROLES.includes(role)) return json({ error: '角色不对' }, 400);
+      if (me.role !== 'super' && RANK[role] >= RANK.admin) return json({ error: '只有超级管理员可以设管理员' }, 403);
+      const names = { super: '超级管理员', admin: '管理员', editor: '可编辑', viewer: '只能查看' };
+      if (role === 'super') {
+        // hand over the super admin role; the current super admin becomes an admin
+        await db.batch([db.prepare("UPDATE members SET role='super', is_admin=1 WHERE email=?").bind(target), db.prepare("UPDATE members SET role='admin', is_admin=1 WHERE email=?").bind(who), bump(db, 'members'), ...addLog(db, who, `把超级管理员转给了 ${t.name}`)]);
+      } else {
+        await db.batch([db.prepare('UPDATE members SET role=?, is_admin=? WHERE email=?').bind(role, isAdminRole(role) ? 1 : 0, target), bump(db, 'members'), ...addLog(db, who, `把 ${t.name} 设为「${names[role]}」`)]);
+      }
+      return json({ ok: true });
+    }
     if (method === 'POST' && sub === 'reset') {
       const temp = randHex(4), salt = randHex(16);
       await db.batch([db.prepare('UPDATE members SET pw_hash=?,pw_salt=?,fails=0,locked_until=0 WHERE email=?').bind(await hashPassword(temp, salt), salt, target), db.prepare('DELETE FROM sessions WHERE email=?').bind(target), ...addLog(db, who, `重设了 ${t.name} 的密码`)]);
       return json({ temp });
     }
+    if (method === 'POST' && sub === 'logout') {
+      await db.batch([db.prepare('DELETE FROM sessions WHERE email=?').bind(target), ...addLog(db, who, `让 ${t.name} 在所有设备登出`)]);
+      return json({ ok: true });
+    }
     if (method === 'DELETE') {
-      if (target === who) return json({ error: '不能移除自己' }, 400);
       await db.batch([db.prepare('DELETE FROM members WHERE email=?').bind(target), db.prepare('DELETE FROM sessions WHERE email=?').bind(target), bump(db, 'members'), ...addLog(db, who, `移除了 ${t.name}`)]);
       return json({ ok: true });
+    }
+  }
+
+  if (res === 'settings') {
+    if (method === 'GET') return json({ defaultRole: await defaultRole(db) });
+    if (method === 'PUT') {
+      if (me.role !== 'super') return json({ error: '只有超级管理员可以改这个设置' }, 403);
+      const r = String(body.defaultRole || '');
+      if (!['editor', 'viewer'].includes(r)) return json({ error: '只能选「可编辑」或「只能查看」' }, 400);
+      await db.batch([db.prepare("INSERT INTO kv(k,v) VALUES('default_role',?) ON CONFLICT(k) DO UPDATE SET v=excluded.v").bind(r), ...addLog(db, who, `把新成员默认权限改成「${r === 'viewer' ? '只能查看' : '可编辑'}」`)]);
+      return json({ defaultRole: r });
     }
   }
 
@@ -180,6 +215,7 @@ async function handle(request, env, parts) {
       return json(row ? { data: JSON.parse(row.data), rev: row.rev, updatedAt: row.updated_at, updatedBy: row.updated_by } : { data: null, rev: 0 });
     }
     if (method === 'PUT') {
+      if (!canWrite(me.role)) return json({ error: '你只有查看权限，改不了行程' }, 403);
       const data = body.data, baseRev = Number(body.baseRev) || 0;
       if (!data || !Array.isArray(data.days) || !data.days.length) return json({ error: 'bad plan' }, 400);
       const text = JSON.stringify(data);
@@ -206,6 +242,7 @@ async function handle(request, env, parts) {
       const { results } = await db.prepare('SELECT * FROM expenses WHERE deleted=0 ORDER BY day DESC, id DESC').all();
       return json({ expenses: results.map((e) => ({ ...e, split: JSON.parse(e.split || '[]') })) });
     }
+    if ((method === 'POST' || method === 'DELETE') && !canWrite(me.role)) return json({ error: '你只有查看权限，不能记账' }, 403);
     if (method === 'POST') {
       const { results } = await db.prepare('SELECT email,name FROM members').all();
       const ids = new Set(results.map((m) => m.email));

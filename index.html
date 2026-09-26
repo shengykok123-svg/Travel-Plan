@@ -530,6 +530,36 @@ input[type=range]{accent-color:var(--acc)}
 .ea{text-align:right}.ea b{display:block}.ea small{font-size:11px;color:var(--mute)}
 @media (max-width:560px){.erow{grid-template-columns:30px minmax(0,1fr) auto}.erow .mini-btn{grid-column:2}.tk-own{margin-left:0}.logbook,.elist,.expform,.me-edit{padding-left:44px}}
 
+/* roles */
+.badge.role-super{background:var(--acc);color:var(--paper)}
+.badge.role-admin{background:var(--sage7);color:var(--paper)}
+.badge.role-editor{background:var(--sage2);color:var(--sage8)}
+.badge.role-viewer{background:var(--n2);color:var(--mute2)}
+.badge.lock{background:var(--acc2);color:var(--acc8)}
+.role-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.role-card{background:var(--paper);border-radius:22px;padding:16px 18px;box-shadow:var(--sh-sm);display:flex;flex-direction:column;gap:2px;border-top:6px solid var(--rc)}
+.role-card b{font-family:'Caprasimo',serif;font-weight:400;font-size:30px;line-height:1.1}
+.role-card span{font-weight:700}
+.role-card small{font-size:12px;color:var(--mute);text-wrap:pretty}
+.role-card.role-super{--rc:var(--acc)}.role-card.role-admin{--rc:var(--sage7)}.role-card.role-editor{--rc:var(--sage3)}.role-card.role-viewer{--rc:var(--n5)}
+.acc-set{display:flex;flex-wrap:wrap;gap:26px}
+.acc-set>.sticky-note{flex:1 1 300px}
+.acc-list{padding:8px 22px 8px 54px}
+.acc{display:grid;grid-template-columns:36px minmax(0,1fr) auto auto;gap:6px 14px;align-items:center;padding:12px 0;border-bottom:1px dashed rgba(32,30,29,.12)}
+.acc:last-child{border-bottom:0}
+.acc.me{background:linear-gradient(90deg,rgba(246,160,107,.12),transparent)}
+.an b{display:block;font-weight:600}.an small{display:block;font-size:12px;color:var(--mute)}
+.ar select{border:1px solid var(--div);background:var(--paper);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600}
+.aa{display:flex;flex-wrap:wrap;gap:2px;justify-content:flex-end}
+.confirm{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;background:var(--acc2);color:var(--acc8);border-radius:16px;padding:10px 14px;font-size:13px}
+.ferr.temp{grid-column:1/-1;background:var(--sage2);color:var(--sage8)}
+@media (max-width:640px){.acc{grid-template-columns:36px minmax(0,1fr)}.ar,.aa{grid-column:2}.aa{justify-content:flex-start}.acc-list{padding-left:44px}}
+.ro-banner{display:none;margin:0 0 18px;background:var(--n2);color:var(--mute2);border-radius:16px;padding:10px 16px;font-size:13px}
+body.ro .ro-banner{display:block}
+body.ro [data-a="edit"],body.ro [data-a="del"],body.ro .addbtn,body.ro .swapbtn,body.ro .opt .pick,body.ro .hcard .sb,body.ro [data-a="import"],body.ro [data-a="reset"]{display:none!important}
+body.ro .tkr,body.ro .hcard{cursor:default}
+body.ro .sliders input{pointer-events:none;opacity:.55}
+
 /* overlays */
 .lb{position:fixed;inset:0;z-index:60;background:rgba(46,43,37,.9);display:flex;align-items:center;justify-content:center;gap:12px;padding:20px;animation:tpUp .2s ease}
 .lb figure{margin:0;max-width:min(960px,100%);display:flex;flex-direction:column;align-items:center;gap:12px;background:var(--paper);padding:14px 14px 16px;border-radius:26px;transform:rotate(-.8deg)}
@@ -566,6 +596,7 @@ input[type=range]{accent-color:var(--acc)}
       </div>
     </section>
     <nav class="tabs" aria-label="页面"><div class="tabs-in" id="tabs" role="tablist"></div></nav>
+    <div class="ro-banner" role="note">你是「只能查看」成员：可以看所有内容和改自己的资料，但不能改行程、订票和账本。需要编辑请找管理员。</div>
     <main id="main"></main>
   </div>
   <div id="lb-root"></div>
@@ -717,7 +748,7 @@ const GAL_NAME={beefhotpot:'潮汕牛肉火锅',cheungfun:'肠粉',coconutchicke
 const HOTEL_BRAND={sz1:'hanting',zh1:'hanting',gz1:'hanting',sz2:'jihotel',zh2:'jihotel',gz2:'jihotel',sz3:'atour',gz3:'atour',zh3:'vienna'};
 
 Object.assign(PLACES,{
-  taier:{n:'太二酸菜鱼（COCO Park 一带分店）',c:'sz',la:22.5335,ln:114.0545,r:4.3,rv:'酸菜鱼招牌，鱼片嫩、酸辣开胃。这个品牌规定超过4人不接待，5个人要分两桌坐，去之前先问清楚这家分店的规则。'},
+  taier:{n:'太二酸菜鱼（COCO Park 一带分店）',c:'sz',la:22.5335,ln:114.0545,r:4.3,rv:'酸菜鱼招牌，鱼片嫩、酸辣开胃。这个品牌规定超过4人不接待，4个人刚好坐一桌。'},
   runyuan:{n:'润园四季椰子鸡（福田分店）',c:'sz',la:22.5415,ln:114.0600,r:4.5,rv:'深圳特色椰子鸡火锅，汤底清甜，鸡肉嫩。饭点要排队，可以线上取号。分店位置以地图为准。'},
   chenpp:{n:'陈鹏鹏潮汕菜馆（深圳分店）',c:'sz',la:22.5440,ln:114.0480,r:4.4,rv:'深圳有名的潮汕菜，卤鹅、蚝烙、粿条好评多。分店位置以地图为准。'},
   manji_sz:{n:'满记甜品（海岸城一带）',c:'sz',la:22.5168,ln:113.9365,r:4.1,rv:'连锁港式甜品，芒果班戟、杨枝甘露口味稳定。'},
@@ -726,7 +757,7 @@ Object.assign(PLACES,{
   kampai:{n:'甘牌烧鹅（湾仔）',c:'hk',la:22.2767,ln:114.1745,r:4.3,rv:'米其林一星烧鹅，皮脆多汁。在湾仔，从中环坐港铁一站。排队长。'},
   taicheong:{n:'泰昌饼家（中环）',c:'hk',la:22.2817,ln:114.1547,r:4.2,rv:'香港有名的蛋挞，外带为主，就在大馆附近。'},
   mido:{n:'美都餐室（油麻地）',c:'hk',la:22.3098,ln:114.1705,r:4.1,rv:'1950年代的老茶餐厅，怀旧装修，焗猪扒饭出名。离佐敦一站。'},
-  manji_hk:{n:'满记甜品（尖沙咀）',c:'hk',la:22.2985,ln:114.1725,r:4.0,rv:'连锁港式甜品，座位多，5个人比较容易坐在一起。'},
+  manji_hk:{n:'满记甜品（尖沙咀）',c:'hk',la:22.2985,ln:114.1725,r:4.0,rv:'连锁港式甜品，座位多，4个人比较容易坐在一起。'},
   lordstow:{n:'安德鲁饼店（威尼斯人分店）',c:'mo',la:22.1477,ln:113.5602,r:4.4,rv:'澳门葡挞的元祖，路环总店最出名。威尼斯人里也有分店，下午逛的时候买更顺路。'},
   chankongkei:{n:'陈光记饭店',c:'mo',la:22.1928,ln:113.5402,r:4.0,rv:'烧鹅饭、黑椒烧鹅是招牌，平价、上菜快。'},
   hangheung:{n:'杏香园西点',c:'mo',la:22.1938,ln:113.5394,r:4.1,rv:'芒果西米捞、雪糕糯米糍出名，价格亲民。'},
@@ -777,7 +808,7 @@ const DEFAULT_DAYS=[
  {date:'2026-10-09',title:'深夜抵达深圳',cities:['sz'],stay:'sz',items:[
   it('23:55','move','飞机抵达宝安机场 T3','szx',0),
   it('24:20','move','入境、取行李，开通 eSIM，测试支付宝','szx',0,'CNY','深夜入境人少，大约20–40分钟。'),
-  it('24:50','move','滴滴 / 的士 → 福田酒店（约40分钟）','H:sz',220,'CNY','这个时间地铁已经停运。5个人带行李要叫2辆车，或者用滴滴叫6座商务车。','','g'),
+  it('24:50','move','滴滴 / 的士 → 福田酒店（约40分钟）','H:sz',220,'CNY','这个时间地铁已经停运。4个人带行李，建议用滴滴叫6座商务车，或者叫2辆的士。','','g'),
   it('25:30','hotel','酒店入住，休息','H:sz',0,'CNY','订房时备注“凌晨1–2点才到”，免得房间被取消。')
  ]},
  {date:'2026-10-10',title:'深圳市区 · 深圳湾',cities:['sz'],stay:'sz',items:[
@@ -789,7 +820,7 @@ const DEFAULT_DAYS=[
   it('16:15','sight','平安金融中心 云际观光层（116楼）','pingan',160,'CNY','买16:30的时段，白天看城市全景。','美团 / 携程 / 官方公众号，提前1–3天，看天气再买'),
   it('17:30','move','地铁 → 后海 / 深圳湾公园','szbay',5),
   it('17:50','sight','深圳湾公园看日落','szbay',0,'CNY','日落大约18:00，对岸就是香港。'),
-  it('19:00','food','晚餐：潮汕牛肉火锅','bahe',120,'CNY','必点吊龙、匙柄、手打牛肉丸。周六晚上人多，5个人要先线上取号。'),
+  it('19:00','food','晚餐：潮汕牛肉火锅','bahe',120,'CNY','必点吊龙、匙柄、手打牛肉丸。周六晚上人多，要先线上取号。'),
   it('20:30','show','人才公园夜景 · 春笋大楼灯光秀','talent',0,'CNY','周六晚上一般有灯光秀，以当天公告为准。'),
   it('21:30','sweet','糖水：双皮奶、杨枝甘露（海岸城一带）','',25),
   it('22:00','rest','回酒店，准备护照、港币或支付宝HK','H:sz',5)
@@ -821,7 +852,7 @@ const DEFAULT_DAYS=[
   it('10:00','sight','海上世界：明华轮 · 海边步道','seaworld',0),
   it('11:15','food','简单午餐（码头附近）','shekou',45),
   it('12:00','move','船 蛇口邮轮母港 → 珠海九洲港（约1小时）','jiuzhou',110,'CNY','提前40分钟到码头。班次以购票页面为准。','携程 / 蛇口邮轮母港小程序，用护照实名'),
-  it('13:15','move','的士 → 拱北酒店，先寄存行李','H:zh',60,'CNY','5个人带行李要叫2辆的士，或者用滴滴叫6座车。','','g'),
+  it('13:15','move','的士 → 拱北酒店，先寄存行李','H:zh',60,'CNY','4个人带行李，建议用滴滴叫6座车，或者叫2辆的士。','','g'),
   it('14:00','sweet','下午茶：拱北口岸广场一带','gongbei',35),
   it('15:00','sight','骑共享单车走情侣路 · 珠海渔女','fisher',5),
   it('16:15','sight','日月贝（珠海大剧院）','opera',0),
@@ -866,7 +897,7 @@ const DEFAULT_DAYS=[
   it('17:30','show','海洋大马戏 / 晚场表演','chimelong',0),
   it('18:30','food','晚餐：园内餐厅','chimelong',90),
   it('19:30','show','烟花汇演 / 灯光秀（如有）','chimelong',0,'CNY','以长隆App为准。'),
-  it('20:30','move','城际回珠海站，走回酒店','H:zh',8,'CNY','散场时的士难叫，5个人坐城际最方便。'),
+  it('20:30','move','城际回珠海站，走回酒店','H:zh',8,'CNY','散场时的士难叫，坐城际最方便。'),
   it('21:15','rest','收拾行李','H:zh',0)
  ]},
  {date:'2026-10-15',title:'珠海 → 广州',cities:['zh','gz'],stay:'gz',items:[
@@ -903,12 +934,12 @@ const DEFAULT_DAYS=[
   it('12:00','move','地铁 → 广州东站','gzeast',5,'CNY','带行李进站要安检，预留时间。'),
   it('12:45','move','穗深城际 广州东 → 深圳机场站（约1.5–2小时）','szx',80,'CNY','班次和始发站以12306为准。','12306'),
   it('14:45','move','到机场 T3，先寄存行李','szx',30,'CNY','机场有行李寄存服务，按件计费（估价）。这样下午可以空手去玩。'),
-  it('15:15','move','的士 → 宝安欢乐港湾（约20分钟）','joyharbour',80,'CNY','5个人叫2辆车，或者滴滴6座车。','','g'),
+  it('15:15','move','的士 → 宝安欢乐港湾（约20分钟）','joyharbour',40,'CNY','行李已经寄存，4个人一辆的士就够。','','g'),
   it('15:45','sight','欢乐港湾海滨步道','joyharbour',0),
   it('16:30','sight','湾区之光摩天轮','joyharbour',120,'CNY','深圳最大的摩天轮之一，看海景和机场飞机起降。','美团 / 大众点评 / 官方公众号'),
   it('17:40','show','海边看日落','joyharbour',0,'CNY','日落大约18:00。'),
   it('18:05','food','最后一顿晚餐：欢乐港湾（潮汕菜 / 粤菜）','joyharbour',120),
-  it('19:00','move','的士 → 机场 T3','szx',80,'CNY','','','g'),
+  it('19:00','move','的士 → 机场 T3','szx',40,'CNY','4个人一辆的士，在机场取行李。','','g'),
   it('19:15','move','取行李，值机、托运、过安检','szx',0,'CNY','国际航班起飞前约3小时到机场。'),
   it('22:00','move','航班起飞，回马来西亚','szx',0)
  ]}
@@ -916,7 +947,7 @@ const DEFAULT_DAYS=[
 DEFAULT_DAYS.forEach((d,di)=>d.items.forEach((x,ii)=>x.id='d'+(di+1)+'-'+(ii+1)));
 const DEFAULT={
   v:1,
-  settings:{people:5,rooms:2,myr:0.59,rates:{CNY:1,HKD:0.92,MOP:0.89},flight:1100,misc:500,hotel:{sz:'sz1',zh:'zh1',gz:'gz1'}},
+  settings:{people:4,rooms:2,myr:0.59,rates:{CNY:1,HKD:0.92,MOP:0.89},flight:1100,misc:500,hotel:{sz:'sz1',zh:'zh1',gz:'gz1'}},
   days:DEFAULT_DAYS,bookings:{},rev:'default'
 };
 
@@ -938,7 +969,7 @@ Object.assign(PLACES,{
   diandude_sz:{n:'点都德（深圳福田分店）',c:'sz',la:22.5345,ln:114.0565,r:4.3,rv:'广州老牌早茶连锁，虾饺、金莎红米肠稳定。分店位置以地图为准，周末要取号。'},
   taotaoju_sz:{n:'陶陶居（深圳湾一带分店）',c:'sz',la:22.5195,ln:113.9425,r:4.3,rv:'百年茶楼的深圳分店，装修古典，点心和烧味都不错。分店位置以地图为准。'},
   fuhecheng:{n:'福合埕牛肉火锅（深圳分店）',c:'sz',la:22.5185,ln:113.9395,r:4.4,rv:'深圳本地潮汕牛肉火锅，牛肉新鲜、价格实在。分店多，选离人才公园近的。'},
-  tanyu_sz:{n:'探鱼（COCO Park）',c:'sz',la:22.5338,ln:114.0552,r:4.2,rv:'连锁烤鱼，口味多，座位宽，适合5个人。'},
+  tanyu_sz:{n:'探鱼（COCO Park）',c:'sz',la:22.5338,ln:114.0552,r:4.2,rv:'连锁烤鱼，口味多，座位宽，适合4个人。'},
   haidilao_sz:{n:'海底捞（海岸城）',c:'sz',la:22.5172,ln:113.9362,r:4.4,rv:'服务出名，大桌好坐，晚上营业到很晚。价格偏高。'},
   heytea_sz:{n:'喜茶（海岸城）',c:'sz',la:22.5170,ln:113.9368,r:4.3,rv:'深圳起家的网红茶饮，芝士奶盖、多肉葡萄。'},
   nayuki_sz:{n:'奈雪的茶（海岸城）',c:'sz',la:22.5168,ln:113.9372,r:4.2,rv:'茶饮加欧包，座位比一般奶茶店多。'},
@@ -955,8 +986,8 @@ Object.assign(PLACES,{
   yeeshun_hk:{n:'义顺牛奶公司（佐敦分店）',c:'hk',la:22.3040,ln:114.1715,r:4.0,rv:'澳门老字号的香港分店，双皮奶、姜汁撞奶。'},
   mammy:{n:'妈咪鸡蛋仔（旺角）',c:'hk',la:22.3185,ln:114.1700,r:4.2,rv:'米其林推荐的街头鸡蛋仔，外脆内软，边走边吃。'},
   fatkee:{n:'发记甜品（旺角）',c:'hk',la:22.3180,ln:114.1705,r:4.1,rv:'旺角老牌糖水店，杨枝甘露、芒果糯米糍，营业到很晚。'},
-  sweetdynasty:{n:'糖朝（尖沙咀）',c:'hk',la:22.2995,ln:114.1720,r:4.0,rv:'甜品和点心都有，座位多，5个人好坐。价格偏高。'},
-  huafa:{n:'华发商都（美食街）',c:'zh',la:22.2270,ln:113.5210,r:4.3,rv:'珠海大型商场，餐厅选择多，适合5个人各点各的。'},
+  sweetdynasty:{n:'糖朝（尖沙咀）',c:'hk',la:22.2995,ln:114.1720,r:4.0,rv:'甜品和点心都有，座位多，4个人好坐。价格偏高。'},
+  huafa:{n:'华发商都（美食街）',c:'zh',la:22.2270,ln:113.5210,r:4.3,rv:'珠海大型商场，餐厅选择多，适合4个人各点各的。'},
   haidilao_zh:{n:'海底捞（珠海拱北分店）',c:'zh',la:22.2205,ln:113.5530,r:4.3,rv:'服务稳定，大桌好坐，晚上营业到很晚。分店位置以地图为准。'},
   koikei:{n:'钜记饼家（大三巴街）',c:'mo',la:22.1965,ln:113.5412,r:4.1,rv:'澳门最大的手信店，葡挞、杏仁饼、猪肉脯都能试吃。'},
   koikei_tp:{n:'钜记饼家（官也街分店）',c:'mo',la:22.1538,ln:113.5582,r:4.1,rv:'官也街上的手信店，葡挞现烤，杏仁饼可以试吃。'},
@@ -967,7 +998,7 @@ Object.assign(PLACES,{
   militar:{n:'澳门陆军俱乐部葡国餐厅',c:'mo',la:22.1915,ln:113.5445,r:4.3,rv:'百年历史的葡式建筑里吃葡国菜，环境优雅，套餐价格合理。建议订位。'},
   laikei:{n:'礼记雪糕',c:'mo',la:22.1960,ln:113.5465,r:4.1,rv:'1930年代开的老冰室，雪糕三文治和雪糕糯米糍是招牌。'},
   galo:{n:'公鸡葡国餐厅（氹仔）',c:'mo',la:22.1540,ln:113.5578,r:4.2,rv:'官也街附近的葡国菜，葡国鸡、马介休，价格比安东尼奥亲民。'},
-  galaxy:{n:'银河 · 美食广场',c:'mo',la:22.1485,ln:113.5540,r:4.1,rv:'港式、澳门、各国快餐都有，适合5个人各吃各的。'},
+  galaxy:{n:'银河 · 美食广场',c:'mo',la:22.1485,ln:113.5540,r:4.1,rv:'港式、澳门、各国快餐都有，适合4个人各吃各的。'},
   huiru:{n:'惠如楼（中山五路）',c:'gz',la:23.1265,ln:113.2745,r:4.1,rv:'百年老茶楼，环境传统，点心价格比网红店便宜。'},
   taipingguan:{n:'太平馆西餐厅（北京路）',c:'gz',la:23.1235,ln:113.2712,r:4.1,rv:'1860年开的中式西餐老店，烧乳鸽、葡国鸡、瑞士鸡翼有名。'},
   shunkee:{n:'顺记冰室（宝华路）',c:'gz',la:23.1205,ln:113.2455,r:4.1,rv:'广州老字号冰室，椰子雪糕和芒果雪糕出名。'},
@@ -1012,7 +1043,9 @@ const WD=['周日','周一','周二','周三','周四','周五','周六'];
 const TABS=[['overview','总览'],['itinerary','每日行程'],['now','旅途中'],['map','地图'],['food','美食'],['hotels','住宿'],['tickets','订票清单'],['budget','预算'],['settings','设置']];
 // Cloud mode = served from Cloudflare Pages with the /api backend (accounts, profiles, expenses)
 const CLOUD={on:false,email:'',me:null,members:[],log:[],expenses:[],rev:0,ver:{},err:''};
-const tabsList=()=>CLOUD.on&&CLOUD.me?TABS.slice(0,8).concat([['team','同伴'],['split','分账'],['settings','设置']]):TABS;
+const tabsList=()=>CLOUD.on&&CLOUD.me?TABS.slice(0,8).concat([['team','同伴'],['split','分账']],CLOUD.me.isAdmin?[['accounts','账号']]:[],[['settings','设置']]):TABS;
+// viewers (只能查看) can read everything but not change shared data
+const viewerOnly=()=>!!(CLOUD.on&&CLOUD.me&&CLOUD.me.role==='viewer');
 const $=s=>document.querySelector(s);
 const clone=o=>JSON.parse(JSON.stringify(o));
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1030,6 +1063,8 @@ const bj=ts=>{const d=new Date(ts+8*3600e3);return (d.getUTCMonth()+1)+'/'+d.get
 const short=n=>n.split(/[（(·]/)[0].trim();
 const xhsU=n=>'https://www.rednote.com/search_result?keyword='+enc(n.replace(/（[^）]*）|\([^)]*\)/g,' ').replace(/·/g,' ').replace(/\s+/g,' ').trim());
 const gmapU=n=>'https://www.google.com/maps/search/?api=1&query='+enc(n.replace(/[（）()·]/g,' ').trim());
+// what to search on rednote for an itinerary item: the venue if there is one, otherwise the item itself
+function xhsQuery(i,pl,d){if(i.kind==='move'&&!/船|缆车|天星|城际|高铁/.test(i.title))return '';if(i.kind==='rest')return '';const city=CITY[pl?pl.c:((d&&d.cities)||['sz'])[0]].n;if(pl)return pl.n+' '+city;const t=i.title.replace(MEAL_RE,'').replace(/（[^）]*）|([^)]*)/g,' ').trim();return t?t+' '+city:''}
 const MEAL_RE=/^(早午餐|早餐|午餐|晚餐|早茶|甜品|下午茶|最后一顿晚餐)[：:]\s*/;
 
 /* ---------- state ---------- */
@@ -1046,6 +1081,7 @@ const SAVE_TXT={local:'✎ 修改会自动保存在这台设备',ok:'✓ 已同�
 function setSync(s){const el=$('#save');el.dataset.s=s==='cloud'?'ok':s==='cloudErr'?'err':s;$('#save-t').textContent=SAVE_TXT[s]}
 // fn mutates the plan; msg is the toast; log is the line written to the shared change log (cloud mode)
 function commit(fn,msg,log){
+  if(viewerOnly()){toast('你只有查看权限，改不了。需要编辑请找管理员');render();return}
   fn(trip);trip.rev=Math.random().toString(36).slice(2);trip.updatedAt=Date.now();
   try{localStorage.setItem(LS,JSON.stringify(trip))}catch(e){}
   if(CLOUD.on&&CLOUD.me){cloudQueue.push({fn,log:log===undefined?msg:log});cloudPump()}
@@ -1096,12 +1132,12 @@ const GREG={};let greg=0;
 function regGal(imgs,title,note){const id='g'+(++greg);GREG[id]={imgs,title,note};return id}
 function urgency(t){
   const s=t.title+' '+t.how;
-  if(t.hotel)return {must:true,why:'5个人要三人房，房型少；广州碰上广交会更紧张。现在就订，选可免费取消。'};
-  if(/12306/.test(t.how))return {must:true,why:'约提前15天开售，5个人要连座，周末和热门班次容易卖完。开售当天就买。'};
+  if(t.hotel)return {must:true,why:'4个人订2间双床房；广州碰上广交会，房间紧张。现在就订，选可免费取消。'};
+  if(/12306/.test(t.how))return {must:true,why:'约提前15天开售，4个人要连座，周末和热门班次容易卖完。开售当天就买。'};
   if(/博物馆/.test(s))return {must:true,why:'免费但要实名预约，名额有限，提前3–7天。'};
   if(/长隆/.test(s))return {must:true,why:'网上买比现场便宜，入园直接刷护照，不用排队买票。提前1–3天。'};
-  if(/船|邮轮/.test(s))return {must:true,why:'班次不多，5个人要同一班，提前1–2天买。'};
-  if(t.kind==='food'||t.kind==='sweet')return {must:true,why:'5个人要订位，提前1–2天打电话或在点评上订。'};
+  if(/船|邮轮/.test(s))return {must:true,why:'班次不多，4个人要同一班，提前1–2天买。'};
+  if(t.kind==='food'||t.kind==='sweet')return {must:true,why:'热门店饭点排队久，提前1–2天打电话或在点评上订位。'};
   return {must:false,why:'当天或前一天在 App 上买就可以，先看天气再决定。'};
 }
 function tickets(){const out=[],ppl=Math.max(1,+trip.settings.people||1);
@@ -1250,7 +1286,7 @@ function pItinerary(){
         ${i.book?`<p class="ev-book">订票：${esc(i.book)}</p>`:''}
         <div class="ev-acts">
           ${opts?`<button type="button" class="swapbtn" data-a="swap" data-id="${esc(i.id)}" aria-expanded="${S.swap===i.id}">⇄ 换一家（${opts.length} 选 1）</button>`:''}
-          ${pl&&!pl.hotel&&i.kind!=='move'&&i.kind!=='rest'?`<a class="lk x" href="${xhsU(pl.n+' '+CITY[pl.c].n)}" target="_blank" rel="noopener">小红书</a>`:''}
+          ${xhsQuery(i,pl,d)?`<a class="lk x" href="${xhsU(xhsQuery(i,pl,d))}" target="_blank" rel="noopener" title="在小红书搜：${esc(xhsQuery(i,pl,d))}">小红书</a>`:''}
           ${pl?`<a class="lk g" href="${gmapU(pl.n+' '+CITY[pl.c].n)}" target="_blank" rel="noopener">地图导航</a>`:''}
           <span class="sp"></span>
           <button type="button" class="mini-btn" data-a="edit" data-id="${esc(i.id)}">✎ 编辑</button>
@@ -1378,7 +1414,7 @@ function pHotels(){const ppl=Math.max(1,+trip.settings.people||1);
           <div class="ft"><div><b>¥${n0(nc)}<small> /晚</small></b><div class="tot">合计 ¥${n0(nc*ns.length)} · 每人 ¥${n0(nc*ns.length/ppl)}</div></div><span class="sb">${sel?'✓ 已选择':'选这家'}</span></div></div></button>`}).join('');
     return `<div><div class="hcity-h"><div class="hcode" style="--c:${CC[c]}">${CODE[c]}</div><h3>${CITY[c].n}</h3><span class="nw" style="font-size:13px;color:var(--mute)">${ns.length} 晚 · ${ns.length?dp(ns[0].date).md+' – '+dp(ns[ns.length-1].date).md+' 入住':''}</span></div><div class="hgrid">${cards}</div></div>`}).join('');
   return `<section class="page" style="display:flex;flex-direction:column;gap:40px"><div>${ph('P.06','住宿选择','每座城市三家可选，价格为每晚估价。选好的酒店会自动算进预算和订票清单。')}
-    <div style="font-size:13px;color:var(--mute);margin-top:-8px">${ppl} 人住 ${roomText()} · 三人房数量少，订之前在携程上筛选“三人间 / 家庭房”或打电话问酒店。广州那两晚碰上广交会，已按上涨后的价格估算。</div></div>${cities}</section>`}
+    <div style="font-size:13px;color:var(--mute);margin-top:-8px">${ppl} 人住 ${roomText()}${mix().tri?' · 三人房数量少，订之前在携程上筛选“三人间 / 家庭房”或打电话问酒店。':''}广州那两晚碰上广交会，已按上涨后的价格估算。</div></div>${cities}</section>`}
 
 /* ---------- P.07 tickets ---------- */
 function pTickets(){const tk=tickets(),done=tk.filter(t=>trip.bookings[t.id]).length,pct=tk.length?Math.round(done/tk.length*100):0;
@@ -1432,7 +1468,7 @@ function pBudget(){const B=calc(),myr=+trip.settings.myr||0,n=B.ppl;
 function pSettings(){const synced=!!docRef||CLOUD.on;
   return `<section class="page">${ph('P.09','设置与备份',synced?'出发前确认一下这几件事。行程改动会同步给打开同一个 claude.ai 链接的同行者。':'出发前确认一下这几件事。行程改动只存在这台设备上，要分享给同行者就导出成文字。')}
     <div class="set"><div class="notebook nb"><div class="holes"></div><h3>待你确认的事</h3><ul>
-      <li><b>5 人（2男3女）</b>住 <b>2 间房</b>：男生住双床房，女生住三人房。</li>
+      <li><b>4 人（2男2女）</b>住 <b>2 间双床房</b>：男生一间，女生一间。</li>
       <li>10/9 <b>23:55</b> 抵达深圳宝安机场，凌晨叫车到福田酒店。10/9 那晚的房间还是要订，订房时备注凌晨到达。</li>
       <li>10/17 <b>22:00</b> 从深圳宝安机场起飞：上午留在广州，中午坐城际到机场寄存行李，下午去附近的欢乐港湾，19:15 回机场值机。</li>
       <li>机票按每人来回约 <b>RM ${n0(trip.settings.flight)}</b> 计算。</li>
@@ -1454,7 +1490,7 @@ function render(){
   pending=false;
   for(const k in GREG)delete GREG[k];
   renderHero();
-  const P={overview:pOverview,itinerary:pItinerary,now:pNow,map:pMap,food:pFood,hotels:pHotels,tickets:pTickets,budget:pBudget,settings:pSettings,team:pTeam,split:pSplit}[S.tab]||pOverview;
+  const P={overview:pOverview,itinerary:pItinerary,now:pNow,map:pMap,food:pFood,hotels:pHotels,tickets:pTickets,budget:pBudget,settings:pSettings,team:pTeam,split:pSplit,accounts:pAccounts}[['team','split','accounts'].includes(S.tab)&&!(CLOUD.on&&CLOUD.me)?'overview':S.tab]||pOverview;
   $('#main').innerHTML=P();
   renderLb();
   if(S.tab==='itinerary')onScroll();
@@ -1536,15 +1572,17 @@ setInterval(()=>{if(S.tab==='now')refreshNow()},1000);
 setInterval(()=>{renderHero()},30000);
 
 /* ---------- boot ---------- */
-(function(){const h=(location.hash||'').slice(1);if(TABS.some(t=>t[0]===h)||h==='team'||h==='split')S.tab=h;
+(function(){const h=(location.hash||'').slice(1);if(TABS.some(t=>t[0]===h)||['team','split','accounts'].includes(h))S.tab=h;
   const t=Date.now();if(t>=START-3600e3&&t<=END+3600e3){const id=nowItemId();trip.days.forEach((d,k)=>{if(d.items.some(i=>i.id===id))S.day=k})}
   render()})();
 
 /* ================= cloud mode: accounts, profiles, change log, expenses ================= */
 var AVATAR_COLORS=['#c67139','#a8463f','#6f8150','#3f7f86','#b08628','#6b559a','#4f6a8f','#a8506e'];
+var ROLE_NAME={super:'超级管理员',admin:'管理员',editor:'可编辑',viewer:'只能查看'};
+var ROLE_DESC={super:'管所有账号和角色，可以设管理员、转让超级管理员',admin:'可以编辑，也能邀请、重设密码、管理可编辑和只能查看的人',editor:'可以改行程、订票、记账',viewer:'只能看，只能改自己的资料'};
 var ROOM_NAME={twin:'双床房',triple:'三人房','':'还没分'};
 var EXP_CURS=[['MYR','RM'],['CNY','¥'],['HKD','HK$'],['MOP','MOP']];
-var cloudUI={editMe:false,obErr:'',expDel:null,expErr:'',rmArm:null,auth:null,temp:null,polling:false};
+var cloudUI={transfer:null,editMe:false,obErr:'',expDel:null,expErr:'',rmArm:null,auth:null,temp:null,polling:false};
 
 async function api(path,opt){opt=opt||{};
   const h={'content-type':'application/json'};
@@ -1556,7 +1594,7 @@ async function api(path,opt){opt=opt||{};
 function memberName(email){const m=CLOUD.members.find(x=>x.email===email);return m?m.name:(email||'').split('@')[0]}
 function avatar(m,size){size=size||34;const n=(m&&m.name)||'?';return `<span class="av" style="--c:${esc((m&&m.color)||'#a19786')};width:${size}px;height:${size}px;font-size:${Math.round(size*.42)}px" aria-hidden="true">${esc(n.slice(0,1))}</span>`}
 function waLink(phone){let d=String(phone||'').replace(/[^\d+]/g,'');if(d.startsWith('+'))d=d.slice(1);else if(d.startsWith('0'))d='60'+d.slice(1);return d?'https://wa.me/'+d:''}
-function ownerLine(t){const own=(trip.assign||{})[t.id]||'';
+function ownerLine(t){const own=(trip.assign||{})[t.id]||'';if(viewerOnly())return own?`<div class="tk-own">负责订：${esc(memberName(own))}</div>`:'';
   return `<div class="tk-own"><label>负责订：<select data-assign="${esc(t.id)}" aria-label="谁负责订 ${esc(t.title)}"><option value="">还没分配</option>${CLOUD.members.map(m=>`<option value="${esc(m.email)}"${m.email===own?' selected':''}>${esc(m.name)}</option>`).join('')}</select></label>${own===CLOUD.email&&!trip.bookings[t.id]?'<span class="mine">轮到你订</span>':''}</div>`}
 
 /* ---------- saving with conflict replay ---------- */
@@ -1601,7 +1639,7 @@ async function cloudBoot(){
   if(!r.ok){CLOUD.err=r.body.error||'服务器出错了';renderOnboard();return}
   CLOUD.err='';CLOUD.email=r.body.email;CLOUD.me=r.body.member;cloudUI.auth=null;
   if(joinCode){try{history.replaceState(null,'',location.pathname+location.hash)}catch(e){}joinCode=''}
-  await Promise.all([refreshMembers(),refreshExpenses(),refreshLog(),loadPlan(),refreshInvite()]);
+  await Promise.all([refreshMembers(),refreshExpenses(),refreshLog(),loadPlan(),refreshInvite(),refreshSettings()]);
   // the very first account uploads the plan everyone starts from
   if(CLOUD.rev===0){cloudQueue.push({fn:()=>{},log:'建立了共享行程'});cloudPump()}
   const p=await api('/poll');if(p.ok)CLOUD.ver=p.body;
@@ -1612,7 +1650,7 @@ async function refreshInvite(){if(!(CLOUD.me&&CLOUD.me.isAdmin))return;const r=a
 function inviteLink(){return location.origin+location.pathname+'?join='+(CLOUD.invite||'')}
 
 /* ---------- header chip, login / register ---------- */
-function renderMeChip(){const el=$('#me-chip');if(!el)return;if(!(CLOUD.on&&CLOUD.me)){el.hidden=true;return}el.hidden=false;el.innerHTML=avatar(CLOUD.me,28)+`<span>${esc(CLOUD.me.name)}</span>`}
+function renderMeChip(){document.body.classList.toggle('ro',viewerOnly());const el=$('#me-chip');if(!el)return;if(!(CLOUD.on&&CLOUD.me)){el.hidden=true;return}el.hidden=false;el.innerHTML=avatar(CLOUD.me,28)+`<span>${esc(CLOUD.me.name)}</span>`}
 function profileFields(m,isNew){m=m||{};const col=m.color||AVATAR_COLORS[(CLOUD.members.length||0)%AVATAR_COLORS.length];
   return `<label>名字<input name="name" value="${esc(m.name||'')}" maxlength="40" required autocomplete="nickname" placeholder="同伴会看到这个名字"></label>
     <label>电话号码${isNew?'（用来登录）':'（登录账号，不能改）'}<input name="phone" value="${esc(m.phone||'')}" maxlength="24" required inputmode="tel" autocomplete="tel" placeholder="012-345 6789"${isNew?'':' readonly'}></label>
@@ -1660,14 +1698,14 @@ function pTeam(){
   const cards=CLOUD.members.map((m,k)=>{const mine=m.email===CLOUD.email;const wa=waLink(m.phone);
     const todo=Object.entries(trip.assign||{}).filter(([id,e])=>e===m.email&&!trip.bookings[id]).length;
     return `<div class="mcard" style="--tilt:${[-1.2,1,-.6,1.4,-.9,.7][k%6]}deg;--c:${esc(m.color)}"><div class="tp"></div>
-      <div class="mtop">${avatar(m,52)}<div style="min-width:0"><div class="mname">${esc(m.name)}${m.isAdmin?' <span class="badge">管理员</span>':''}${mine?' <span class="badge you">你</span>':''}</div><div class="memail">${m.isAdmin?'管理员 · 可以发邀请、重设密码':'同伴'}</div></div></div>
+      <div class="mtop">${avatar(m,52)}<div style="min-width:0"><div class="mname">${esc(m.name)}${m.role&&m.role!=='editor'?` <span class="badge role-${m.role}">${ROLE_NAME[m.role]}</span>`:''}${mine?' <span class="badge you">你</span>':''}</div><div class="memail">${ROLE_NAME[m.role||'editor']}</div></div></div>
       <div class="mrow2"><span>电话</span><b class="tab-num">${esc(m.phone)}</b></div>
       <div class="mrow2"><span>房间</span><b>${ROOM_NAME[m.room||'']}</b></div>
       ${m.diet?`<div class="mrow2"><span>饮食</span><b>${esc(m.diet)}</b></div>`:''}
       <div class="mrow2"><span>待订</span><b>${todo} 项</b></div>
       <div class="links">${wa?`<a class="lk d" href="${wa}" target="_blank" rel="noopener">WhatsApp</a>`:''}<button type="button" class="lk g as-btn" data-a="cl-copy" data-v="${esc(m.phone)}">复制电话</button>
         ${mine?'<button type="button" class="lk x as-btn" data-a="cl-editMe">编辑我的资料</button><button type="button" class="lk g as-btn" data-a="cl-logout">登出</button>':''}
-        ${isAdmin&&!mine?`<button type="button" class="lk g as-btn" data-a="cl-reset" data-v="${esc(m.email)}">重设密码</button><button type="button" class="lk g as-btn${cloudUI.rmArm===m.email?' armed':''}" data-a="cl-rm" data-v="${esc(m.email)}">${cloudUI.rmArm===m.email?'确定移除？':'移除'}</button>`:''}</div>
+        ${false?`<button type="button" class="lk g as-btn" data-a="cl-reset" data-v="${esc(m.email)}">重设密码</button><button type="button" class="lk g as-btn${cloudUI.rmArm===m.email?' armed':''}" data-a="cl-rm" data-v="${esc(m.email)}">${cloudUI.rmArm===m.email?'确定移除？':'移除'}</button>`:''}</div>
       ${cloudUI.temp&&cloudUI.temp.id===m.email?`<p class="ferr" style="background:var(--sage2);color:var(--sage8)">临时密码：<b class="tab-num">${esc(cloudUI.temp.pw)}</b>　发给 ${esc(m.name)}，登录后请他在「编辑我的资料」改密码。</p>`:''}</div>`}).join('');
   const log=CLOUD.log.map(l=>{const m=CLOUD.members.find(x=>x.email===l.email);return `<div class="lrow">${avatar(m||{name:l.email},26)}<div class="lt"><b>${esc(m?m.name:l.email.split('@')[0])}</b> ${esc(l.text)}</div><span class="lw tab-num">${bj(l.at)}</span></div>`}).join('')||'<p class="ph-note">还没有修改记录。</p>';
   return `<section class="page" style="display:flex;flex-direction:column;gap:34px">${ph('P.10','同伴',`${CLOUD.members.length} 位同伴。名字和电话只有加入这个行程的人看得到。`)}
@@ -1689,7 +1727,7 @@ function balances(){const net={};CLOUD.members.forEach(m=>net[m.email]=0);let to
   const moves=[];let i=0,j=0;while(i<db.length&&j<cr.length){const x=Math.min(db[i].v,cr[j].v);moves.push({from:db[i].e,to:cr[j].e,v:x});db[i].v-=x;cr[j].v-=x;if(db[i].v<.5)i++;if(cr[j].v<.5)j++}
   return {net,moves,total}}
 function pSplit(){const B=balances(),today=new Date(Date.now()+8*3600e3).toISOString().slice(0,10);
-  const form=`<form class="notebook expform" id="exp-form"><div class="holes"></div><h3 class="disp" style="margin:0 0 12px">记一笔</h3>
+  const form=viewerOnly()?`<div class="notebook expform"><div class="holes"></div><h3 class="disp" style="margin:0 0 12px">记一笔</h3><p class="ph-note">你只有查看权限，不能记账。需要记账请找管理员把你改成「可编辑」。</p></div>`:`<form class="notebook expform" id="exp-form"><div class="holes"></div><h3 class="disp" style="margin:0 0 12px">记一笔</h3>
     <div class="egrid"><label class="full">是什么<input name="descr" maxlength="80" required placeholder="例如：10/11 一乐烧鹅午餐"></label>
       <label>金额<input name="amount" type="number" min="0.01" step="0.01" required inputmode="decimal"></label>
       <label>币种<select name="cur">${EXP_CURS.map(([c,s])=>`<option value="${c}"${c==='CNY'?' selected':''}>${s} ${c}</option>`).join('')}</select></label>
@@ -1713,6 +1751,36 @@ function pSplit(){const B=balances(),today=new Date(Date.now()+8*3600e3).toISOSt
     <div><div class="tk-gh"><h3>账本</h3><span>按日期，最新的在上面</span></div><div class="notebook elist"><div class="holes"></div>${list}</div></div></section>`;
 }
 
+/* ---------- P.12 accounts & roles ---------- */
+async function refreshSettings(){const r=await api('/settings');if(r.ok)CLOUD.defaultRole=r.body.defaultRole}
+// which roles the signed-in person may give a target: the super admin sets anything, admins only switch editor/viewer
+function roleOptions(actor,target){
+  if(actor==='super')return ['admin','editor','viewer','super'];
+  if(actor==='admin'&&(target==='editor'||target==='viewer'))return ['editor','viewer'];
+  return [];
+}
+function pAccounts(){
+  const me=CLOUD.me||{},sup=me.role==='super';
+  if(!me.isAdmin)return pTeam();
+  const counts=['super','admin','editor','viewer'].map(r=>[r,CLOUD.members.filter(m=>(m.role||'editor')===r).length]);
+  const rows=CLOUD.members.map(m=>{const mine=m.email===CLOUD.email,role=m.role||'editor',opts=mine?[]:roleOptions(me.role,role),t=cloudUI.transfer===m.email;
+    const sel=opts.length?`<select data-role="${esc(m.email)}" aria-label="${esc(m.name)} 的角色">${opts.map(r=>`<option value="${r}"${r===role?' selected':''}>${r==='super'?'转让超级管理员给他':ROLE_NAME[r]}</option>`).join('')}</select>`:`<span class="badge role-${role}">${ROLE_NAME[role]}</span>`;
+    const can=!mine&&(sup||(me.role==='admin'&&(role==='editor'||role==='viewer')));
+    return `<div class="acc${mine?' me':''}">${avatar(m,36)}<div class="an"><b>${esc(m.name)}${mine?' <span class="badge you">你</span>':''}${m.locked?' <span class="badge lock">已锁定</span>':''}</b><small class="tab-num">${esc(m.phone)} · 最近登录 ${m.lastLogin?bj(m.lastLogin):'—'}</small></div>
+      <div class="ar">${sel}</div>
+      <div class="aa">${can?`<button type="button" class="mini-btn" data-a="cl-reset" data-v="${esc(m.email)}">重设密码</button><button type="button" class="mini-btn" data-a="cl-kick" data-v="${esc(m.email)}">全部登出</button><button type="button" class="mini-btn${cloudUI.rmArm===m.email?' armed':''}" data-a="cl-rm" data-v="${esc(m.email)}">${cloudUI.rmArm===m.email?'确定移除？':'移除'}</button>`:''}</div>
+      ${t?`<div class="confirm">确定把<b>超级管理员</b>转给 ${esc(m.name)}？转让后你会变成「管理员」，不能再设管理员。<button type="button" class="btn" data-a="cl-transfer" data-v="${esc(m.email)}">确定转让</button><button type="button" class="btn ghost" data-a="cl-transferNo">取消</button></div>`:''}
+      ${cloudUI.temp&&cloudUI.temp.id===m.email?`<p class="ferr temp">临时密码：<b class="tab-num">${esc(cloudUI.temp.pw)}</b>　发给 ${esc(m.name)}，登录后请他在「编辑我的资料」改密码。</p>`:''}</div>`}).join('');
+  return `<section class="page" style="display:flex;flex-direction:column;gap:30px">${ph('P.12','账号与权限',sup?'你是超级管理员：这里集中管理所有账号和角色。':'你是管理员：可以管理「可编辑」和「只能查看」的同伴。')}
+    <div class="role-grid">${counts.map(([r,n])=>`<div class="role-card role-${r}"><b>${n}</b><span>${ROLE_NAME[r]}</span><small>${ROLE_DESC[r]}</small></div>`).join('')}</div>
+    <div class="acc-set">
+      <div class="sticky-note"><div class="tape terra" style="top:-10px;right:40px;transform:rotate(4deg)"></div><p><b>新成员注册后默认是：</b></p>
+        ${sup?`<div class="seg" role="group" aria-label="新成员默认权限" style="margin-top:8px"><button type="button" data-a="cl-defRole" data-v="editor" aria-pressed="${CLOUD.defaultRole!=='viewer'}">可编辑</button><button type="button" data-a="cl-defRole" data-v="viewer" aria-pressed="${CLOUD.defaultRole==='viewer'}">只能查看</button></div>`:`<p style="margin-top:6px"><b>${CLOUD.defaultRole==='viewer'?'只能查看':'可编辑'}</b>（只有超级管理员可以改）</p>`}</div>
+      ${CLOUD.invite?`<div class="sticky-note invite" style="transform:rotate(.6deg)"><p><b>邀请链接</b></p><div class="inv"><code class="tab-num">${esc(inviteLink())}</code><button type="button" class="btn" data-a="cl-copyInvite">复制</button><button type="button" class="btn ghost" data-a="cl-newInvite">换一个</button></div></div>`:''}
+    </div>
+    <div><div class="tk-gh"><h3>所有账号</h3><span>${CLOUD.members.length} 个 · 改角色马上生效</span></div><div class="notebook acc-list"><div class="holes"></div>${rows}</div></div></section>`;
+}
+
 /* ---------- events ---------- */
 document.addEventListener('submit',async e=>{
   if(e.target.id==='me-form'){e.preventDefault();saveProfile(e.target);return}
@@ -1729,6 +1797,10 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a^=
   if(a==='cl-copy'){try{await navigator.clipboard.writeText(v);toast('已复制 '+v)}catch(err){toast(v)}}
   if(a==='cl-rm'){if(cloudUI.rmArm!==v){cloudUI.rmArm=v;render();setTimeout(()=>{if(cloudUI.rmArm===v){cloudUI.rmArm=null;render()}},3000);return}
     cloudUI.rmArm=null;const r=await api('/members/'+encodeURIComponent(v),{method:'DELETE'});if(!r.ok){toast(r.body.error||'移除失败');return}await refreshMembers();refreshLog();render();toast('已移除')}
+  if(a==='cl-transferNo'){cloudUI.transfer=null;render()}
+  if(a==='cl-transfer'){cloudUI.transfer=null;const r=await api('/members/'+encodeURIComponent(v)+'/role',{method:'PUT',body:{role:'super'}});if(!r.ok){toast(r.body.error||'转让失败');return}await refreshMembers();refreshLog();render();toast('已转让超级管理员')}
+  if(a==='cl-kick'){const r=await api('/members/'+encodeURIComponent(v)+'/logout',{method:'POST'});toast(r.ok?'已让对方在所有设备登出':(r.body.error||'失败'));refreshLog()}
+  if(a==='cl-defRole'){const r=await api('/settings',{method:'PUT',body:{defaultRole:v}});if(r.ok){CLOUD.defaultRole=r.body.defaultRole;render();toast('新成员默认：'+ROLE_NAME[v])}else toast(r.body.error||'改不了')}
   if(a==='cl-auth'){cloudUI.auth=v;cloudUI.obErr='';renderOnboard()}
   if(a==='cl-retry'){CLOUD.err='';cloudBoot()}
   if(a==='cl-logout'){await api('/auth/logout',{method:'POST'});CLOUD.me=null;CLOUD.members=[];CLOUD.expenses=[];CLOUD.log=[];cloudUI.auth='login';S.tab='overview';await cloudBoot();toast('已登出')}
@@ -1738,6 +1810,10 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a^=
   if(a==='cl-expDel'){const id=+v;if(cloudUI.expDel!==id){cloudUI.expDel=id;render();setTimeout(()=>{if(cloudUI.expDel===id){cloudUI.expDel=null;render()}},3000);return}
     cloudUI.expDel=null;const r=await api('/expenses/'+id,{method:'DELETE'});if(!r.ok){toast(r.body.error||'删除失败');return}await refreshExpenses();refreshLog();render();toast('已删除')}
 });
+document.addEventListener('change',async e=>{const who=e.target.dataset&&e.target.dataset.role;if(!who)return;const role=e.target.value;
+  if(role==='super'){cloudUI.transfer=who;render();return}
+  const r=await api('/members/'+encodeURIComponent(who)+'/role',{method:'PUT',body:{role}});if(!r.ok){toast(r.body.error||'改不了');render();return}
+  await refreshMembers();refreshLog();render();toast('已改成「'+ROLE_NAME[role]+'」')});
 document.addEventListener('change',e=>{const id=e.target.dataset&&e.target.dataset.assign;if(!id)return;const who=e.target.value,tt=(tickets().find(x=>x.id===id)||{}).title||id;
   commit(t=>{t.assign=t.assign||{};if(who)t.assign[id]=who;else delete t.assign[id]},who?'已分配给 '+memberName(who):'已取消分配',who?tt+' 交给 '+memberName(who)+' 订':'取消了 '+tt+' 的分配')});
 document.addEventListener('click',e=>{if(e.target.closest('#me-chip')){S.tab='team';render();scrollTo({top:$('.tabs').offsetTop,behavior:'smooth'})}});

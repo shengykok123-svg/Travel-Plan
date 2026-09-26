@@ -1,8 +1,10 @@
 /* ================= cloud mode: accounts, profiles, change log, expenses ================= */
 var AVATAR_COLORS=['#c67139','#a8463f','#6f8150','#3f7f86','#b08628','#6b559a','#4f6a8f','#a8506e'];
+var ROLE_NAME={super:'超级管理员',admin:'管理员',editor:'可编辑',viewer:'只能查看'};
+var ROLE_DESC={super:'管所有账号和角色，可以设管理员、转让超级管理员',admin:'可以编辑，也能邀请、重设密码、管理可编辑和只能查看的人',editor:'可以改行程、订票、记账',viewer:'只能看，只能改自己的资料'};
 var ROOM_NAME={twin:'双床房',triple:'三人房','':'还没分'};
 var EXP_CURS=[['MYR','RM'],['CNY','¥'],['HKD','HK$'],['MOP','MOP']];
-var cloudUI={editMe:false,obErr:'',expDel:null,expErr:'',rmArm:null,auth:null,temp:null,polling:false};
+var cloudUI={transfer:null,editMe:false,obErr:'',expDel:null,expErr:'',rmArm:null,auth:null,temp:null,polling:false};
 
 async function api(path,opt){opt=opt||{};
   const h={'content-type':'application/json'};
@@ -14,7 +16,7 @@ async function api(path,opt){opt=opt||{};
 function memberName(email){const m=CLOUD.members.find(x=>x.email===email);return m?m.name:(email||'').split('@')[0]}
 function avatar(m,size){size=size||34;const n=(m&&m.name)||'?';return `<span class="av" style="--c:${esc((m&&m.color)||'#a19786')};width:${size}px;height:${size}px;font-size:${Math.round(size*.42)}px" aria-hidden="true">${esc(n.slice(0,1))}</span>`}
 function waLink(phone){let d=String(phone||'').replace(/[^\d+]/g,'');if(d.startsWith('+'))d=d.slice(1);else if(d.startsWith('0'))d='60'+d.slice(1);return d?'https://wa.me/'+d:''}
-function ownerLine(t){const own=(trip.assign||{})[t.id]||'';
+function ownerLine(t){const own=(trip.assign||{})[t.id]||'';if(viewerOnly())return own?`<div class="tk-own">负责订：${esc(memberName(own))}</div>`:'';
   return `<div class="tk-own"><label>负责订：<select data-assign="${esc(t.id)}" aria-label="谁负责订 ${esc(t.title)}"><option value="">还没分配</option>${CLOUD.members.map(m=>`<option value="${esc(m.email)}"${m.email===own?' selected':''}>${esc(m.name)}</option>`).join('')}</select></label>${own===CLOUD.email&&!trip.bookings[t.id]?'<span class="mine">轮到你订</span>':''}</div>`}
 
 /* ---------- saving with conflict replay ---------- */
@@ -59,7 +61,7 @@ async function cloudBoot(){
   if(!r.ok){CLOUD.err=r.body.error||'服务器出错了';renderOnboard();return}
   CLOUD.err='';CLOUD.email=r.body.email;CLOUD.me=r.body.member;cloudUI.auth=null;
   if(joinCode){try{history.replaceState(null,'',location.pathname+location.hash)}catch(e){}joinCode=''}
-  await Promise.all([refreshMembers(),refreshExpenses(),refreshLog(),loadPlan(),refreshInvite()]);
+  await Promise.all([refreshMembers(),refreshExpenses(),refreshLog(),loadPlan(),refreshInvite(),refreshSettings()]);
   // the very first account uploads the plan everyone starts from
   if(CLOUD.rev===0){cloudQueue.push({fn:()=>{},log:'建立了共享行程'});cloudPump()}
   const p=await api('/poll');if(p.ok)CLOUD.ver=p.body;
@@ -70,7 +72,7 @@ async function refreshInvite(){if(!(CLOUD.me&&CLOUD.me.isAdmin))return;const r=a
 function inviteLink(){return location.origin+location.pathname+'?join='+(CLOUD.invite||'')}
 
 /* ---------- header chip, login / register ---------- */
-function renderMeChip(){const el=$('#me-chip');if(!el)return;if(!(CLOUD.on&&CLOUD.me)){el.hidden=true;return}el.hidden=false;el.innerHTML=avatar(CLOUD.me,28)+`<span>${esc(CLOUD.me.name)}</span>`}
+function renderMeChip(){document.body.classList.toggle('ro',viewerOnly());const el=$('#me-chip');if(!el)return;if(!(CLOUD.on&&CLOUD.me)){el.hidden=true;return}el.hidden=false;el.innerHTML=avatar(CLOUD.me,28)+`<span>${esc(CLOUD.me.name)}</span>`}
 function profileFields(m,isNew){m=m||{};const col=m.color||AVATAR_COLORS[(CLOUD.members.length||0)%AVATAR_COLORS.length];
   return `<label>名字<input name="name" value="${esc(m.name||'')}" maxlength="40" required autocomplete="nickname" placeholder="同伴会看到这个名字"></label>
     <label>电话号码${isNew?'（用来登录）':'（登录账号，不能改）'}<input name="phone" value="${esc(m.phone||'')}" maxlength="24" required inputmode="tel" autocomplete="tel" placeholder="012-345 6789"${isNew?'':' readonly'}></label>
@@ -118,14 +120,14 @@ function pTeam(){
   const cards=CLOUD.members.map((m,k)=>{const mine=m.email===CLOUD.email;const wa=waLink(m.phone);
     const todo=Object.entries(trip.assign||{}).filter(([id,e])=>e===m.email&&!trip.bookings[id]).length;
     return `<div class="mcard" style="--tilt:${[-1.2,1,-.6,1.4,-.9,.7][k%6]}deg;--c:${esc(m.color)}"><div class="tp"></div>
-      <div class="mtop">${avatar(m,52)}<div style="min-width:0"><div class="mname">${esc(m.name)}${m.isAdmin?' <span class="badge">管理员</span>':''}${mine?' <span class="badge you">你</span>':''}</div><div class="memail">${m.isAdmin?'管理员 · 可以发邀请、重设密码':'同伴'}</div></div></div>
+      <div class="mtop">${avatar(m,52)}<div style="min-width:0"><div class="mname">${esc(m.name)}${m.role&&m.role!=='editor'?` <span class="badge role-${m.role}">${ROLE_NAME[m.role]}</span>`:''}${mine?' <span class="badge you">你</span>':''}</div><div class="memail">${ROLE_NAME[m.role||'editor']}</div></div></div>
       <div class="mrow2"><span>电话</span><b class="tab-num">${esc(m.phone)}</b></div>
       <div class="mrow2"><span>房间</span><b>${ROOM_NAME[m.room||'']}</b></div>
       ${m.diet?`<div class="mrow2"><span>饮食</span><b>${esc(m.diet)}</b></div>`:''}
       <div class="mrow2"><span>待订</span><b>${todo} 项</b></div>
       <div class="links">${wa?`<a class="lk d" href="${wa}" target="_blank" rel="noopener">WhatsApp</a>`:''}<button type="button" class="lk g as-btn" data-a="cl-copy" data-v="${esc(m.phone)}">复制电话</button>
         ${mine?'<button type="button" class="lk x as-btn" data-a="cl-editMe">编辑我的资料</button><button type="button" class="lk g as-btn" data-a="cl-logout">登出</button>':''}
-        ${isAdmin&&!mine?`<button type="button" class="lk g as-btn" data-a="cl-reset" data-v="${esc(m.email)}">重设密码</button><button type="button" class="lk g as-btn${cloudUI.rmArm===m.email?' armed':''}" data-a="cl-rm" data-v="${esc(m.email)}">${cloudUI.rmArm===m.email?'确定移除？':'移除'}</button>`:''}</div>
+        ${false?`<button type="button" class="lk g as-btn" data-a="cl-reset" data-v="${esc(m.email)}">重设密码</button><button type="button" class="lk g as-btn${cloudUI.rmArm===m.email?' armed':''}" data-a="cl-rm" data-v="${esc(m.email)}">${cloudUI.rmArm===m.email?'确定移除？':'移除'}</button>`:''}</div>
       ${cloudUI.temp&&cloudUI.temp.id===m.email?`<p class="ferr" style="background:var(--sage2);color:var(--sage8)">临时密码：<b class="tab-num">${esc(cloudUI.temp.pw)}</b>　发给 ${esc(m.name)}，登录后请他在「编辑我的资料」改密码。</p>`:''}</div>`}).join('');
   const log=CLOUD.log.map(l=>{const m=CLOUD.members.find(x=>x.email===l.email);return `<div class="lrow">${avatar(m||{name:l.email},26)}<div class="lt"><b>${esc(m?m.name:l.email.split('@')[0])}</b> ${esc(l.text)}</div><span class="lw tab-num">${bj(l.at)}</span></div>`}).join('')||'<p class="ph-note">还没有修改记录。</p>';
   return `<section class="page" style="display:flex;flex-direction:column;gap:34px">${ph('P.10','同伴',`${CLOUD.members.length} 位同伴。名字和电话只有加入这个行程的人看得到。`)}
@@ -147,7 +149,7 @@ function balances(){const net={};CLOUD.members.forEach(m=>net[m.email]=0);let to
   const moves=[];let i=0,j=0;while(i<db.length&&j<cr.length){const x=Math.min(db[i].v,cr[j].v);moves.push({from:db[i].e,to:cr[j].e,v:x});db[i].v-=x;cr[j].v-=x;if(db[i].v<.5)i++;if(cr[j].v<.5)j++}
   return {net,moves,total}}
 function pSplit(){const B=balances(),today=new Date(Date.now()+8*3600e3).toISOString().slice(0,10);
-  const form=`<form class="notebook expform" id="exp-form"><div class="holes"></div><h3 class="disp" style="margin:0 0 12px">记一笔</h3>
+  const form=viewerOnly()?`<div class="notebook expform"><div class="holes"></div><h3 class="disp" style="margin:0 0 12px">记一笔</h3><p class="ph-note">你只有查看权限，不能记账。需要记账请找管理员把你改成「可编辑」。</p></div>`:`<form class="notebook expform" id="exp-form"><div class="holes"></div><h3 class="disp" style="margin:0 0 12px">记一笔</h3>
     <div class="egrid"><label class="full">是什么<input name="descr" maxlength="80" required placeholder="例如：10/11 一乐烧鹅午餐"></label>
       <label>金额<input name="amount" type="number" min="0.01" step="0.01" required inputmode="decimal"></label>
       <label>币种<select name="cur">${EXP_CURS.map(([c,s])=>`<option value="${c}"${c==='CNY'?' selected':''}>${s} ${c}</option>`).join('')}</select></label>
@@ -171,6 +173,36 @@ function pSplit(){const B=balances(),today=new Date(Date.now()+8*3600e3).toISOSt
     <div><div class="tk-gh"><h3>账本</h3><span>按日期，最新的在上面</span></div><div class="notebook elist"><div class="holes"></div>${list}</div></div></section>`;
 }
 
+/* ---------- P.12 accounts & roles ---------- */
+async function refreshSettings(){const r=await api('/settings');if(r.ok)CLOUD.defaultRole=r.body.defaultRole}
+// which roles the signed-in person may give a target: the super admin sets anything, admins only switch editor/viewer
+function roleOptions(actor,target){
+  if(actor==='super')return ['admin','editor','viewer','super'];
+  if(actor==='admin'&&(target==='editor'||target==='viewer'))return ['editor','viewer'];
+  return [];
+}
+function pAccounts(){
+  const me=CLOUD.me||{},sup=me.role==='super';
+  if(!me.isAdmin)return pTeam();
+  const counts=['super','admin','editor','viewer'].map(r=>[r,CLOUD.members.filter(m=>(m.role||'editor')===r).length]);
+  const rows=CLOUD.members.map(m=>{const mine=m.email===CLOUD.email,role=m.role||'editor',opts=mine?[]:roleOptions(me.role,role),t=cloudUI.transfer===m.email;
+    const sel=opts.length?`<select data-role="${esc(m.email)}" aria-label="${esc(m.name)} 的角色">${opts.map(r=>`<option value="${r}"${r===role?' selected':''}>${r==='super'?'转让超级管理员给他':ROLE_NAME[r]}</option>`).join('')}</select>`:`<span class="badge role-${role}">${ROLE_NAME[role]}</span>`;
+    const can=!mine&&(sup||(me.role==='admin'&&(role==='editor'||role==='viewer')));
+    return `<div class="acc${mine?' me':''}">${avatar(m,36)}<div class="an"><b>${esc(m.name)}${mine?' <span class="badge you">你</span>':''}${m.locked?' <span class="badge lock">已锁定</span>':''}</b><small class="tab-num">${esc(m.phone)} · 最近登录 ${m.lastLogin?bj(m.lastLogin):'—'}</small></div>
+      <div class="ar">${sel}</div>
+      <div class="aa">${can?`<button type="button" class="mini-btn" data-a="cl-reset" data-v="${esc(m.email)}">重设密码</button><button type="button" class="mini-btn" data-a="cl-kick" data-v="${esc(m.email)}">全部登出</button><button type="button" class="mini-btn${cloudUI.rmArm===m.email?' armed':''}" data-a="cl-rm" data-v="${esc(m.email)}">${cloudUI.rmArm===m.email?'确定移除？':'移除'}</button>`:''}</div>
+      ${t?`<div class="confirm">确定把<b>超级管理员</b>转给 ${esc(m.name)}？转让后你会变成「管理员」，不能再设管理员。<button type="button" class="btn" data-a="cl-transfer" data-v="${esc(m.email)}">确定转让</button><button type="button" class="btn ghost" data-a="cl-transferNo">取消</button></div>`:''}
+      ${cloudUI.temp&&cloudUI.temp.id===m.email?`<p class="ferr temp">临时密码：<b class="tab-num">${esc(cloudUI.temp.pw)}</b>　发给 ${esc(m.name)}，登录后请他在「编辑我的资料」改密码。</p>`:''}</div>`}).join('');
+  return `<section class="page" style="display:flex;flex-direction:column;gap:30px">${ph('P.12','账号与权限',sup?'你是超级管理员：这里集中管理所有账号和角色。':'你是管理员：可以管理「可编辑」和「只能查看」的同伴。')}
+    <div class="role-grid">${counts.map(([r,n])=>`<div class="role-card role-${r}"><b>${n}</b><span>${ROLE_NAME[r]}</span><small>${ROLE_DESC[r]}</small></div>`).join('')}</div>
+    <div class="acc-set">
+      <div class="sticky-note"><div class="tape terra" style="top:-10px;right:40px;transform:rotate(4deg)"></div><p><b>新成员注册后默认是：</b></p>
+        ${sup?`<div class="seg" role="group" aria-label="新成员默认权限" style="margin-top:8px"><button type="button" data-a="cl-defRole" data-v="editor" aria-pressed="${CLOUD.defaultRole!=='viewer'}">可编辑</button><button type="button" data-a="cl-defRole" data-v="viewer" aria-pressed="${CLOUD.defaultRole==='viewer'}">只能查看</button></div>`:`<p style="margin-top:6px"><b>${CLOUD.defaultRole==='viewer'?'只能查看':'可编辑'}</b>（只有超级管理员可以改）</p>`}</div>
+      ${CLOUD.invite?`<div class="sticky-note invite" style="transform:rotate(.6deg)"><p><b>邀请链接</b></p><div class="inv"><code class="tab-num">${esc(inviteLink())}</code><button type="button" class="btn" data-a="cl-copyInvite">复制</button><button type="button" class="btn ghost" data-a="cl-newInvite">换一个</button></div></div>`:''}
+    </div>
+    <div><div class="tk-gh"><h3>所有账号</h3><span>${CLOUD.members.length} 个 · 改角色马上生效</span></div><div class="notebook acc-list"><div class="holes"></div>${rows}</div></div></section>`;
+}
+
 /* ---------- events ---------- */
 document.addEventListener('submit',async e=>{
   if(e.target.id==='me-form'){e.preventDefault();saveProfile(e.target);return}
@@ -187,6 +219,10 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a^=
   if(a==='cl-copy'){try{await navigator.clipboard.writeText(v);toast('已复制 '+v)}catch(err){toast(v)}}
   if(a==='cl-rm'){if(cloudUI.rmArm!==v){cloudUI.rmArm=v;render();setTimeout(()=>{if(cloudUI.rmArm===v){cloudUI.rmArm=null;render()}},3000);return}
     cloudUI.rmArm=null;const r=await api('/members/'+encodeURIComponent(v),{method:'DELETE'});if(!r.ok){toast(r.body.error||'移除失败');return}await refreshMembers();refreshLog();render();toast('已移除')}
+  if(a==='cl-transferNo'){cloudUI.transfer=null;render()}
+  if(a==='cl-transfer'){cloudUI.transfer=null;const r=await api('/members/'+encodeURIComponent(v)+'/role',{method:'PUT',body:{role:'super'}});if(!r.ok){toast(r.body.error||'转让失败');return}await refreshMembers();refreshLog();render();toast('已转让超级管理员')}
+  if(a==='cl-kick'){const r=await api('/members/'+encodeURIComponent(v)+'/logout',{method:'POST'});toast(r.ok?'已让对方在所有设备登出':(r.body.error||'失败'));refreshLog()}
+  if(a==='cl-defRole'){const r=await api('/settings',{method:'PUT',body:{defaultRole:v}});if(r.ok){CLOUD.defaultRole=r.body.defaultRole;render();toast('新成员默认：'+ROLE_NAME[v])}else toast(r.body.error||'改不了')}
   if(a==='cl-auth'){cloudUI.auth=v;cloudUI.obErr='';renderOnboard()}
   if(a==='cl-retry'){CLOUD.err='';cloudBoot()}
   if(a==='cl-logout'){await api('/auth/logout',{method:'POST'});CLOUD.me=null;CLOUD.members=[];CLOUD.expenses=[];CLOUD.log=[];cloudUI.auth='login';S.tab='overview';await cloudBoot();toast('已登出')}
@@ -196,6 +232,10 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a^=
   if(a==='cl-expDel'){const id=+v;if(cloudUI.expDel!==id){cloudUI.expDel=id;render();setTimeout(()=>{if(cloudUI.expDel===id){cloudUI.expDel=null;render()}},3000);return}
     cloudUI.expDel=null;const r=await api('/expenses/'+id,{method:'DELETE'});if(!r.ok){toast(r.body.error||'删除失败');return}await refreshExpenses();refreshLog();render();toast('已删除')}
 });
+document.addEventListener('change',async e=>{const who=e.target.dataset&&e.target.dataset.role;if(!who)return;const role=e.target.value;
+  if(role==='super'){cloudUI.transfer=who;render();return}
+  const r=await api('/members/'+encodeURIComponent(who)+'/role',{method:'PUT',body:{role}});if(!r.ok){toast(r.body.error||'改不了');render();return}
+  await refreshMembers();refreshLog();render();toast('已改成「'+ROLE_NAME[role]+'」')});
 document.addEventListener('change',e=>{const id=e.target.dataset&&e.target.dataset.assign;if(!id)return;const who=e.target.value,tt=(tickets().find(x=>x.id===id)||{}).title||id;
   commit(t=>{t.assign=t.assign||{};if(who)t.assign[id]=who;else delete t.assign[id]},who?'已分配给 '+memberName(who):'已取消分配',who?tt+' 交给 '+memberName(who)+' 订':'取消了 '+tt+' 的分配')});
 document.addEventListener('click',e=>{if(e.target.closest('#me-chip')){S.tab='team';render();scrollTo({top:$('.tabs').offsetTop,behavior:'smooth'})}});
