@@ -488,6 +488,11 @@ input[type=range]{accent-color:var(--acc)}
 .ob-card h2{font-size:clamp(26px,4vw,34px);margin:4px 0 8px}
 .ob-card p{margin:0 0 16px}
 .me-edit{padding:26px 26px 22px 54px}
+.auth-seg{margin:6px 0 12px}
+.ob-card .pform{margin-top:4px}
+.invite p{margin:0}
+.inv{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.inv code{flex:1 1 260px;min-width:0;background:var(--paper);border-radius:999px;padding:8px 14px;font-size:12px;color:var(--ink);overflow-wrap:anywhere;word-break:break-all}
 .mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:28px 22px}
 .mcard{position:relative;background:var(--paper);border-radius:24px;padding:18px 18px 16px;box-shadow:var(--sh-md);transform:rotate(var(--tilt));display:flex;flex-direction:column;gap:8px;transition:transform .25s}
 .mcard:hover{transform:rotate(0) translateY(-3px)}
@@ -1538,7 +1543,7 @@ setInterval(()=>{renderHero()},30000);
 var AVATAR_COLORS=['#c67139','#a8463f','#6f8150','#3f7f86','#b08628','#6b559a','#4f6a8f','#a8506e'];
 var ROOM_NAME={twin:'双床房',triple:'三人房','':'还没分'};
 var EXP_CURS=[['MYR','RM'],['CNY','¥'],['HKD','HK$'],['MOP','MOP']];
-var cloudUI={editMe:false,obErr:'',expDel:null,expErr:'',rmArm:null};
+var cloudUI={editMe:false,obErr:'',expDel:null,expErr:'',rmArm:null,auth:null,temp:null,polling:false};
 
 async function api(path,opt){opt=opt||{};
   const h={'content-type':'application/json'};
@@ -1586,44 +1591,67 @@ async function poll(){
 }
 
 /* ---------- boot ---------- */
+var joinCode=(()=>{try{return (new URLSearchParams(location.search).get('join')||'').trim().toUpperCase()}catch(e){return ''}})();
 async function cloudBoot(){
   const r=await api('/me');
   if(!r.json)return; // not on Cloudflare: keep GitHub Pages / claude.ai behaviour
   CLOUD.on=true;
-  if(!r.ok){CLOUD.err=r.body.error||'登录失败';renderOnboard();return}
-  CLOUD.email=r.body.email;CLOUD.me=r.body.member;
-  if(!CLOUD.me){renderOnboard();return}
-  await Promise.all([refreshMembers(),refreshExpenses(),refreshLog(),loadPlan()]);
+  if(r.status===401){CLOUD.me=null;CLOUD.firstUser=!!r.body.firstUser;cloudUI.auth=cloudUI.auth||(CLOUD.firstUser||joinCode?'register':'login');renderOnboard();render();return}
+  if(!r.ok){CLOUD.err=r.body.error||'服务器出错了';renderOnboard();return}
+  CLOUD.err='';CLOUD.email=r.body.email;CLOUD.me=r.body.member;cloudUI.auth=null;
+  if(joinCode){try{history.replaceState(null,'',location.pathname+location.hash)}catch(e){}joinCode=''}
+  await Promise.all([refreshMembers(),refreshExpenses(),refreshLog(),loadPlan(),refreshInvite()]);
+  // the very first account uploads the plan everyone starts from
+  if(CLOUD.rev===0){cloudQueue.push({fn:()=>{},log:'建立了共享行程'});cloudPump()}
   const p=await api('/poll');if(p.ok)CLOUD.ver=p.body;
   setSync('cloud');renderOnboard();render();
-  setInterval(poll,5000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)poll()});
+  if(!cloudUI.polling){cloudUI.polling=true;setInterval(poll,5000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)poll()})}
 }
+async function refreshInvite(){if(!(CLOUD.me&&CLOUD.me.isAdmin))return;const r=await api('/invite');if(r.ok)CLOUD.invite=r.body.code}
+function inviteLink(){return location.origin+location.pathname+'?join='+(CLOUD.invite||'')}
 
-/* ---------- header chip + first-time profile ---------- */
+/* ---------- header chip, login / register ---------- */
 function renderMeChip(){const el=$('#me-chip');if(!el)return;if(!(CLOUD.on&&CLOUD.me)){el.hidden=true;return}el.hidden=false;el.innerHTML=avatar(CLOUD.me,28)+`<span>${esc(CLOUD.me.name)}</span>`}
-function profileForm(m,ob){m=m||{};const col=m.color||AVATAR_COLORS[CLOUD.members.length%AVATAR_COLORS.length];
-  return `<form class="pform" id="${ob?'ob-form':'me-form'}">
-    <label>名字<input name="name" value="${esc(m.name||'')}" maxlength="40" required autocomplete="nickname" placeholder="同伴会看到这个名字"></label>
-    <label>电话号码<input name="phone" value="${esc(m.phone||'')}" maxlength="24" required inputmode="tel" autocomplete="tel" placeholder="+60 12-345 6789"></label>
+function profileFields(m,isNew){m=m||{};const col=m.color||AVATAR_COLORS[(CLOUD.members.length||0)%AVATAR_COLORS.length];
+  return `<label>名字<input name="name" value="${esc(m.name||'')}" maxlength="40" required autocomplete="nickname" placeholder="同伴会看到这个名字"></label>
+    <label>电话号码${isNew?'（用来登录）':'（登录账号，不能改）'}<input name="phone" value="${esc(m.phone||'')}" maxlength="24" required inputmode="tel" autocomplete="tel" placeholder="012-345 6789"${isNew?'':' readonly'}></label>
     <fieldset><legend>头像颜色</legend><div class="swatches">${AVATAR_COLORS.map(c=>`<label class="sw"><input type="radio" name="color" value="${c}"${c===col?' checked':''}><span style="--c:${c}"></span></label>`).join('')}</div></fieldset>
     <label>住哪间房<select name="room">${Object.entries(ROOM_NAME).map(([k,n])=>`<option value="${k}"${(m.room||'')===k?' selected':''}>${n}</option>`).join('')}</select></label>
-    <label class="full">饮食禁忌 / 过敏（可不填）<input name="diet" value="${esc(m.diet||'')}" maxlength="100" placeholder="例如：不吃牛、海鲜过敏"></label>
+    <label class="full">饮食禁忌 / 过敏（可不填）<input name="diet" value="${esc(m.diet||'')}" maxlength="100" placeholder="例如：不吃牛、海鲜过敏"></label>`}
+function profileForm(m){return `<form class="pform" id="me-form">${profileFields(m,false)}
+    <label class="full">改密码（不改就留空）<input name="newPassword" type="password" minlength="6" autocomplete="new-password" placeholder="至少 6 位"></label>
     ${cloudUI.obErr?`<p class="ferr" role="alert">${esc(cloudUI.obErr)}</p>`:''}
-    <div class="acts">${ob?'':'<button type="button" class="btn ghost" data-a="cl-cancelMe">取消</button>'}<button type="submit" class="btn">${ob?'加入行程':'保存资料'}</button></div></form>`}
+    <div class="acts"><button type="button" class="btn ghost" data-a="cl-cancelMe">取消</button><button type="submit" class="btn">保存资料</button></div></form>`}
 function renderOnboard(){const root=$('#ob-root');if(!root)return;renderMeChip();
   if(!CLOUD.on||(CLOUD.me&&!CLOUD.err)){root.innerHTML='';return}
-  if(CLOUD.err){root.innerHTML=`<div class="ob"><div class="ob-card"><div class="tape terra" style="top:-12px;left:50%;margin-left:-46px"></div><h2 class="disp">暂时进不去</h2><p>${esc(CLOUD.err)}</p><p class="ph-note">如果你刚被加进名单，关掉页面重新打开，用邮箱验证码再登录一次。</p></div></div>`;return}
+  if(CLOUD.err){root.innerHTML=`<div class="ob"><div class="ob-card"><div class="tape terra" style="top:-12px;left:50%;margin-left:-46px"></div><h2 class="disp">暂时进不去</h2><p>${esc(CLOUD.err)}</p><button type="button" class="btn" data-a="cl-retry">再试一次</button></div></div>`;return}
+  const reg=cloudUI.auth==='register',err=cloudUI.obErr?`<p class="ferr" role="alert">${esc(cloudUI.obErr)}</p>`:'';
+  const head=CLOUD.firstUser?'你是第一个注册的人，注册后会成为管理员，可以把邀请链接发给同伴。':reg?(joinCode?'你是用邀请链接打开的，填好资料就能加入。':'注册要用邀请码，可以向同伴要邀请链接。'):'用注册时的电话号码和密码登录。';
   root.innerHTML=`<div class="ob" role="dialog" aria-modal="true" aria-labelledby="ob-h"><div class="ob-card"><div class="tape sage" style="top:-12px;left:50%;margin-left:-46px;transform:rotate(-3deg)"></div>
-    <div class="ph-no">WELCOME</div><h2 class="disp" id="ob-h"><span class="hl">先填一下你的资料</span></h2>
-    <p class="ph-note">你用 <b>${esc(CLOUD.email)}</b> 登录。名字和电话只有加入这个行程的同伴看得到。</p>${profileForm(null,true)}</div></div>`;
+    <div class="ph-no">粤港澳九日行 · 旅行手帐</div><h2 class="disp" id="ob-h"><span class="hl">${reg?'加入行程':'欢迎回来'}</span></h2>
+    ${CLOUD.firstUser?'':`<div class="seg auth-seg" role="group" aria-label="登录或注册"><button type="button" data-a="cl-auth" data-v="login" aria-pressed="${!reg}">登录</button><button type="button" data-a="cl-auth" data-v="register" aria-pressed="${reg}">注册</button></div>`}
+    <p class="ph-note">${head}</p>
+    ${reg?`<form class="pform" id="reg-form">${profileFields(null,true)}
+        <label>密码<input name="password" type="password" minlength="6" required autocomplete="new-password" placeholder="至少 6 位"></label>
+        ${CLOUD.firstUser?'':`<label>邀请码<input name="invite" value="${esc(joinCode)}" maxlength="10" required autocomplete="off" style="text-transform:uppercase" placeholder="6 位"></label>`}
+        ${err}<div class="acts"><button type="submit" class="btn">注册并加入</button></div></form>`
+      :`<form class="pform" id="login-form"><label>电话号码<input name="phone" required inputmode="tel" autocomplete="tel" placeholder="012-345 6789"></label>
+        <label>密码<input name="password" type="password" required autocomplete="current-password"></label>
+        ${err}<p class="ph-note full" style="margin:0">忘了密码？请管理员在「同伴」页帮你重设。</p>
+        <div class="acts"><button type="submit" class="btn">登录</button></div></form>`}
+  </div></div>`;
 }
-async function saveProfile(form,ob){const f=new FormData(form);
-  const body={name:f.get('name'),phone:f.get('phone'),color:f.get('color'),room:f.get('room'),diet:f.get('diet')};
+async function doAuth(form,kind){const f=new FormData(form);
+  const body=kind==='register'?{name:f.get('name'),phone:f.get('phone'),color:f.get('color'),room:f.get('room'),diet:f.get('diet'),password:f.get('password'),invite:f.get('invite')}:{phone:f.get('phone'),password:f.get('password')};
+  const btn=form.querySelector('[type=submit]');if(btn){btn.disabled=true;btn.textContent='请稍候…'}
+  const r=await api('/auth/'+kind,{method:'POST',body});
+  if(!r.ok){cloudUI.obErr=r.body.error||'出错了，请再试一次';renderOnboard();return}
+  cloudUI.obErr='';await cloudBoot();toast(kind==='register'?'欢迎加入！':'已登录')}
+async function saveProfile(form){const f=new FormData(form);
+  const body={name:f.get('name'),phone:f.get('phone'),color:f.get('color'),room:f.get('room'),diet:f.get('diet'),newPassword:f.get('newPassword')||''};
   const r=await api('/me',{method:'PUT',body});
-  if(!r.ok){cloudUI.obErr=r.body.error||'保存失败';ob?renderOnboard():render();return}
-  cloudUI.obErr='';cloudUI.editMe=false;CLOUD.me=r.body.member;
-  if(ob){await cloudBoot();toast('欢迎加入！')}else{await refreshMembers();renderMeChip();render();toast('资料已保存')}
-}
+  if(!r.ok){cloudUI.obErr=r.body.error||'保存失败';render();return}
+  cloudUI.obErr='';cloudUI.editMe=false;CLOUD.me=r.body.member;await refreshMembers();renderMeChip();render();toast(body.newPassword?'资料和密码已保存':'资料已保存')}
 
 /* ---------- P.10 companions ---------- */
 function pTeam(){
@@ -1631,19 +1659,24 @@ function pTeam(){
   const cards=CLOUD.members.map((m,k)=>{const mine=m.email===CLOUD.email;const wa=waLink(m.phone);
     const todo=Object.entries(trip.assign||{}).filter(([id,e])=>e===m.email&&!trip.bookings[id]).length;
     return `<div class="mcard" style="--tilt:${[-1.2,1,-.6,1.4,-.9,.7][k%6]}deg;--c:${esc(m.color)}"><div class="tp"></div>
-      <div class="mtop">${avatar(m,52)}<div style="min-width:0"><div class="mname">${esc(m.name)}${m.isAdmin?' <span class="badge">管理员</span>':''}${mine?' <span class="badge you">你</span>':''}</div><div class="memail">${esc(m.email)}</div></div></div>
+      <div class="mtop">${avatar(m,52)}<div style="min-width:0"><div class="mname">${esc(m.name)}${m.isAdmin?' <span class="badge">管理员</span>':''}${mine?' <span class="badge you">你</span>':''}</div><div class="memail">${m.isAdmin?'管理员 · 可以发邀请、重设密码':'同伴'}</div></div></div>
       <div class="mrow2"><span>电话</span><b class="tab-num">${esc(m.phone)}</b></div>
       <div class="mrow2"><span>房间</span><b>${ROOM_NAME[m.room||'']}</b></div>
       ${m.diet?`<div class="mrow2"><span>饮食</span><b>${esc(m.diet)}</b></div>`:''}
       <div class="mrow2"><span>待订</span><b>${todo} 项</b></div>
       <div class="links">${wa?`<a class="lk d" href="${wa}" target="_blank" rel="noopener">WhatsApp</a>`:''}<button type="button" class="lk g as-btn" data-a="cl-copy" data-v="${esc(m.phone)}">复制电话</button>
-        ${mine?'<button type="button" class="lk x as-btn" data-a="cl-editMe">编辑我的资料</button>':''}
-        ${isAdmin&&!mine?`<button type="button" class="lk g as-btn${cloudUI.rmArm===m.email?' armed':''}" data-a="cl-rm" data-v="${esc(m.email)}">${cloudUI.rmArm===m.email?'确定移除？':'移除'}</button>`:''}</div></div>`}).join('');
+        ${mine?'<button type="button" class="lk x as-btn" data-a="cl-editMe">编辑我的资料</button><button type="button" class="lk g as-btn" data-a="cl-logout">登出</button>':''}
+        ${isAdmin&&!mine?`<button type="button" class="lk g as-btn" data-a="cl-reset" data-v="${esc(m.email)}">重设密码</button><button type="button" class="lk g as-btn${cloudUI.rmArm===m.email?' armed':''}" data-a="cl-rm" data-v="${esc(m.email)}">${cloudUI.rmArm===m.email?'确定移除？':'移除'}</button>`:''}</div>
+      ${cloudUI.temp&&cloudUI.temp.id===m.email?`<p class="ferr" style="background:var(--sage2);color:var(--sage8)">临时密码：<b class="tab-num">${esc(cloudUI.temp.pw)}</b>　发给 ${esc(m.name)}，登录后请他在「编辑我的资料」改密码。</p>`:''}</div>`}).join('');
   const log=CLOUD.log.map(l=>{const m=CLOUD.members.find(x=>x.email===l.email);return `<div class="lrow">${avatar(m||{name:l.email},26)}<div class="lt"><b>${esc(m?m.name:l.email.split('@')[0])}</b> ${esc(l.text)}</div><span class="lw tab-num">${bj(l.at)}</span></div>`}).join('')||'<p class="ph-note">还没有修改记录。</p>';
   return `<section class="page" style="display:flex;flex-direction:column;gap:34px">${ph('P.10','同伴',`${CLOUD.members.length} 位同伴。名字和电话只有加入这个行程的人看得到。`)}
     ${cloudUI.editMe?`<div class="notebook me-edit"><div class="holes"></div><h3 class="disp" style="margin:0 0 12px">编辑我的资料</h3>${profileForm(me,false)}</div>`:''}
     <div class="mgrid">${cards}</div>
-    <div class="sticky-note" style="transform:rotate(-.6deg)"><div class="tape terra" style="top:-10px;right:40px;transform:rotate(4deg)"></div><p><b>加新同伴：</b>${isAdmin?'你是管理员。':'请管理员'}在 Cloudflare Zero Trust → Access → Applications → 这个应用 → Policies 里，把对方的邮箱加进允许名单。对方打开网址、收邮箱验证码登录后，会先填资料。</p></div>
+    <div class="sticky-note invite" style="transform:rotate(-.6deg)"><div class="tape terra" style="top:-10px;right:40px;transform:rotate(4deg)"></div>
+      ${isAdmin&&CLOUD.invite?`<p><b>邀请同伴：</b>把这个链接发到群里，对方打开后填资料、设密码就能加入。</p>
+        <div class="inv"><code class="tab-num">${esc(inviteLink())}</code><button type="button" class="btn" data-a="cl-copyInvite">复制链接</button><button type="button" class="btn ghost" data-a="cl-newInvite">换一个邀请码</button></div>
+        <p class="ph-note" style="margin:6px 0 0;color:var(--sage8)">邀请码：<b class="tab-num">${esc(CLOUD.invite)}</b>。换了之后旧链接就不能用了，已经加入的人不受影响。</p>`
+      :`<p><b>邀请同伴：</b>请管理员（${esc((CLOUD.members.find(x=>x.isAdmin)||{}).name||'')}）在这一页复制邀请链接发到群里。</p>`}</div>
     <div><div class="tk-gh"><h3>修改记录</h3><span>最近 80 条 · 北京时间</span></div><div class="notebook logbook"><div class="holes"></div>${log}</div></div></section>`;
 }
 
@@ -1681,7 +1714,8 @@ function pSplit(){const B=balances(),today=new Date(Date.now()+8*3600e3).toISOSt
 
 /* ---------- events ---------- */
 document.addEventListener('submit',async e=>{
-  if(e.target.id==='ob-form'||e.target.id==='me-form'){e.preventDefault();saveProfile(e.target,e.target.id==='ob-form');return}
+  if(e.target.id==='me-form'){e.preventDefault();saveProfile(e.target);return}
+  if(e.target.id==='reg-form'||e.target.id==='login-form'){e.preventDefault();doAuth(e.target,e.target.id==='reg-form'?'register':'login');return}
   if(e.target.id==='exp-form'){e.preventDefault();const f=new FormData(e.target);
     const body={descr:f.get('descr'),amount:+f.get('amount'),cur:f.get('cur'),payer:f.get('payer'),day:f.get('day'),split:f.getAll('split')};
     const r=await api('/expenses',{method:'POST',body});
@@ -1693,7 +1727,13 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-a^=
   if(a==='cl-cancelMe'){cloudUI.editMe=false;cloudUI.obErr='';render()}
   if(a==='cl-copy'){try{await navigator.clipboard.writeText(v);toast('已复制 '+v)}catch(err){toast(v)}}
   if(a==='cl-rm'){if(cloudUI.rmArm!==v){cloudUI.rmArm=v;render();setTimeout(()=>{if(cloudUI.rmArm===v){cloudUI.rmArm=null;render()}},3000);return}
-    cloudUI.rmArm=null;const r=await api('/members/'+encodeURIComponent(v),{method:'DELETE'});if(!r.ok){toast(r.body.error||'移除失败');return}await refreshMembers();refreshLog();render();toast('已移除。记得也在 Cloudflare Access 里删掉对方的邮箱')}
+    cloudUI.rmArm=null;const r=await api('/members/'+encodeURIComponent(v),{method:'DELETE'});if(!r.ok){toast(r.body.error||'移除失败');return}await refreshMembers();refreshLog();render();toast('已移除')}
+  if(a==='cl-auth'){cloudUI.auth=v;cloudUI.obErr='';renderOnboard()}
+  if(a==='cl-retry'){CLOUD.err='';cloudBoot()}
+  if(a==='cl-logout'){await api('/auth/logout',{method:'POST'});CLOUD.me=null;CLOUD.members=[];CLOUD.expenses=[];CLOUD.log=[];cloudUI.auth='login';S.tab='overview';await cloudBoot();toast('已登出')}
+  if(a==='cl-reset'){const r=await api('/members/'+encodeURIComponent(v)+'/reset',{method:'POST'});if(!r.ok){toast(r.body.error||'重设失败');return}cloudUI.temp={id:v,pw:r.body.temp};refreshLog();render()}
+  if(a==='cl-copyInvite'){const l=inviteLink();try{await navigator.clipboard.writeText(l);toast('已复制邀请链接')}catch(err){toast(l)}}
+  if(a==='cl-newInvite'){const r=await api('/invite',{method:'POST'});if(r.ok){CLOUD.invite=r.body.code;render();toast('已换新的邀请码，旧链接不能用了')}}
   if(a==='cl-expDel'){const id=+v;if(cloudUI.expDel!==id){cloudUI.expDel=id;render();setTimeout(()=>{if(cloudUI.expDel===id){cloudUI.expDel=null;render()}},3000);return}
     cloudUI.expDel=null;const r=await api('/expenses/'+id,{method:'DELETE'});if(!r.ok){toast(r.body.error||'删除失败');return}await refreshExpenses();refreshLog();render();toast('已删除')}
 });

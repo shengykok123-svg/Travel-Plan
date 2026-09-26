@@ -29,10 +29,11 @@ A second planner in the same journal style lives in [`xian/`](xian/): 9 days, 8 
 
 ## Cloudflare version (accounts, profiles, shared editing)
 
-The same `index.html` switches to cloud mode when it is served by Cloudflare Pages with the API in `functions/`:
+Live at https://travel-plan-efl.pages.dev. The same `index.html` switches to cloud mode when it is served by Cloudflare Pages with the API in `functions/`:
 
-- Login with an email one-time code through **Cloudflare Access** (only emails on the Access policy can open the site)
-- Each person fills in a profile: name, phone, avatar colour, room, dietary notes
+- Register with name, phone number and password; log in with phone + password (60-day session cookie, passwords hashed with PBKDF2, temporary lock after repeated wrong passwords)
+- The first person to register becomes admin and needs no invite code; everyone else registers through the invite link (`/?join=CODE`) the admin copies from the 同伴 page. The admin can change the code, reset a password to a temporary one, or remove someone
+- Profiles: name, phone, avatar colour, room, dietary notes
 - Everyone edits one shared plan (D1 database). Saves use a revision number; if two people save at once, the later edit is replayed on top of the newer plan instead of overwriting it
 - 同伴 page: companion cards (phone, WhatsApp link, room, bookings still to do) and a change log
 - 分账 page: record who paid for what, split evenly, balances in MYR and the fewest transfers to settle up
@@ -42,8 +43,6 @@ Setup:
 
 1. `npm install`, then `npx wrangler login`
 2. `npx wrangler d1 create travel-plan` and put the id in `wrangler.toml`
-3. Create a Cloudflare Access self-hosted application for the Pages domain (and `*.<project>.pages.dev`), with an Allow policy listing the travellers' emails and the One-time PIN login method
-4. Put the team domain (`<team>.cloudflareaccess.com`) and the application AUD tag in `wrangler.toml` under `[vars]`
-5. `npm run deploy` (builds `public/`, applies D1 migrations, deploys)
+3. `npm run deploy` (builds `public/`, applies D1 migrations, deploys)
 
-Local development: `npm run dev` runs with `DEV_MODE=1`, which trusts an `x-dev-email` header (set `localStorage.devEmail` in the browser). Never set `DEV_MODE` in production.
+Local development: `npm run dev` runs with `DEV_MODE=1`, which also accepts an `x-dev-email` header as the signed-in user (set `localStorage.devEmail` in the browser). Never set `DEV_MODE` in production.

@@ -8,8 +8,3 @@ database_name = "travel-plan"
 database_id = "809c9577-f4d2-4ba8-a251-6ae03c2bc23b"
 migrations_dir = "migrations"
 
-# Fill these in after creating the Cloudflare Access application.
-# TEAM_DOMAIN looks like "yourteam.cloudflareaccess.com"; POLICY_AUD is the application's AUD tag.
-[vars]
-TEAM_DOMAIN = ""
-POLICY_AUD = ""
