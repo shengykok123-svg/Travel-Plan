@@ -3,7 +3,7 @@
 const CITY={
   sz:{n:'深圳',cur:'CNY'},hk:{n:'香港',cur:'HKD'},mo:{n:'澳门',cur:'MOP'},zh:{n:'珠海',cur:'CNY'},gz:{n:'广州',cur:'CNY'}
 };
-const CUR={CNY:'¥',HKD:'HK$',MOP:'MOP '};
+const CUR={CNY:'¥',HKD:'HK$',MOP:'MOP ',MYR:'RM '};
 const KIND={move:'交通',sight:'景点',food:'餐饮',sweet:'甜品小吃',shop:'逛街',show:'夜景/表演',hotel:'住宿',rest:'休息'};
 const CAT_OF={move:'move',sight:'ticket',show:'ticket',food:'food',sweet:'food',shop:'other',rest:'other',hotel:'other'};
 

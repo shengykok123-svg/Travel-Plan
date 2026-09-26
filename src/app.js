@@ -77,7 +77,7 @@ function mix(){const p=Math.max(1,+trip.settings.people||1),r=Math.max(1,+trip.s
 const night=H=>{if(!H)return 0;const m=mix();return m.twin*H.p+m.tri*(H.p3||Math.round(H.p*1.35))};
 function roomText(){const m=mix(),a=[];if(m.twin)a.push(m.twin+'间双床房');if(m.tri)a.push(m.tri+'间三人房');return a.join(' + ')}
 function place(pid){if(!pid)return null;if(pid.startsWith('H:')){const c=pid.slice(2),h=hotelFor(c);if(!h)return null;return {id:pid,n:h.n,c,la:h.la,ln:h.ln,r:h.r,rv:h.rv,hotel:true,hid:h.id,h:'入住一般14:00后，可以先寄存行李'}}const p=PLACES[pid];return p?{id:pid,...p}:null}
-const cny=(v,cur)=>(Number(v)||0)*(trip.settings.rates[cur]||1);
+const cny=(v,cur)=>(Number(v)||0)*(cur==='MYR'?1/(+trip.settings.myr||.59):(trip.settings.rates[cur]||1));
 function calc(){const s=trip.settings,ppl=Math.max(1,+s.people||1);const cat={hotel:0,move:0,food:0,ticket:0,other:0,misc:0,flight:0},perDay=[],cash={HKD:0,MOP:0};
   const nights={};trip.days.forEach(d=>{if(d.stay)nights[d.stay]=(nights[d.stay]||0)+1});
   trip.days.forEach(d=>{let act=0;d.items.forEach(i=>{const a=actualOf(i.id),amt=a?a.amt:i.cost,cur=a?a.cur:i.cur,per=a?a.per:i.per;const m=per==='g'?1:ppl,c=cny(amt,cur)*m;cat[CAT_OF[i.kind]||'other']+=c;act+=c;if(cash[cur]!=null)cash[cur]+=(+amt||0)*m});
@@ -224,7 +224,7 @@ function editPanel(i){const o=(obj,v)=>Object.entries(obj).map(([k,n])=>`<option
     <label>时间（次日写 24:xx）<input name="t" value="${esc(i.t)}" pattern="[0-2][0-9]:[0-5][0-9]" required></label>
     <label>类型<select name="kind">${o(KIND,i.kind)}</select></label>
     <label>费用<input name="cost" type="number" min="0" step="1" value="${+i.cost||0}"></label>
-    <label>币种<select name="cur">${o({CNY:'人民币',HKD:'港币',MOP:'澳门元'},i.cur)}</select></label>
+    <label>币种<select name="cur">${o({CNY:'人民币',HKD:'港币',MOP:'澳门元',MYR:'马币'},i.cur)}</select></label>
     <label>计价<select name="per">${o({p:'每人',g:'全组一共'},i.per)}</select></label>
     <label class="full">标题<input name="title" value="${esc(i.title)}" required></label>
     <label class="full">备注<textarea name="note">${esc(i.note)}</textarea></label>

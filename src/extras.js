@@ -77,7 +77,7 @@ function addOptForm(item){const ph=S.formPhotos||[];
     <label>店名<input name="n" required maxlength="40" placeholder="例如：陶陶居"></label>
     <label>吃什么<input name="dish" required maxlength="40" placeholder="例如：虾饺、叉烧包"></label>
     <label>价格（每人）<input name="cost" type="number" min="0" step="1" required inputmode="decimal"></label>
-    <label>币种<select name="cur">${[['CNY','人民币'],['HKD','港币'],['MOP','澳门元']].map(([k,n])=>`<option value="${k}"${k===item.cur?' selected':''}>${n}</option>`).join('')}</select></label>
+    <label>币种<select name="cur">${[['CNY','人民币'],['HKD','港币'],['MOP','澳门元'],['MYR','马币']].map(([k,n])=>`<option value="${k}"${k===item.cur?' selected':''}>${n}</option>`).join('')}</select></label>
     <label class="full">参考链接（小红书、地图、点评都可以）<input name="link" type="url" maxlength="400" placeholder="https://"></label>
     <label class="full">备注<input name="note" maxlength="120" placeholder="例如：要排队，最好 11 点前到"></label>
     ${photoField(ph)}
@@ -143,7 +143,7 @@ function priceLine(t){const a=actualOf(t.id),ro=viewerOnly();
   if(ro)return a?`<div class="tk-price"><span>实付 <b>${fmt(a)}</b></span>${diff}</div>`:'';
   return `<form class="tk-price" data-actual="${esc(t.id)}"><span class="tp-l">实付</span>
     <input name="amt" type="number" min="0" step="0.01" inputmode="decimal" value="${a?a.amt:''}" placeholder="${n0(est.amt)}" aria-label="实际价格">
-    <select name="cur" aria-label="币种">${[['CNY','¥'],['HKD','HK$'],['MOP','MOP']].map(([k,n])=>`<option value="${k}"${(a?a.cur:est.cur)===k?' selected':''}>${n}</option>`).join('')}</select>
+    <select name="cur" aria-label="币种">${[['CNY','¥'],['HKD','HK$'],['MOP','MOP'],['MYR','RM']].map(([k,n])=>`<option value="${k}"${(a?a.cur:est.cur)===k?' selected':''}>${n}</option>`).join('')}</select>
     <select name="per" aria-label="计价">${[['p','每人'],['g','全组']].map(([k,n])=>`<option value="${k}"${(a?a.per:est.per)===k?' selected':''}>${n}</option>`).join('')}</select>
     <button type="submit" class="mini-btn">${a?'更新':'记下'}</button>${a?`<button type="button" class="mini-btn" data-a="clearActual" data-v="${esc(t.id)}">清除</button>`:''}${diff}</form>`}
 document.addEventListener('submit',e=>{const id=e.target.dataset&&e.target.dataset.actual;if(!id)return;e.preventDefault();const f=new FormData(e.target);const amt=+f.get('amt');

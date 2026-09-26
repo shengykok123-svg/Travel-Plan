@@ -724,7 +724,7 @@ body.ro .sliders input{pointer-events:none;opacity:.55}
 const CITY={
   sz:{n:'深圳',cur:'CNY'},hk:{n:'香港',cur:'HKD'},mo:{n:'澳门',cur:'MOP'},zh:{n:'珠海',cur:'CNY'},gz:{n:'广州',cur:'CNY'}
 };
-const CUR={CNY:'¥',HKD:'HK$',MOP:'MOP '};
+const CUR={CNY:'¥',HKD:'HK$',MOP:'MOP ',MYR:'RM '};
 const KIND={move:'交通',sight:'景点',food:'餐饮',sweet:'甜品小吃',shop:'逛街',show:'夜景/表演',hotel:'住宿',rest:'休息'};
 const CAT_OF={move:'move',sight:'ticket',show:'ticket',food:'food',sweet:'food',shop:'other',rest:'other',hotel:'other'};
 
@@ -1228,7 +1228,7 @@ function addOptForm(item){const ph=S.formPhotos||[];
     <label>店名<input name="n" required maxlength="40" placeholder="例如：陶陶居"></label>
     <label>吃什么<input name="dish" required maxlength="40" placeholder="例如：虾饺、叉烧包"></label>
     <label>价格（每人）<input name="cost" type="number" min="0" step="1" required inputmode="decimal"></label>
-    <label>币种<select name="cur">${[['CNY','人民币'],['HKD','港币'],['MOP','澳门元']].map(([k,n])=>`<option value="${k}"${k===item.cur?' selected':''}>${n}</option>`).join('')}</select></label>
+    <label>币种<select name="cur">${[['CNY','人民币'],['HKD','港币'],['MOP','澳门元'],['MYR','马币']].map(([k,n])=>`<option value="${k}"${k===item.cur?' selected':''}>${n}</option>`).join('')}</select></label>
     <label class="full">参考链接（小红书、地图、点评都可以）<input name="link" type="url" maxlength="400" placeholder="https://"></label>
     <label class="full">备注<input name="note" maxlength="120" placeholder="例如：要排队，最好 11 点前到"></label>
     ${photoField(ph)}
@@ -1294,7 +1294,7 @@ function priceLine(t){const a=actualOf(t.id),ro=viewerOnly();
   if(ro)return a?`<div class="tk-price"><span>实付 <b>${fmt(a)}</b></span>${diff}</div>`:'';
   return `<form class="tk-price" data-actual="${esc(t.id)}"><span class="tp-l">实付</span>
     <input name="amt" type="number" min="0" step="0.01" inputmode="decimal" value="${a?a.amt:''}" placeholder="${n0(est.amt)}" aria-label="实际价格">
-    <select name="cur" aria-label="币种">${[['CNY','¥'],['HKD','HK$'],['MOP','MOP']].map(([k,n])=>`<option value="${k}"${(a?a.cur:est.cur)===k?' selected':''}>${n}</option>`).join('')}</select>
+    <select name="cur" aria-label="币种">${[['CNY','¥'],['HKD','HK$'],['MOP','MOP'],['MYR','RM']].map(([k,n])=>`<option value="${k}"${(a?a.cur:est.cur)===k?' selected':''}>${n}</option>`).join('')}</select>
     <select name="per" aria-label="计价">${[['p','每人'],['g','全组']].map(([k,n])=>`<option value="${k}"${(a?a.per:est.per)===k?' selected':''}>${n}</option>`).join('')}</select>
     <button type="submit" class="mini-btn">${a?'更新':'记下'}</button>${a?`<button type="button" class="mini-btn" data-a="clearActual" data-v="${esc(t.id)}">清除</button>`:''}${diff}</form>`}
 document.addEventListener('submit',e=>{const id=e.target.dataset&&e.target.dataset.actual;if(!id)return;e.preventDefault();const f=new FormData(e.target);const amt=+f.get('amt');
@@ -1381,7 +1381,7 @@ function mix(){const p=Math.max(1,+trip.settings.people||1),r=Math.max(1,+trip.s
 const night=H=>{if(!H)return 0;const m=mix();return m.twin*H.p+m.tri*(H.p3||Math.round(H.p*1.35))};
 function roomText(){const m=mix(),a=[];if(m.twin)a.push(m.twin+'间双床房');if(m.tri)a.push(m.tri+'间三人房');return a.join(' + ')}
 function place(pid){if(!pid)return null;if(pid.startsWith('H:')){const c=pid.slice(2),h=hotelFor(c);if(!h)return null;return {id:pid,n:h.n,c,la:h.la,ln:h.ln,r:h.r,rv:h.rv,hotel:true,hid:h.id,h:'入住一般14:00后，可以先寄存行李'}}const p=PLACES[pid];return p?{id:pid,...p}:null}
-const cny=(v,cur)=>(Number(v)||0)*(trip.settings.rates[cur]||1);
+const cny=(v,cur)=>(Number(v)||0)*(cur==='MYR'?1/(+trip.settings.myr||.59):(trip.settings.rates[cur]||1));
 function calc(){const s=trip.settings,ppl=Math.max(1,+s.people||1);const cat={hotel:0,move:0,food:0,ticket:0,other:0,misc:0,flight:0},perDay=[],cash={HKD:0,MOP:0};
   const nights={};trip.days.forEach(d=>{if(d.stay)nights[d.stay]=(nights[d.stay]||0)+1});
   trip.days.forEach(d=>{let act=0;d.items.forEach(i=>{const a=actualOf(i.id),amt=a?a.amt:i.cost,cur=a?a.cur:i.cur,per=a?a.per:i.per;const m=per==='g'?1:ppl,c=cny(amt,cur)*m;cat[CAT_OF[i.kind]||'other']+=c;act+=c;if(cash[cur]!=null)cash[cur]+=(+amt||0)*m});
@@ -1528,7 +1528,7 @@ function editPanel(i){const o=(obj,v)=>Object.entries(obj).map(([k,n])=>`<option
     <label>时间（次日写 24:xx）<input name="t" value="${esc(i.t)}" pattern="[0-2][0-9]:[0-5][0-9]" required></label>
     <label>类型<select name="kind">${o(KIND,i.kind)}</select></label>
     <label>费用<input name="cost" type="number" min="0" step="1" value="${+i.cost||0}"></label>
-    <label>币种<select name="cur">${o({CNY:'人民币',HKD:'港币',MOP:'澳门元'},i.cur)}</select></label>
+    <label>币种<select name="cur">${o({CNY:'人民币',HKD:'港币',MOP:'澳门元',MYR:'马币'},i.cur)}</select></label>
     <label>计价<select name="per">${o({p:'每人',g:'全组一共'},i.per)}</select></label>
     <label class="full">标题<input name="title" value="${esc(i.title)}" required></label>
     <label class="full">备注<textarea name="note">${esc(i.note)}</textarea></label>
