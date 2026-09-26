@@ -424,7 +424,7 @@ function pBudget(){const B=calc(),myr=+trip.settings.myr||0,n=B.ppl;
   return `<section class="page">${ph('P.08','预算','拖动左边的便签，右边的账单会立刻重新算。金额按人民币和马币同时显示。')}
     <div class="bud"><div class="sliders"><div class="tape terra" style="top:-12px;left:50%;margin-left:-46px;transform:rotate(-3deg)"></div>
       ${SLIDERS.map(s=>{const v=s.get();return `<div class="srow"><div class="lr"><label for="n-${s.k}">${s.l}</label><span class="numwrap">${s.pre?`<i>${s.pre}</i>`:''}<input type="number" class="num" id="n-${s.k}" data-n="${s.k}" value="${fmtS(s,v)}" min="${s.int?s.min:0}" step="${s.dec?'0.001':s.step}" inputmode="decimal">${s.suf?`<i>${s.suf}</i>`:''}</span></div><input type="range" data-s="${s.k}" min="${s.min}" max="${s.max}" step="${s.step}" value="${v}" aria-label="${s.l}"></div>`}).join('')}
-      <p>汇率都以马币为准，可以直接在方框里输入，也可以拖动。杂费默认 ¥500/人，包含 eSIM 流量、手信和应急开销。机票按每人来回 RM 1,100 估算，订好后改成实际价格。</p></div>
+      <p>汇率都以马币为准，可以直接在方框里输入，也可以拖动。杂费默认 ¥500/人，包含 eSIM 流量、手信和应急开销。机票按每人来回 RM 1,200 计算。</p></div>
     <div class="bud-r"><div class="receipt"><div class="rc-h">GBA TRIP · 预算账单</div>
       <div class="rc-tot"><div><small>每人</small><div class="big">RM ${n0(B.myr/n)}</div><div class="sub">¥${n0(B.cny/n)}</div></div>
         <div><small>${n} 人合计</small><div class="mid">RM ${n0(B.myr)}</div><div class="sub">¥${n0(B.cny)}</div></div>

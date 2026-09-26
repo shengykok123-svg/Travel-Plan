@@ -340,7 +340,7 @@ const DEFAULT_DAYS=[
 DEFAULT_DAYS.forEach((d,di)=>d.items.forEach((x,ii)=>x.id='d'+(di+1)+'-'+(ii+1)));
 const DEFAULT={
   v:1,
-  settings:{people:4,rooms:2,myr:0.59,rates:{CNY:1,HKD:0.92,MOP:0.89},flight:1100,misc:500,hotel:{sz:'sz1',zh:'zh1',gz:'gz1'}},
+  settings:{people:4,rooms:2,myr:1/1.63,rates:{CNY:1,HKD:0.884764,MOP:0.855913},flight:1200,misc:500,hotel:{sz:'sz1',zh:'zh1',gz:'gz1'}},
   days:DEFAULT_DAYS,bookings:{},rev:'default'
 };
 
