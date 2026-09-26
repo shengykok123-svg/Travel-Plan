@@ -261,6 +261,7 @@ function pItinerary(){
   const pp=(B.perDay[di].act+B.perDay[di].h)/B.ppl;
   return `<section class="page">
     <div class="daychips">${chips}</div>
+    ${dayBar(di)}
     <div class="it-wrap">
       <div class="notebook nb-page" id="nb">
         <div class="holes"></div>
@@ -271,6 +272,7 @@ function pItinerary(){
         </div><div class="day-nav"><button type="button" class="rbtn" data-a="goDay" data-v="${di-1}" aria-label="前一天"${di===0?' disabled':''}>←</button><button type="button" class="rbtn go" data-a="goDay" data-v="${di+1}" aria-label="后一天"${di===trip.days.length-1?' disabled':''}>→</button></div></div>
         <div>${rows}</div>
         <div style="padding-left:78px;margin-top:10px"><button type="button" class="addbtn" data-a="add">＋ 加一项安排</button></div>
+        ${dayFoot(di)}
       </div>
       <aside class="side stick">
         <div class="mapframe"><div class="tape sage" style="top:-12px;left:18px;transform:rotate(-8deg)"></div><div class="tape terra" style="top:-12px;right:18px;transform:rotate(7deg)"></div>${mapHTML('mini',di,'340px')}</div>
@@ -460,7 +462,17 @@ function render(){
 }
 function setTab(id){S.tab=id;if(id!=='map'&&id!=='itinerary')S.pick=null;S.swap=null;S.edit=null;render();try{history.replaceState(null,'','#'+id)}catch(e){}}
 function openDay(k){S.tab='itinerary';S.day=Math.max(0,Math.min(trip.days.length-1,k));S.edit=null;S.swap=null;S.pick=null;S.delArm=null;render();scrollTo({top:$('.tabs').offsetTop,behavior:'smooth'})}
-function goDay(k){if(k<0||k>=trip.days.length)return;S.day=k;S.edit=null;S.swap=null;S.pick=null;S.delArm=null;S.active=null;render()}
+function goDay(k,noScroll){if(k<0||k>=trip.days.length)return;S.day=k;S.edit=null;S.swap=null;S.pick=null;S.delArm=null;S.active=null;render();if(!noScroll)toDayTop()}
+// scroll so the day's heading sits just under the sticky tabs + day bar
+function toDayTop(){const nb=$('#nb');if(!nb)return;const off=($('.tabs')?$('.tabs').offsetHeight:0)+($('.daybar')&&getComputedStyle($('.daybar')).display!=='none'?$('.daybar').offsetHeight:0)+8;const y=nb.getBoundingClientRect().top+scrollY-off;if(Math.abs(scrollY-y)>40)scrollTo({top:y,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
+function dayBar(di){const d=trip.days[di],p=dp(d.date),n=trip.days.length;
+  return `<div class="daybar" role="navigation" aria-label="切换天数"><button type="button" class="db-arrow" data-a="goDay" data-v="${di-1}" aria-label="前一天"${di===0?' disabled':''}>‹</button>
+    <label class="db-mid"><span class="db-day">DAY ${di+1} · ${p.md} ${p.wd}</span><span class="db-title">${esc(d.title)}</span><span class="db-caret" aria-hidden="true">▾</span><span class="db-hint">也可以按键盘 ← →</span>
+      <select id="db-select" aria-label="跳到某一天">${trip.days.map((x,k)=>{const q=dp(x.date);return `<option value="${k}"${k===di?' selected':''}>第${k+1}天 · ${q.md} ${q.wd} · ${esc(x.title)}</option>`}).join('')}</select></label>
+    <button type="button" class="db-arrow go" data-a="goDay" data-v="${di+1}" aria-label="后一天"${di===n-1?' disabled':''}>›</button></div>`}
+function dayFoot(di){const n=trip.days.length,nx=trip.days[di+1],pv=trip.days[di-1];
+  return `<div class="dayfoot">${nx?`<button type="button" class="df-next" data-a="goDay" data-v="${di+1}" style="--c:${CC[(nx.cities||['sz'])[0]]}"><span class="df-lab">下一天 · DAY ${di+2} · ${dp(nx.date).md} ${dp(nx.date).wd}</span><span class="df-title">${esc(nx.title)}</span><span class="df-go" aria-hidden="true">→</span></button>`:'<div class="df-end">这是最后一天 · 一路平安 ✈</div>'}
+    <div class="df-row">${pv?`<button type="button" class="df-prev" data-a="goDay" data-v="${di-1}">← 上一天：${dp(pv.date).md} ${esc(pv.title)}</button>`:'<span></span>'}<button type="button" class="df-prev" data-a="dayTop">↑ 回到今天开头</button></div></div>`}
 function updPick(){const slot=$('#pick-slot');if(slot)slot.innerHTML=pickCard(S.tab==='map');document.querySelectorAll('.map').forEach(redrawMap)}
 
 /* ---------- events ---------- */
@@ -473,6 +485,7 @@ document.addEventListener('click',e=>{
     case 'tab':setTab(v);break;
     case 'openDay':openDay(+v);break;
     case 'goDay':goDay(+v);break;
+    case 'dayTop':toDayTop();break;
     case 'pick':S.pick=v;updPick();break;
     case 'swap':S.swap=S.swap===el.dataset.id?null:el.dataset.id;S.edit=null;render();break;
     case 'choose':{const id=el.dataset.id,k=+el.dataset.k,it=trip.days.flatMap(d=>d.items).find(x=>x.id===id);if(it&&k!==curOpt(it))chooseMeal(id,k);break}
@@ -508,6 +521,7 @@ document.addEventListener('submit',e=>{if(e.target.id!=='edit-form')return;e.pre
   const t=String(f.get('t')||'').trim(),title=String(f.get('title')||'').trim();if(!title)return;
   S.edit=null;commit(x=>{for(const d of x.days){const it=d.items.find(i=>i.id===id);if(!it)continue;Object.assign(it,{t:/^\d{2}:\d{2}$/.test(t)?t:it.t,kind:f.get('kind'),title,cost:Math.max(0,+f.get('cost')||0),cur:f.get('cur'),per:f.get('per'),note:String(f.get('note')||'').trim(),book:String(f.get('book')||'').trim()});delete it._new}},'已保存','修改了 '+(()=>{const d=trip.days.find(d=>d.items.some(i=>i.id===id));return d?dp(d.date).md:''})()+' '+(/^d{2}:d{2}$/.test(t)?fmtT(t):'')+'：'+title);
   if(pending)render()});
+document.addEventListener('change',e=>{if(e.target.id==='db-select')goDay(+e.target.value)});
 document.addEventListener('input',e=>{
   if(e.target.id==='sim-range'){S.sim=SLO+(+e.target.value)*6e4;refreshNow();return}
   const ds=e.target.dataset||{};
