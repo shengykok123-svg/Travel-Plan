@@ -462,6 +462,69 @@ input[type=range]{accent-color:var(--acc)}
 .reset{border:1.5px solid var(--acc-h);background:transparent;color:var(--acc7);border-radius:999px;white-space:nowrap;padding:9px 18px;font-size:13px;cursor:pointer}
 .reset.armed{background:var(--acc-h);color:var(--paper)}
 
+/* accounts (Cloudflare mode) */
+.top-r{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#me-chip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--div);background:var(--paper);border-radius:999px;padding:3px 12px 3px 3px;font-size:13px;font-weight:600;cursor:pointer}
+#me-chip:hover{border-color:var(--acc)}
+.av{display:inline-grid;place-items:center;flex:none;border-radius:50%;background:var(--c);color:var(--paper);font-weight:700;line-height:1}
+.tk-own{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:-4px 0 10px 42px;font-size:12px;color:var(--mute)}
+.tk-own select{border:1px solid var(--div);background:var(--paper);border-radius:999px;padding:3px 10px;font-size:12px}
+.tk-own .mine{background:var(--acc2);color:var(--acc8);border-radius:999px;padding:1px 9px;font-weight:700}
+.pform{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.pform label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--mute2)}
+.pform .full,.pform .acts,.pform fieldset,.pform .ferr{grid-column:1/-1}
+.pform input,.pform select,.egrid input,.egrid select{border:1px solid var(--div);background:var(--paper);border-radius:999px;padding:8px 14px;font-size:14px;min-width:0}
+.pform fieldset,.egrid fieldset{border:0;padding:0;margin:0}
+.pform legend,.egrid legend{font-size:12px;color:var(--mute2);padding:0;margin-bottom:6px}
+.pform .acts,.expform .acts{display:flex;justify-content:flex-end;gap:8px}
+.swatches{display:flex;flex-wrap:wrap;gap:8px}
+.sw input{position:absolute;opacity:0;pointer-events:none}
+.sw span{display:block;width:30px;height:30px;border-radius:50%;background:var(--c);cursor:pointer;border:3px solid var(--paper);box-shadow:0 0 0 1px var(--div)}
+.sw input:checked+span{box-shadow:0 0 0 2px var(--ink)}
+.sw input:focus-visible+span{outline:2px solid var(--acc);outline-offset:2px}
+.ferr{margin:0;color:var(--acc8);background:var(--acc2);border-radius:12px;padding:8px 12px;font-size:13px}
+.ob{position:fixed;inset:0;z-index:55;background:rgba(245,234,216,.94);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:grid;place-items:center;padding:20px;overflow:auto}
+.ob-card{position:relative;background:var(--paper);border-radius:30px;padding:30px 26px 24px;box-shadow:var(--sh-lg);max-width:560px;width:100%;transform:rotate(-.6deg)}
+.ob-card h2{font-size:clamp(26px,4vw,34px);margin:4px 0 8px}
+.ob-card p{margin:0 0 16px}
+.me-edit{padding:26px 26px 22px 54px}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:28px 22px}
+.mcard{position:relative;background:var(--paper);border-radius:24px;padding:18px 18px 16px;box-shadow:var(--sh-md);transform:rotate(var(--tilt));display:flex;flex-direction:column;gap:8px;transition:transform .25s}
+.mcard:hover{transform:rotate(0) translateY(-3px)}
+.mcard .tp{position:absolute;top:-10px;left:26px;width:78px;height:22px;border-radius:3px;background:var(--c);opacity:.45;transform:rotate(-4deg)}
+.mtop{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+.mname{font-family:var(--disp);font-weight:700;font-synthesis:none;font-size:19px;line-height:1.25}
+.memail{font-size:12px;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.badge{font-family:var(--body);font-size:11px;font-weight:700;background:var(--sage2);color:var(--sage8);border-radius:999px;padding:1px 8px;vertical-align:3px}
+.badge.you{background:var(--acc2);color:var(--acc8)}
+.mrow2{display:flex;justify-content:space-between;gap:10px;font-size:13px;border-bottom:1px dashed rgba(32,30,29,.1);padding-bottom:4px}
+.mrow2 span{color:var(--mute)}.mrow2 b{font-weight:600;text-align:right}
+.as-btn{border:0;cursor:pointer;font:inherit;font-size:12px}
+.as-btn.armed{background:var(--acc-h);color:var(--paper)}
+.logbook,.elist{padding:10px 22px 10px 54px}
+.lrow{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:10px;align-items:center;min-height:32px;padding:4px 0}
+.lt{font-size:13px;color:var(--mute2)}.lt b{color:var(--ink)}
+.lw{font-size:12px;color:var(--mute);white-space:nowrap}
+.split-top{display:flex;flex-wrap:wrap;gap:30px;align-items:flex-start}
+.expform{flex:1 1 400px;padding:26px 26px 22px 54px}
+.egrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:12px}
+.egrid label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--mute2)}
+.egrid .full{grid-column:1/-1}
+.who{display:flex;flex-wrap:wrap;gap:8px}
+.whoc{display:inline-flex!important;flex-direction:row!important;align-items:center;gap:6px!important;background:var(--surface);border-radius:999px;padding:4px 12px 4px 6px;font-size:13px!important;color:var(--ink)!important;cursor:pointer}
+.whoc input{accent-color:var(--acc)}
+.split-side{flex:1 1 360px;min-width:0;display:flex;flex-direction:column;gap:34px}
+.bals{display:flex;flex-direction:column;gap:8px}
+.brow{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:center;font-size:14px}
+.brow b{white-space:nowrap}.brow .pos{color:var(--sage7)}.brow .neg{color:var(--acc7)}
+.settle .mv{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:14px;color:var(--ink);padding:4px 0}
+.settle .mv span{color:var(--sage8);font-size:13px}.settle .mv em{margin-left:auto;font-style:normal;font-weight:700}
+.erow{display:grid;grid-template-columns:30px minmax(0,1fr) auto auto;gap:12px;align-items:center;min-height:56px;padding:8px 0;border-bottom:1px dashed rgba(32,30,29,.1)}
+.erow:last-child{border-bottom:0}
+.em b{display:block;font-weight:600}.em small{display:block;font-size:12px;color:var(--mute)}
+.ea{text-align:right}.ea b{display:block}.ea small{font-size:11px;color:var(--mute)}
+@media (max-width:560px){.erow{grid-template-columns:30px minmax(0,1fr) auto}.erow .mini-btn{grid-column:2}.tk-own{margin-left:0}.logbook,.elist,.expform,.me-edit{padding-left:44px}}
+
 /* overlays */
 .lb{position:fixed;inset:0;z-index:60;background:rgba(46,43,37,.9);display:flex;align-items:center;justify-content:center;gap:12px;padding:20px;animation:tpUp .2s ease}
 .lb figure{margin:0;max-width:min(960px,100%);display:flex;flex-direction:column;align-items:center;gap:12px;background:var(--paper);padding:14px 14px 16px;border-radius:26px;transform:rotate(-.8deg)}
@@ -482,7 +545,7 @@ input[type=range]{accent-color:var(--acc)}
   <div class="shell">
     <header class="top">
       <div class="brand"><div class="logo">粤</div><div class="brand-t">粤港澳九日行 · 旅行手帐</div></div>
-      <span class="save" id="save" data-s="local"><i></i><span id="save-t">✎ 修改会自动保存在这台设备</span></span>
+      <div class="top-r"><span class="save" id="save" data-s="local"><i></i><span id="save-t">✎ 修改会自动保存在这台设备</span></span><button type="button" id="me-chip" hidden aria-label="我的资料"></button></div>
     </header>
     <section class="hero">
       <div class="hero-l">
@@ -501,6 +564,7 @@ input[type=range]{accent-color:var(--acc)}
     <main id="main"></main>
   </div>
   <div id="lb-root"></div>
+  <div id="ob-root"></div>
   <div id="toast-root"></div>
 </div>
 
@@ -940,6 +1004,9 @@ const CODE={sz:'SZX',hk:'HKG',mo:'MFM',zh:'ZUH',gz:'CAN'};
 const KC={move:'#82796a',sight:'#56633f',food:'#b2622d',sweet:'#a8506e',shop:'#4f6a8f',show:'#6b559a',hotel:'#3f7f86',rest:'#a19786'};
 const WD=['周日','周一','周二','周三','周四','周五','周六'];
 const TABS=[['overview','总览'],['itinerary','每日行程'],['now','旅途中'],['map','地图'],['food','美食'],['hotels','住宿'],['tickets','订票清单'],['budget','预算'],['settings','设置']];
+// Cloud mode = served from Cloudflare Pages with the /api backend (accounts, profiles, expenses)
+const CLOUD={on:false,email:'',me:null,members:[],log:[],expenses:[],rev:0,ver:{},err:''};
+const tabsList=()=>CLOUD.on&&CLOUD.me?TABS.slice(0,8).concat([['team','同伴'],['split','分账'],['settings','设置']]):TABS;
 const $=s=>document.querySelector(s);
 const clone=o=>JSON.parse(JSON.stringify(o));
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -961,7 +1028,7 @@ const MEAL_RE=/^(早午餐|早餐|午餐|晚餐|早茶|甜品|下午茶|最后�
 
 /* ---------- state ---------- */
 const LS='gba-trip-redesign-v1',LS_OLD='gba-trip-2026-v3';
-function norm(o){const d=clone(DEFAULT),s=o.settings||{};return {v:1,rev:o.rev||'x',updatedAt:o.updatedAt||0,settings:{...d.settings,...s,rates:{...d.settings.rates,...(s.rates||{})},hotel:{...d.settings.hotel,...(s.hotel||{})}},days:Array.isArray(o.days)&&o.days.length?o.days:d.days,bookings:o.bookings||{}}}
+function norm(o){const d=clone(DEFAULT),s=o.settings||{};return {v:1,rev:o.rev||'x',updatedAt:o.updatedAt||0,settings:{...d.settings,...s,rates:{...d.settings.rates,...(s.rates||{})},hotel:{...d.settings.hotel,...(s.hotel||{})}},days:Array.isArray(o.days)&&o.days.length?o.days:d.days,bookings:o.bookings||{},assign:o.assign||{},bookedBy:o.bookedBy||{}}}
 let trip=null;
 try{const s=localStorage.getItem(LS)||localStorage.getItem(LS_OLD);if(s){const o=JSON.parse(s);if(o&&o.days)trip=norm(o)}}catch(e){}
 if(!trip)trip=norm(clone(DEFAULT));
@@ -969,14 +1036,17 @@ const S={budView:'pp',tab:'overview',day:0,edit:null,swap:null,pick:null,mapDay:
 
 /* ---------- shared sync (claude.ai) ---------- */
 let docRef=null,writing=false,dirty=false,saveTimer=null,readOnly=false,pending=false;
-const SAVE_TXT={local:'✎ 修改会自动保存在这台设备',ok:'✓ 已同步 · 同行者打开同一个链接能看到修改',saving:'正在保存…',err:'同步失败，修改先存在这台设备',readonly:'你只能查看，修改只存在这台设备'};
-function setSync(s){const el=$('#save');el.dataset.s=s;$('#save-t').textContent=SAVE_TXT[s]}
-function commit(fn,msg){
+const SAVE_TXT={local:'✎ 修改会自动保存在这台设备',ok:'✓ 已同步 · 同行者打开同一个链接能看到修改',saving:'正在保存…',err:'同步失败，修改先存在这台设备',readonly:'你只能查看，修改只存在这台设备',cloud:'✓ 已同步 · 所有同伴都能看到',cloudErr:'连不上服务器，修改先存在这台设备，恢复后会自动补上'};
+function setSync(s){const el=$('#save');el.dataset.s=s==='cloud'?'ok':s==='cloudErr'?'err':s;$('#save-t').textContent=SAVE_TXT[s]}
+// fn mutates the plan; msg is the toast; log is the line written to the shared change log (cloud mode)
+function commit(fn,msg,log){
   fn(trip);trip.rev=Math.random().toString(36).slice(2);trip.updatedAt=Date.now();
   try{localStorage.setItem(LS,JSON.stringify(trip))}catch(e){}
-  if(docRef&&!readOnly){dirty=true;clearTimeout(saveTimer);saveTimer=setTimeout(flush,600)}
+  if(CLOUD.on&&CLOUD.me){cloudQueue.push({fn,log:log===undefined?msg:log});cloudPump()}
+  else if(docRef&&!readOnly){dirty=true;clearTimeout(saveTimer);saveTimer=setTimeout(flush,600)}
   render();if(msg)toast(msg);
 }
+const cloudQueue=[];let cloudBusy=false;
 async function flush(){
   if(writing||!dirty||!docRef)return;writing=true;dirty=false;setSync('saving');
   try{await docRef.set(clone(trip));setSync('ok')}
@@ -1011,7 +1081,7 @@ function curOpt(i){const L=MEAL_OPTS[i.id];if(!L)return -1;if(Number.isInteger(i
 const optName=o=>o.n||(o.pl&&PLACES[o.pl]?PLACES[o.pl].n:'');
 function links3(name,city){const q=name.replace(/[（）()·]/g,' ').replace(/\s+/g,' ').trim(),c=CITY[city].n;return `<div class="links"><a class="lk x" href="https://www.rednote.com/search_result?keyword=${enc(q+' '+c)}" target="_blank" rel="noopener">小红书评价</a><a class="lk g" href="https://www.google.com/maps/search/?api=1&query=${enc(q+' '+c)}" target="_blank" rel="noopener">Google 地图评价</a><a class="lk d" href="https://www.dianping.com/search/keyword/0/0_${enc(q)}" target="_blank" rel="noopener">大众点评</a></div>`}
 function chooseMeal(itemId,k){const o=MEAL_OPTS[itemId]&&MEAL_OPTS[itemId][k];if(!o)return;
-  commit(t=>{for(const d of t.days){const i=d.items.find(x=>x.id===itemId);if(!i)continue;i.title=mealPrefix(i)+'：'+optName(o).replace(/（.*?）/,'')+'（'+o.dish+'）';i.place=o.pl;i.cost=o.cost;i.cur=o.cur;i.per='p';i.opt=k;return}},'已换成 '+short(optName(o)));
+  commit(t=>{for(const d of t.days){const i=d.items.find(x=>x.id===itemId);if(!i)continue;i.title=mealPrefix(i)+'：'+optName(o).replace(/（.*?）/,'')+'（'+o.dish+'）';i.place=o.pl;i.cost=o.cost;i.cur=o.cur;i.per='p';i.opt=k;return}},'已换成 '+short(optName(o)),(()=>{for(const d of trip.days){const i=d.items.find(x=>x.id===itemId);if(i)return dp(d.date).md+' '+mealPrefix(i)+' 换成 '+short(optName(o))}return ''})());
   if(o.pl){S.pick=o.pl;render()}}
 function gal(g){const ks=Array.isArray(g)?g:(g?[g]:[]),out=[];ks.forEach(k=>(GALLERY[k]||[]).forEach(x=>out.push({...x,k})));return out}
 const placeGal=p=>p?(p.hotel?HOTEL_BRAND[p.hid]:PLACE_GAL[p.id]):null;
@@ -1115,7 +1185,7 @@ function renderHero(){
     <div class="tab-num" style="font-size:14px;color:var(--mute)">${sub}</div>
     <div class="dash"></div>
     <div class="pc-grid"><div><small>人数</small><b>${B.ppl} 人 · ${trip.settings.rooms} 间房</b></div><div><small>每人预算</small><b>RM ${n0(B.myr/B.ppl)}</b></div><div><small>订票进度</small><b>${done} / ${tk.length}</b></div><div><small>城市</small><b>5 座</b></div></div>`;
-  $('#tabs').innerHTML=TABS.map(([id,l])=>`<button type="button" class="tab" role="tab" data-a="tab" data-v="${id}" aria-selected="${S.tab===id}">${l}</button>`).join('');
+  renderMeChip();$('#tabs').innerHTML=tabsList().map(([id,l])=>`<button type="button" class="tab" role="tab" data-a="tab" data-v="${id}" aria-selected="${S.tab===id}">${l}</button>`).join('');
 }
 
 /* ---------- P.01 overview ---------- */
@@ -1308,7 +1378,7 @@ function pHotels(){const ppl=Math.max(1,+trip.settings.people||1);
 function pTickets(){const tk=tickets(),done=tk.filter(t=>trip.bookings[t.id]).length,pct=tk.length?Math.round(done/tk.length*100):0;
   const row=t=>{const on=!!trip.bookings[t.id],p=dp(t.date),u=urgency(t);let sale='';if(/12306/.test(t.how)){const s=new Date(p.dt);s.setDate(s.getDate()-14);sale=`约 ${s.getMonth()+1}/${s.getDate()} 开售`}
     return `<button type="button" class="tkr${on?' done':''}" data-a="book" data-v="${esc(t.id)}" aria-pressed="${on}"><span class="box">${on?'✓':''}</span><span class="w">${p.md}${t.t?' '+fmtT(t.t):''}</span>
-      <span class="m"><b>${esc(t.title)}</b><small>${esc(t.how)}${sale?` · <span class="sale">${sale}</span>`:''}</small><small class="why">${esc(u.why)}</small></span><span class="c">${esc(t.cost)}</span>${on?'<span class="stampmark terra">已订 ✓</span>':''}</button>`};
+      <span class="m"><b>${esc(t.title)}</b><small>${esc(t.how)}${sale?` · <span class="sale">${sale}</span>`:''}</small><small class="why">${esc(u.why)}</small></span><span class="c">${esc(t.cost)}</span>${on?`<span class="stampmark terra">已订 ✓${trip.bookedBy&&trip.bookedBy[t.id]?' · '+esc(memberName(trip.bookedBy[t.id])):''}</span>`:''}</button>${CLOUD.on&&CLOUD.me?ownerLine(t):''}`};
   const groups=[['必须提前订','酒店、高铁、热门门票和订位',tk.filter(t=>urgency(t).must)],['当天或前一天订也可以','视天气和体力决定',tk.filter(t=>!urgency(t).must)]].filter(g=>g[2].length).map(([ti,sub,list])=>`<div><div class="tk-gh"><h3>${ti}</h3><span>${sub} · ${list.filter(t=>trip.bookings[t.id]).length}/${list.length}</span></div><div class="notebook tk-page"><div class="holes"></div>${list.map(row).join('')}</div></div>`).join('');
   return `<section class="page" style="display:flex;flex-direction:column;gap:30px">${ph('P.07','订票清单','点一下标记为已订，会盖上一个印章。酒店按你在「住宿」里选的那家计算。')}
     <div class="tk-sum"><div class="tape terra" style="top:-12px;right:40px;transform:rotate(6deg)"></div>
@@ -1331,7 +1401,7 @@ const fmtS=(s,v)=>s.dec?(+v).toFixed(s.dec):String(Math.round(v));
 function applySetting(k,raw){const s=SLIDERS.find(x=>x.k===k);if(!s)return;let v=+raw;
   if(!isFinite(v)||v<=0&&(s.rate||s.int)||v<0){toast('请输入有效的数字');render();return}
   if(s.int)v=Math.max(s.min,Math.round(v));
-  commit(t=>s.set(t,v))}
+  commit(t=>s.set(t,v),null,'把「'+s.l+'」改成 '+(s.pre||'')+fmtS(s,v)+(s.suf?' '+s.suf:''))}
 function pBudget(){const B=calc(),myr=+trip.settings.myr||0,n=B.ppl;
   const cl=[['hotel','住宿','#3f7f86'],['food','餐饮','#c67139'],['ticket','门票 · 体验','#56633f'],['move','交通','#82796a'],['other','购物 · 其他','#4f6a8f'],['misc','杂费','#a8506e'],['flight','机票','#201e1d']];
   const pp=S.budView!=='all',div=pp?n:1;
@@ -1353,7 +1423,7 @@ function pBudget(){const B=calc(),myr=+trip.settings.myr||0,n=B.ppl;
         <div class="bars">${trip.days.map((d,k)=>`<button type="button" data-a="openDay" data-v="${k}" title="${esc(d.title)}"><small>${n0(dayV(k))}</small><i style="height:${Math.max(3,Math.round(dayV(k)/dm*100))}%;--c:${CC[(d.cities||['sz'])[0]]}"></i><em>${dp(d.date).md}</em></button>`).join('')}</div></div></div></div></section>`}
 
 /* ---------- P.09 settings ---------- */
-function pSettings(){const synced=!!docRef;
+function pSettings(){const synced=!!docRef||CLOUD.on;
   return `<section class="page">${ph('P.09','设置与备份',synced?'出发前确认一下这几件事。行程改动会同步给打开同一个 claude.ai 链接的同行者。':'出发前确认一下这几件事。行程改动只存在这台设备上，要分享给同行者就导出成文字。')}
     <div class="set"><div class="notebook nb"><div class="holes"></div><h3>待你确认的事</h3><ul>
       <li><b>5 人（2男3女）</b>住 <b>2 间房</b>：男生住双床房，女生住三人房。</li>
@@ -1378,7 +1448,7 @@ function render(){
   pending=false;
   for(const k in GREG)delete GREG[k];
   renderHero();
-  const P={overview:pOverview,itinerary:pItinerary,now:pNow,map:pMap,food:pFood,hotels:pHotels,tickets:pTickets,budget:pBudget,settings:pSettings}[S.tab];
+  const P={overview:pOverview,itinerary:pItinerary,now:pNow,map:pMap,food:pFood,hotels:pHotels,tickets:pTickets,budget:pBudget,settings:pSettings,team:pTeam,split:pSplit}[S.tab]||pOverview;
   $('#main').innerHTML=P();
   renderLb();
   if(S.tab==='itinerary')onScroll();
@@ -1402,9 +1472,9 @@ document.addEventListener('click',e=>{
     case 'swap':S.swap=S.swap===el.dataset.id?null:el.dataset.id;S.edit=null;render();break;
     case 'choose':{const id=el.dataset.id,k=+el.dataset.k,it=trip.days.flatMap(d=>d.items).find(x=>x.id===id);if(it&&k!==curOpt(it))chooseMeal(id,k);break}
     case 'edit':S.edit=S.edit===el.dataset.id?null:el.dataset.id;S.swap=null;render();break;
-    case 'cancelEdit':{const di=S.day,it=trip.days[di].items.find(x=>x.id===S.edit);S.edit=null;if(it&&it._new){commit(t=>{t.days[di].items=t.days[di].items.filter(x=>x.id!==it.id)})}else render();break}
-    case 'del':{const id=el.dataset.id;if(S.delArm===id){S.delArm=null;commit(t=>{t.days[S.day].items=t.days[S.day].items.filter(x=>x.id!==id);delete t.bookings[id]},'已删除')}else{S.delArm=id;render();clearTimeout(pDel);pDel=setTimeout(()=>{if(S.delArm===id){S.delArm=null;render()}},2500)}break}
-    case 'add':{const d=trip.days[S.day],s=sortI(d.items),last=s.length?s[s.length-1].t:'09:00';const [hh,mm]=last.split(':').map(Number);const n={id:'x'+Date.now().toString(36),t:pad(Math.min(27,hh+1))+':'+pad(mm||0),kind:'sight',title:'新的安排',place:'',cost:0,cur:CITY[(d.cities||['sz'])[0]].cur,per:'p',note:'',book:'',_new:true};S.edit=n.id;commit(t=>t.days[S.day].items.push(n));break}
+    case 'cancelEdit':{const di=S.day,it=trip.days[di].items.find(x=>x.id===S.edit);S.edit=null;if(it&&it._new){commit(t=>{t.days[di].items=t.days[di].items.filter(x=>x.id!==it.id)},null,null)}else render();break}
+    case 'del':{const id=el.dataset.id;if(S.delArm===id){S.delArm=null;const di0=S.day,gone=trip.days[di0].items.find(x=>x.id===id);commit(t=>{t.days[di0].items=t.days[di0].items.filter(x=>x.id!==id);delete t.bookings[id]},'已删除',gone?'删除了 '+dp(trip.days[di0].date).md+'：'+gone.title:null)}else{S.delArm=id;render();clearTimeout(pDel);pDel=setTimeout(()=>{if(S.delArm===id){S.delArm=null;render()}},2500)}break}
+    case 'add':{const d=trip.days[S.day],s=sortI(d.items),last=s.length?s[s.length-1].t:'09:00';const [hh,mm]=last.split(':').map(Number);const n={id:'x'+Date.now().toString(36),t:pad(Math.min(27,hh+1))+':'+pad(mm||0),kind:'sight',title:'新的安排',place:'',cost:0,cur:CITY[(d.cities||['sz'])[0]].cur,per:'p',note:'',book:'',_new:true};S.edit=n.id;const di1=S.day;commit(t=>t.days[di1].items.push(n),null,null);break}
     case 'lb':{const G=GREG[el.dataset.g];if(G){S.lb={imgs:G.imgs,title:G.title,note:G.note,i:+el.dataset.i||0};renderLb()}e.preventDefault();break}
     case 'lbClose':S.lb=null;renderLb();break;
     case 'lbStep':{const L=S.lb;if(L){L.i=(L.i+(+v)+L.imgs.length)%L.imgs.length;renderLb()}break}
@@ -1418,12 +1488,12 @@ document.addEventListener('click',e=>{
     case 'budView':S.budView=v;render();break;
     case 'flip':el.classList.toggle('on');break;
     case 'toMap':e.stopPropagation();S.tab='map';S.mapDay='all';S.pick=v;render();scrollTo({top:$('.tabs').offsetTop,behavior:'smooth'});break;
-    case 'hotel':{const c=el.dataset.c,h=el.dataset.v;if(trip.settings.hotel[c]!==h)commit(t=>{t.settings.hotel[c]=h},'已选 '+short(HOTELS[c].find(x=>x.id===h).n));break}
-    case 'book':{const id=v,was=!!trip.bookings[id];commit(t=>{if(t.bookings[id])delete t.bookings[id];else t.bookings[id]=Date.now()},was?'已取消标记':'已标记为已订');break}
+    case 'hotel':{const c=el.dataset.c,h=el.dataset.v;if(trip.settings.hotel[c]!==h)commit(t=>{t.settings.hotel[c]=h},'已选 '+short(HOTELS[c].find(x=>x.id===h).n),CITY[c].n+'酒店换成 '+HOTELS[c].find(x=>x.id===h).n);break}
+    case 'book':{const id=v,was=!!trip.bookings[id],tt=(tickets().find(x=>x.id===id)||{}).title||id;commit(t=>{t.bookedBy=t.bookedBy||{};if(t.bookings[id]){delete t.bookings[id];delete t.bookedBy[id]}else{t.bookings[id]=Date.now();if(CLOUD.email)t.bookedBy[id]=CLOUD.email}},was?'已取消标记':'已标记为已订',(was?'取消了已订：':'标记已订：')+tt);break}
     case 'export':S.json=JSON.stringify(trip);$('#json-box').value=S.json;toast('已导出到文本框');break;
     case 'copy':{const b=$('#json-box');if(!b.value)b.value=JSON.stringify(trip);const fb=()=>{b.focus();b.select();toast('已选中，按 Ctrl+C 复制')};try{navigator.clipboard.writeText(b.value).then(()=>toast('已复制'),fb)}catch(err){fb()}break}
-    case 'import':{try{const o=JSON.parse($('#json-box').value);if(!o||!Array.isArray(o.days))throw 0;const t=norm(o);S.day=0;commit(x=>{Object.assign(x,t)},'已导入')}catch(err){toast('内容格式不对，导入失败')}break}
-    case 'reset':{if(S.resetArm){S.resetArm=false;const b=trip.bookings;commit(x=>{Object.assign(x,norm(clone(DEFAULT)));x.bookings=b},'已恢复默认行程（订票勾选保留）')}else{S.resetArm=true;render();setTimeout(()=>{if(S.resetArm){S.resetArm=false;if(S.tab==='settings')render()}},3000)}break}
+    case 'import':{try{const o=JSON.parse($('#json-box').value);if(!o||!Array.isArray(o.days))throw 0;const t=norm(o);S.day=0;commit(x=>{Object.assign(x,t)},'已导入','导入了一份行程')}catch(err){toast('内容格式不对，导入失败')}break}
+    case 'reset':{if(S.resetArm){S.resetArm=false;const b=trip.bookings;commit(x=>{Object.assign(x,norm(clone(DEFAULT)));x.bookings=b},'已恢复默认行程（订票勾选保留）','恢复了默认行程')}else{S.resetArm=true;render();setTimeout(()=>{if(S.resetArm){S.resetArm=false;if(S.tab==='settings')render()}},3000)}break}
   }
 });
 let pDel=null;
@@ -1431,7 +1501,7 @@ let pDel=null;
 document.addEventListener('click',e=>{const g=e.target.closest('.mk');if(!g||mapMoved)return;S.pick=g.dataset.pid;updPick();if(S.tab==='itinerary'){const ev=[...document.querySelectorAll('[data-ev]')].find(x=>{const it=trip.days[S.day].items.find(i=>i.id===x.dataset.ev);return it&&it.place===S.pick});if(ev)ev.scrollIntoView({block:'center',behavior:'smooth'})}});
 document.addEventListener('submit',e=>{if(e.target.id!=='edit-form')return;e.preventDefault();const f=new FormData(e.target),id=e.target.dataset.id;
   const t=String(f.get('t')||'').trim(),title=String(f.get('title')||'').trim();if(!title)return;
-  S.edit=null;commit(x=>{for(const d of x.days){const it=d.items.find(i=>i.id===id);if(!it)continue;Object.assign(it,{t:/^\d{2}:\d{2}$/.test(t)?t:it.t,kind:f.get('kind'),title,cost:Math.max(0,+f.get('cost')||0),cur:f.get('cur'),per:f.get('per'),note:String(f.get('note')||'').trim(),book:String(f.get('book')||'').trim()});delete it._new}},'已保存');
+  S.edit=null;commit(x=>{for(const d of x.days){const it=d.items.find(i=>i.id===id);if(!it)continue;Object.assign(it,{t:/^\d{2}:\d{2}$/.test(t)?t:it.t,kind:f.get('kind'),title,cost:Math.max(0,+f.get('cost')||0),cur:f.get('cur'),per:f.get('per'),note:String(f.get('note')||'').trim(),book:String(f.get('book')||'').trim()});delete it._new}},'已保存','修改了 '+(()=>{const d=trip.days.find(d=>d.items.some(i=>i.id===id));return d?dp(d.date).md:''})()+' '+(/^d{2}:d{2}$/.test(t)?fmtT(t):'')+'：'+title);
   if(pending)render()});
 document.addEventListener('input',e=>{
   if(e.target.id==='sim-range'){S.sim=SLO+(+e.target.value)*6e4;refreshNow();return}
@@ -1460,9 +1530,177 @@ setInterval(()=>{if(S.tab==='now')refreshNow()},1000);
 setInterval(()=>{renderHero()},30000);
 
 /* ---------- boot ---------- */
-(function(){const h=(location.hash||'').slice(1);if(TABS.some(t=>t[0]===h))S.tab=h;
+(function(){const h=(location.hash||'').slice(1);if(TABS.some(t=>t[0]===h)||h==='team'||h==='split')S.tab=h;
   const t=Date.now();if(t>=START-3600e3&&t<=END+3600e3){const id=nowItemId();trip.days.forEach((d,k)=>{if(d.items.some(i=>i.id===id))S.day=k})}
   render()})();
+
+/* ================= cloud mode: accounts, profiles, change log, expenses ================= */
+var AVATAR_COLORS=['#c67139','#a8463f','#6f8150','#3f7f86','#b08628','#6b559a','#4f6a8f','#a8506e'];
+var ROOM_NAME={twin:'双床房',triple:'三人房','':'还没分'};
+var EXP_CURS=[['MYR','RM'],['CNY','¥'],['HKD','HK$'],['MOP','MOP']];
+var cloudUI={editMe:false,obErr:'',expDel:null,expErr:'',rmArm:null};
+
+async function api(path,opt){opt=opt||{};
+  const h={'content-type':'application/json'};
+  try{const dev=localStorage.getItem('devEmail');if(dev&&/^(localhost|127\.0\.0\.1)$/.test(location.hostname))h['x-dev-email']=dev}catch(e){}
+  let r;try{r=await fetch('/api'+path,{method:opt.method||'GET',headers:h,body:opt.body?JSON.stringify(opt.body):undefined,credentials:'same-origin'})}catch(e){return {status:0,ok:false,body:{}}}
+  let b=null;if((r.headers.get('content-type')||'').includes('application/json')){try{b=await r.json()}catch(e){}}
+  return {status:r.status,ok:r.ok,json:!!b,body:b||{}};
+}
+function memberName(email){const m=CLOUD.members.find(x=>x.email===email);return m?m.name:(email||'').split('@')[0]}
+function avatar(m,size){size=size||34;const n=(m&&m.name)||'?';return `<span class="av" style="--c:${esc((m&&m.color)||'#a19786')};width:${size}px;height:${size}px;font-size:${Math.round(size*.42)}px" aria-hidden="true">${esc(n.slice(0,1))}</span>`}
+function waLink(phone){let d=String(phone||'').replace(/[^\d+]/g,'');if(d.startsWith('+'))d=d.slice(1);else if(d.startsWith('0'))d='60'+d.slice(1);return d?'https://wa.me/'+d:''}
+function ownerLine(t){const own=(trip.assign||{})[t.id]||'';
+  return `<div class="tk-own"><label>负责订：<select data-assign="${esc(t.id)}" aria-label="谁负责订 ${esc(t.title)}"><option value="">还没分配</option>${CLOUD.members.map(m=>`<option value="${esc(m.email)}"${m.email===own?' selected':''}>${esc(m.name)}</option>`).join('')}</select></label>${own===CLOUD.email&&!trip.bookings[t.id]?'<span class="mine">轮到你订</span>':''}</div>`}
+
+/* ---------- saving with conflict replay ---------- */
+function planForServer(){const t=clone(trip);delete t.rev;delete t.updatedAt;return t}
+async function cloudPump(){
+  if(cloudBusy||!cloudQueue.length)return;cloudBusy=true;setSync('saving');
+  const batch=cloudQueue.splice(0,cloudQueue.length);
+  const r=await api('/plan',{method:'PUT',body:{data:planForServer(),baseRev:CLOUD.rev,log:batch.map(b=>b.log).filter(Boolean)}});
+  if(r.status===409&&r.body.conflict){
+    // someone saved first: take their version, replay our edits on top, try again
+    const fresh=norm(r.body.data||clone(DEFAULT));batch.forEach(b=>{try{b.fn(fresh)}catch(e){}});
+    trip=fresh;CLOUD.rev=r.body.rev;cloudQueue.unshift(...batch);cloudBusy=false;
+    if(!S.edit)render();return cloudPump();
+  }
+  if(!r.ok){cloudQueue.unshift(...batch);cloudBusy=false;setSync('cloudErr');setTimeout(cloudPump,4000);return}
+  CLOUD.rev=r.body.rev;cloudBusy=false;setSync('cloud');
+  if(cloudQueue.length)cloudPump();else refreshLog();
+}
+async function refreshLog(){const r=await api('/log');if(r.ok){CLOUD.log=r.body.log||[];if(S.tab==='team')render()}}
+async function refreshMembers(){const r=await api('/members');if(r.ok){CLOUD.members=r.body.members||[];const me=CLOUD.members.find(m=>m.email===CLOUD.email);if(me)CLOUD.me=me}}
+async function refreshExpenses(){const r=await api('/expenses');if(r.ok)CLOUD.expenses=r.body.expenses||[]}
+async function loadPlan(){const r=await api('/plan');if(!r.ok)return;if(r.body.data){trip=norm(r.body.data);CLOUD.rev=r.body.rev}else CLOUD.rev=0;try{localStorage.setItem(LS,JSON.stringify(trip))}catch(e){}}
+async function poll(){
+  if(!CLOUD.on||!CLOUD.me||document.hidden)return;
+  const r=await api('/poll');if(!r.ok){setSync('cloudErr');return}
+  const v=r.body,old=CLOUD.ver;CLOUD.ver=v;let changed=false;
+  if(v.rev!==CLOUD.rev&&!cloudBusy&&!cloudQueue.length){await loadPlan();changed=true;toast('行程已更新（来自同伴）')}
+  if(v.members!==old.members){await refreshMembers();changed=true}
+  if(v.expenses!==old.expenses){await refreshExpenses();changed=true}
+  if(v.log!==old.log)await refreshLog();
+  if(!cloudBusy)setSync('cloud');
+  if(changed){if(S.edit)pending=true;else render()}
+}
+
+/* ---------- boot ---------- */
+async function cloudBoot(){
+  const r=await api('/me');
+  if(!r.json)return; // not on Cloudflare: keep GitHub Pages / claude.ai behaviour
+  CLOUD.on=true;
+  if(!r.ok){CLOUD.err=r.body.error||'登录失败';renderOnboard();return}
+  CLOUD.email=r.body.email;CLOUD.me=r.body.member;
+  if(!CLOUD.me){renderOnboard();return}
+  await Promise.all([refreshMembers(),refreshExpenses(),refreshLog(),loadPlan()]);
+  const p=await api('/poll');if(p.ok)CLOUD.ver=p.body;
+  setSync('cloud');renderOnboard();render();
+  setInterval(poll,5000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)poll()});
+}
+
+/* ---------- header chip + first-time profile ---------- */
+function renderMeChip(){const el=$('#me-chip');if(!el)return;if(!(CLOUD.on&&CLOUD.me)){el.hidden=true;return}el.hidden=false;el.innerHTML=avatar(CLOUD.me,28)+`<span>${esc(CLOUD.me.name)}</span>`}
+function profileForm(m,ob){m=m||{};const col=m.color||AVATAR_COLORS[CLOUD.members.length%AVATAR_COLORS.length];
+  return `<form class="pform" id="${ob?'ob-form':'me-form'}">
+    <label>名字<input name="name" value="${esc(m.name||'')}" maxlength="40" required autocomplete="nickname" placeholder="同伴会看到这个名字"></label>
+    <label>电话号码<input name="phone" value="${esc(m.phone||'')}" maxlength="24" required inputmode="tel" autocomplete="tel" placeholder="+60 12-345 6789"></label>
+    <fieldset><legend>头像颜色</legend><div class="swatches">${AVATAR_COLORS.map(c=>`<label class="sw"><input type="radio" name="color" value="${c}"${c===col?' checked':''}><span style="--c:${c}"></span></label>`).join('')}</div></fieldset>
+    <label>住哪间房<select name="room">${Object.entries(ROOM_NAME).map(([k,n])=>`<option value="${k}"${(m.room||'')===k?' selected':''}>${n}</option>`).join('')}</select></label>
+    <label class="full">饮食禁忌 / 过敏（可不填）<input name="diet" value="${esc(m.diet||'')}" maxlength="100" placeholder="例如：不吃牛、海鲜过敏"></label>
+    ${cloudUI.obErr?`<p class="ferr" role="alert">${esc(cloudUI.obErr)}</p>`:''}
+    <div class="acts">${ob?'':'<button type="button" class="btn ghost" data-a="cl-cancelMe">取消</button>'}<button type="submit" class="btn">${ob?'加入行程':'保存资料'}</button></div></form>`}
+function renderOnboard(){const root=$('#ob-root');if(!root)return;renderMeChip();
+  if(!CLOUD.on||(CLOUD.me&&!CLOUD.err)){root.innerHTML='';return}
+  if(CLOUD.err){root.innerHTML=`<div class="ob"><div class="ob-card"><div class="tape terra" style="top:-12px;left:50%;margin-left:-46px"></div><h2 class="disp">暂时进不去</h2><p>${esc(CLOUD.err)}</p><p class="ph-note">如果你刚被加进名单，关掉页面重新打开，用邮箱验证码再登录一次。</p></div></div>`;return}
+  root.innerHTML=`<div class="ob" role="dialog" aria-modal="true" aria-labelledby="ob-h"><div class="ob-card"><div class="tape sage" style="top:-12px;left:50%;margin-left:-46px;transform:rotate(-3deg)"></div>
+    <div class="ph-no">WELCOME</div><h2 class="disp" id="ob-h"><span class="hl">先填一下你的资料</span></h2>
+    <p class="ph-note">你用 <b>${esc(CLOUD.email)}</b> 登录。名字和电话只有加入这个行程的同伴看得到。</p>${profileForm(null,true)}</div></div>`;
+}
+async function saveProfile(form,ob){const f=new FormData(form);
+  const body={name:f.get('name'),phone:f.get('phone'),color:f.get('color'),room:f.get('room'),diet:f.get('diet')};
+  const r=await api('/me',{method:'PUT',body});
+  if(!r.ok){cloudUI.obErr=r.body.error||'保存失败';ob?renderOnboard():render();return}
+  cloudUI.obErr='';cloudUI.editMe=false;CLOUD.me=r.body.member;
+  if(ob){await cloudBoot();toast('欢迎加入！')}else{await refreshMembers();renderMeChip();render();toast('资料已保存')}
+}
+
+/* ---------- P.10 companions ---------- */
+function pTeam(){
+  const me=CLOUD.me,isAdmin=me&&me.isAdmin;
+  const cards=CLOUD.members.map((m,k)=>{const mine=m.email===CLOUD.email;const wa=waLink(m.phone);
+    const todo=Object.entries(trip.assign||{}).filter(([id,e])=>e===m.email&&!trip.bookings[id]).length;
+    return `<div class="mcard" style="--tilt:${[-1.2,1,-.6,1.4,-.9,.7][k%6]}deg;--c:${esc(m.color)}"><div class="tp"></div>
+      <div class="mtop">${avatar(m,52)}<div style="min-width:0"><div class="mname">${esc(m.name)}${m.isAdmin?' <span class="badge">管理员</span>':''}${mine?' <span class="badge you">你</span>':''}</div><div class="memail">${esc(m.email)}</div></div></div>
+      <div class="mrow2"><span>电话</span><b class="tab-num">${esc(m.phone)}</b></div>
+      <div class="mrow2"><span>房间</span><b>${ROOM_NAME[m.room||'']}</b></div>
+      ${m.diet?`<div class="mrow2"><span>饮食</span><b>${esc(m.diet)}</b></div>`:''}
+      <div class="mrow2"><span>待订</span><b>${todo} 项</b></div>
+      <div class="links">${wa?`<a class="lk d" href="${wa}" target="_blank" rel="noopener">WhatsApp</a>`:''}<button type="button" class="lk g as-btn" data-a="cl-copy" data-v="${esc(m.phone)}">复制电话</button>
+        ${mine?'<button type="button" class="lk x as-btn" data-a="cl-editMe">编辑我的资料</button>':''}
+        ${isAdmin&&!mine?`<button type="button" class="lk g as-btn${cloudUI.rmArm===m.email?' armed':''}" data-a="cl-rm" data-v="${esc(m.email)}">${cloudUI.rmArm===m.email?'确定移除？':'移除'}</button>`:''}</div></div>`}).join('');
+  const log=CLOUD.log.map(l=>{const m=CLOUD.members.find(x=>x.email===l.email);return `<div class="lrow">${avatar(m||{name:l.email},26)}<div class="lt"><b>${esc(m?m.name:l.email.split('@')[0])}</b> ${esc(l.text)}</div><span class="lw tab-num">${bj(l.at)}</span></div>`}).join('')||'<p class="ph-note">还没有修改记录。</p>';
+  return `<section class="page" style="display:flex;flex-direction:column;gap:34px">${ph('P.10','同伴',`${CLOUD.members.length} 位同伴。名字和电话只有加入这个行程的人看得到。`)}
+    ${cloudUI.editMe?`<div class="notebook me-edit"><div class="holes"></div><h3 class="disp" style="margin:0 0 12px">编辑我的资料</h3>${profileForm(me,false)}</div>`:''}
+    <div class="mgrid">${cards}</div>
+    <div class="sticky-note" style="transform:rotate(-.6deg)"><div class="tape terra" style="top:-10px;right:40px;transform:rotate(4deg)"></div><p><b>加新同伴：</b>${isAdmin?'你是管理员。':'请管理员'}在 Cloudflare Zero Trust → Access → Applications → 这个应用 → Policies 里，把对方的邮箱加进允许名单。对方打开网址、收邮箱验证码登录后，会先填资料。</p></div>
+    <div><div class="tk-gh"><h3>修改记录</h3><span>最近 80 条 · 北京时间</span></div><div class="notebook logbook"><div class="holes"></div>${log}</div></div></section>`;
+}
+
+/* ---------- P.11 expenses ---------- */
+function toMYR(a,cur){const s=trip.settings,myr=+s.myr||.59;if(cur==='MYR')return a;if(cur==='CNY')return a*myr;return a*(s.rates[cur]||1)*myr}
+function balances(){const net={};CLOUD.members.forEach(m=>net[m.email]=0);let total=0;
+  CLOUD.expenses.forEach(e=>{const v=toMYR(+e.amount,e.cur);total+=v;const sp=(e.split||[]).filter(x=>x in net);if(!sp.length||!(e.payer in net))return;net[e.payer]+=v;sp.forEach(x=>net[x]-=v/sp.length)});
+  const cr=Object.entries(net).filter(([,v])=>v>.5).map(([e,v])=>({e,v})).sort((a,b)=>b.v-a.v),db=Object.entries(net).filter(([,v])=>v<-.5).map(([e,v])=>({e,v:-v})).sort((a,b)=>b.v-a.v);
+  const moves=[];let i=0,j=0;while(i<db.length&&j<cr.length){const x=Math.min(db[i].v,cr[j].v);moves.push({from:db[i].e,to:cr[j].e,v:x});db[i].v-=x;cr[j].v-=x;if(db[i].v<.5)i++;if(cr[j].v<.5)j++}
+  return {net,moves,total}}
+function pSplit(){const B=balances(),today=new Date(Date.now()+8*3600e3).toISOString().slice(0,10);
+  const form=`<form class="notebook expform" id="exp-form"><div class="holes"></div><h3 class="disp" style="margin:0 0 12px">记一笔</h3>
+    <div class="egrid"><label class="full">是什么<input name="descr" maxlength="80" required placeholder="例如：10/11 一乐烧鹅午餐"></label>
+      <label>金额<input name="amount" type="number" min="0.01" step="0.01" required inputmode="decimal"></label>
+      <label>币种<select name="cur">${EXP_CURS.map(([c,s])=>`<option value="${c}"${c==='CNY'?' selected':''}>${s} ${c}</option>`).join('')}</select></label>
+      <label>谁付的<select name="payer">${CLOUD.members.map(m=>`<option value="${esc(m.email)}"${m.email===CLOUD.email?' selected':''}>${esc(m.name)}</option>`).join('')}</select></label>
+      <label>日期<input name="day" type="date" value="${today}" min="2026-10-01" max="2026-10-31"></label>
+      <fieldset class="full"><legend>谁一起分（平均分）</legend><div class="who">${CLOUD.members.map(m=>`<label class="whoc"><input type="checkbox" name="split" value="${esc(m.email)}" checked>${avatar(m,22)}${esc(m.name)}</label>`).join('')}</div></fieldset></div>
+    ${cloudUI.expErr?`<p class="ferr" role="alert">${esc(cloudUI.expErr)}</p>`:''}
+    <div class="acts"><button type="submit" class="btn">加进账本</button></div></form>`;
+  const bal=CLOUD.members.map(m=>{const v=B.net[m.email]||0;return `<div class="brow">${avatar(m,28)}<span class="bn">${esc(m.name)}</span><b class="tab-num ${v>.5?'pos':v<-.5?'neg':''}">${v>.5?'应收 ':v<-.5?'应付 ':''}RM ${n0(Math.abs(v))}</b></div>`}).join('');
+  const moves=B.moves.length?B.moves.map(x=>`<div class="mv">${avatar(CLOUD.members.find(m=>m.email===x.from),24)}<b>${esc(memberName(x.from))}</b><span>转给</span>${avatar(CLOUD.members.find(m=>m.email===x.to),24)}<b>${esc(memberName(x.to))}</b><em class="tab-num">RM ${n0(x.v)}</em></div>`).join(''):'<p class="ph-note">目前大家都不欠钱。</p>';
+  const list=CLOUD.expenses.map(e=>{const sym=(EXP_CURS.find(c=>c[0]===e.cur)||['',''])[1];const armed=cloudUI.expDel===e.id;
+    return `<div class="erow">${avatar(CLOUD.members.find(m=>m.email===e.payer),30)}<div class="em"><b>${esc(e.descr)}</b><small>${esc(memberName(e.payer))} 付 · ${esc(e.day.slice(5).replace('-','/'))} · ${e.split.length} 人分（${e.split.map(x=>esc(memberName(x))).join('、')}）</small></div>
+      <div class="ea"><b class="tab-num">${sym}${(+e.amount).toLocaleString('en-US',{maximumFractionDigits:2})}</b>${e.cur!=='MYR'?`<small>≈ RM ${n0(toMYR(+e.amount,e.cur))}</small>`:''}</div>
+      <button type="button" class="mini-btn${armed?' armed':''}" data-a="cl-expDel" data-v="${e.id}">${armed?'确定删除？':'删除'}</button></div>`}).join('')||'<p class="ph-note" style="padding:12px 0">还没有记账。旅途中谁先付了钱，就在上面记一笔。</p>';
+  return `<section class="page" style="display:flex;flex-direction:column;gap:30px">${ph('P.11','分账','谁先付了钱就记一笔，最后按马币算清楚谁要转多少给谁。汇率跟「预算」里的设置一样。')}
+    <div class="split-top">${form}
+      <div class="split-side"><div class="receipt"><div class="rc-h">GBA TRIP · 分账</div>
+        <div class="rc-tot"><div><small>一共花了</small><div class="big">RM ${n0(B.total)}</div><div class="sub">${CLOUD.expenses.length} 笔</div></div><div><small>平均每人</small><div class="mid">RM ${n0(B.total/Math.max(1,CLOUD.members.length))}</div></div></div>
+        <div class="bals">${bal}</div></div>
+        <div class="sticky-note settle"><div class="tape terra" style="top:-10px;left:50%;margin-left:-46px"></div><h3 class="disp" style="margin:0 0 10px;font-size:20px">怎么还最省事</h3>${moves}</div></div></div>
+    <div><div class="tk-gh"><h3>账本</h3><span>按日期，最新的在上面</span></div><div class="notebook elist"><div class="holes"></div>${list}</div></div></section>`;
+}
+
+/* ---------- events ---------- */
+document.addEventListener('submit',async e=>{
+  if(e.target.id==='ob-form'||e.target.id==='me-form'){e.preventDefault();saveProfile(e.target,e.target.id==='ob-form');return}
+  if(e.target.id==='exp-form'){e.preventDefault();const f=new FormData(e.target);
+    const body={descr:f.get('descr'),amount:+f.get('amount'),cur:f.get('cur'),payer:f.get('payer'),day:f.get('day'),split:f.getAll('split')};
+    const r=await api('/expenses',{method:'POST',body});
+    if(!r.ok){cloudUI.expErr=r.body.error||'记账失败';render();return}
+    cloudUI.expErr='';await refreshExpenses();refreshLog();render();toast('已记一笔')}
+});
+document.addEventListener('click',async e=>{const el=e.target.closest('[data-a^="cl-"]');if(!el)return;const a=el.dataset.a,v=el.dataset.v;
+  if(a==='cl-editMe'){cloudUI.editMe=true;render();scrollTo({top:$('.tabs').offsetTop,behavior:'smooth'})}
+  if(a==='cl-cancelMe'){cloudUI.editMe=false;cloudUI.obErr='';render()}
+  if(a==='cl-copy'){try{await navigator.clipboard.writeText(v);toast('已复制 '+v)}catch(err){toast(v)}}
+  if(a==='cl-rm'){if(cloudUI.rmArm!==v){cloudUI.rmArm=v;render();setTimeout(()=>{if(cloudUI.rmArm===v){cloudUI.rmArm=null;render()}},3000);return}
+    cloudUI.rmArm=null;const r=await api('/members/'+encodeURIComponent(v),{method:'DELETE'});if(!r.ok){toast(r.body.error||'移除失败');return}await refreshMembers();refreshLog();render();toast('已移除。记得也在 Cloudflare Access 里删掉对方的邮箱')}
+  if(a==='cl-expDel'){const id=+v;if(cloudUI.expDel!==id){cloudUI.expDel=id;render();setTimeout(()=>{if(cloudUI.expDel===id){cloudUI.expDel=null;render()}},3000);return}
+    cloudUI.expDel=null;const r=await api('/expenses/'+id,{method:'DELETE'});if(!r.ok){toast(r.body.error||'删除失败');return}await refreshExpenses();refreshLog();render();toast('已删除')}
+});
+document.addEventListener('change',e=>{const id=e.target.dataset&&e.target.dataset.assign;if(!id)return;const who=e.target.value,tt=(tickets().find(x=>x.id===id)||{}).title||id;
+  commit(t=>{t.assign=t.assign||{};if(who)t.assign[id]=who;else delete t.assign[id]},who?'已分配给 '+memberName(who):'已取消分配',who?tt+' 交给 '+memberName(who)+' 订':'取消了 '+tt+' 的分配')});
+document.addEventListener('click',e=>{if(e.target.closest('#me-chip')){S.tab='team';render();scrollTo({top:$('.tabs').offsetTop,behavior:'smooth'})}});
+cloudBoot();
 
 </script>
 
