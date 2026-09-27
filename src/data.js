@@ -31,7 +31,7 @@ const PLACES={
   peak:{n:'凌霄阁 · 摩天台',c:'hk',la:22.271,ln:114.150,r:4.5,rv:'维港360°全景，香港必看。雾天什么都看不到，出发前看天气。'},
   taikwun:{n:'大馆 · 半山扶梯 · 石板街',c:'hk',la:22.281,ln:114.154,r:4.6,rv:'前中区警署改建的古迹艺术馆，免费参观。建筑和庭院很出片。',h:'约10:00–23:00'},
   yatlok:{n:'一乐烧鹅',c:'hk',la:22.283,ln:114.155,r:4.2,rv:'米其林推荐，烧鹅皮脆肉嫩。店小要拼桌，服务快但冷淡。'},
-  lanfong:{n:'兰芳园（中环总店）',c:'hk',la:22.2835,ln:114.1545,r:4.1,rv:'丝袜奶茶老字号，猪扒包、葱油鸡扒捞丁受欢迎。座位挤。'},
+  lanfong:{n:'兰芳园（中环总店）',c:'hk',la:22.2835,ln:114.1545,r:4.1,rv:'丝袜奶茶老字号，猪扒包、葱油鸡扒捞丁受欢迎。座位挤。周日休息。'},
   pmq:{n:'PMQ 元创方 · 文武庙',c:'hk',la:22.284,ln:114.151,r:4.4,rv:'本地设计师小店和文创，免费逛。文武庙是香港最古老的庙宇之一，巨型盘香很有氛围。'},
   starferry:{n:'天星小轮（中环码头）',c:'hk',la:22.287,ln:114.161,r:4.7,rv:'百年渡轮，船票很便宜，维港景色一流。上层视野更好。'},
   h1881:{n:'1881 Heritage · 海港城',c:'hk',la:22.295,ln:114.170,r:4.4,rv:'前水警总部，维多利亚式建筑很适合拍照。里面主要是名牌店。'},
@@ -66,16 +66,16 @@ const PLACES={
   chimelong:{n:'珠海长隆海洋王国',c:'zh',la:22.100,ln:113.534,r:4.6,rv:'鲸鲨馆是世界级水族馆，表演精彩。刺激项目排队久，热门表演要提前入场占位。',h:'约10:00–20:00（以官方为准）'},
 
   gzsouth:{n:'广州南站',c:'gz',la:22.989,ln:113.269,r:4.0,rv:'华南最大的高铁站之一。出站到地铁要步行10分钟以上。'},
-  yinji:{n:'银记肠粉（上下九）',c:'gz',la:23.1172,ln:113.2488,r:4.1,rv:'牛肉肠、虾仁肠口碑好，价格平。老店装修朴素。'},
-  nanxin:{n:'南信牛奶甜品专家',c:'gz',la:23.1190,ln:113.2470,r:4.2,rv:'双皮奶、姜撞奶经典老字号。座位多，翻台快。'},
+  yinji:{n:'银记肠粉（上下九）',c:'gz',la:23.1172,ln:113.2488,r:4.1,rv:'鲜虾肠、瘦肉蛋肠口碑好，价格平。老店装修朴素。'},
+  nanxin:{n:'南信牛奶甜品专家',c:'gz',la:23.1135,ln:113.2429,r:4.2,rv:'双皮奶、姜撞奶经典老字号。座位多，翻台快。'},
   shamian:{n:'沙面岛',c:'gz',la:23.107,ln:113.241,r:4.6,rv:'欧陆风情建筑群和林荫道，拍照的人很多。傍晚光线最好。'},
   yongqing:{n:'永庆坊 · 粤剧艺术博物馆',c:'gz',la:23.121,ln:113.244,r:4.4,rv:'翻新的西关骑楼老街。商业化但很好拍，博物馆免费。'},
   chiji:{n:'池记云吞面（北京路）',c:'gz',la:23.1245,ln:113.2705,r:4.0,rv:'鲜虾云吞大颗，汤底清甜。价格比普通面店高。'},
   tianzi:{n:'天字码头（珠江夜游）',c:'gz',la:23.119,ln:113.271,r:4.2,rv:'游船途经海心沙、广州塔，夜景好。不同船公司的价格和航线不同。'},
   yanjiang:{n:'沿江路 · 海珠桥',c:'gz',la:23.118,ln:113.269,rv:'北京路往南走就到珠江边，沿江路和长堤一带晚上看珠江和海珠桥夜景，免费。',h:'全天开放'},
   haixin:{n:'海心桥',c:'gz',la:23.113,ln:113.324,rv:'跨珠江的步行桥，连着花城广场和广州塔，晚上看亮灯的广州塔最近最好拍。',h:'全天开放'},
-  zumiao:{n:'佛山祖庙',c:'gz',la:23.035,ln:113.111,rv:'岭南古庙，里面有黄飞鸿纪念馆和叶问堂，有醒狮、功夫表演（按当天场次）。',h:'约08:30–18:00'},
-  lingnan:{n:'佛山岭南天地',c:'gz',la:23.038,ln:113.113,rv:'祖庙旁边的岭南老街区，骑楼、祠堂和小吃店，免费入内。',h:'街区全天开放'},
+  zumiao:{n:'佛山祖庙',c:'gz',la:23.0291,ln:113.1130,rv:'岭南古庙，里面有黄飞鸿纪念馆和叶问堂，有醒狮、功夫表演（按当天场次）。',h:'约08:30–18:00'},
+  lingnan:{n:'佛山岭南天地',c:'gz',la:23.0299,ln:113.1163,rv:'祖庙旁边的岭南老街区，骑楼、祠堂和小吃店，免费入内。',h:'街区全天开放'},
   diandude:{n:'点都德（北京路）',c:'gz',la:23.1238,ln:113.2692,r:4.3,rv:'广州最热门的早茶之一，虾饺、金莎红米肠、蛋挞受欢迎。8点前到可以少排队。'},
   chenclan:{n:'陈家祠',c:'gz',la:23.126,ln:113.246,r:4.6,rv:'岭南建筑装饰艺术的代表，木雕、石雕、砖雕很精致。约1小时。',h:'09:00–17:30'},
   shangxiajiu:{n:'上下九步行街',c:'gz',la:23.1168,ln:113.2505,r:4.1,rv:'骑楼街和老字号小吃多，商品偏平价。'},
@@ -111,13 +111,13 @@ const HOTELS={
 const HOTEL_ANCHOR={sz:'futian_st',zh:'bordergate',gz:'beijinglu'};
 
 const FOODS=[
-  {n:'潮汕牛肉火锅',c:'sz',w:'bahe',p:'¥100–140/人',d:'现切吊龙、匙柄、五花趾，清汤锅底涮几秒就吃。',g:'beefhotpot'},
+  {n:'椰子鸡火锅',c:'sz',w:'sijiyelin_ns',p:'¥100–130/人',d:'椰青水做汤底煮文昌鸡，先喝汤再吃鸡，清甜不辣。深圳本地人很爱吃。',g:'coconutchicken'},
   {n:'椰子鸡火锅',c:'sz',w:'runyuan',p:'¥90–130/人',d:'深圳特色，椰青水做汤底，清甜不腻。',g:'coconutchicken'},
   {n:'潮汕卤鹅',c:'sz',w:'chenpp',p:'¥80–120/人',d:'卤水香浓，鹅肉切片配蒜醋。',g:'braisedgoose'},
-  {n:'广式肠粉',c:'sz',w:null,p:'¥12–25',d:'深圳早餐首选，牛肉、鲜虾、叉烧肠配酱油。',g:'cheungfun'},
+  {n:'广式肠粉',c:'sz',w:null,p:'¥12–25',d:'深圳早餐首选，鲜虾、叉烧、瘦肉蛋肠配酱油。',g:'cheungfun'},
   {n:'烧鹅濑粉',c:'hk',w:'yatlok',p:'HK$80–130',d:'皮脆肉嫩、油香足，配濑粉或白饭。',g:'roastgoose'},
   {n:'鲜虾云吞面',c:'hk',w:'maks',p:'HK$50–80',d:'竹升面弹牙，云吞包整只鲜虾。',g:'wonton'},
-  {n:'丝袜奶茶 · 菠萝油',c:'hk',w:'lanfong',p:'HK$40–60',d:'港式茶餐厅的经典组合。',g:['milktea','pineapplebun']},
+  {n:'丝袜奶茶 · 菠萝油',c:'hk',w:'tsuiwah_central',p:'HK$40–60',d:'港式茶餐厅的经典组合。',g:['milktea','pineapplebun']},
   {n:'港式蛋挞',c:'hk',w:'taicheong',p:'HK$10–15/个',d:'牛油挞皮，蛋浆嫩滑。',g:'eggtart'},
   {n:'炒蛋多士 · 炖奶',c:'hk',w:'ausmilk',p:'HK$50–70',d:'滑蛋多士出名，炖奶香浓。',g:'adc'},
   {n:'焗猪扒饭',c:'hk',w:'mido',p:'HK$80–100',d:'茶餐厅经典，茄汁芝士焗饭。',g:'porkchoprice'},
@@ -132,7 +132,7 @@ const FOODS=[
   {n:'海鲜代加工',c:'zh',w:'wanzai',p:'¥120–200/人',d:'生蚝、濑尿虾、花甲，按斤称价。',g:'seafood'},
   {n:'横琴生蚝',c:'zh',w:'wanzai',p:'¥10–15/只',d:'珠海特产，蒜蓉烤或者煮生蚝粥。',g:'oyster'},
   {n:'早茶',c:'gz',w:'diandude',p:'¥80–120/人',d:'虾饺、烧卖、叉烧包、凤爪、红米肠。',g:['dimsum','charsiubao']},
-  {n:'牛肉肠粉',c:'gz',w:'yinji',p:'¥20–30',d:'西关肠粉，皮薄滑。',g:'cheungfun'},
+  {n:'鲜虾肠粉',c:'gz',w:'yinji',p:'¥20–30',d:'西关肠粉，皮薄滑，鲜虾肠、瘦肉蛋肠都好吃。',g:'cheungfun'},
   {n:'双皮奶 · 姜撞奶',c:'gz',w:'nanxin',p:'¥15–25',d:'广州经典甜品。',g:['doubleskin','gingermilk']},
   {n:'鱼皮 · 艇仔粥',c:'gz',w:'chentianji',p:'¥30–50',d:'西关老字号风味。',g:'congee'},
   {n:'啫啫煲',c:'gz',w:'huishijia',p:'¥120–180/人',d:'砂锅猛火啫香，鸡煲、黄鳝煲最受欢迎。',g:'claypot'},
@@ -176,10 +176,10 @@ function mo(pl,dish,cost,gal,cur,n){return {pl,dish,cost,gal,cur:cur||'CNY',n:n|
 const MEAL_OPTS={
   'd2-1':[mo('','广式肠粉 + 粥',30,'cheungfun','CNY','酒店附近的肠粉店'),mo('','菠萝油 + 奶茶 + 炒蛋',35,'pineapplebun','CNY','酒店附近的茶餐厅')],
   'd2-4':[mo('coco','粤菜 / 茶餐厅',80,'charsiu','CNY','COCO Park 一带'),mo('taier','酸菜鱼',80,'suancaiyu'),mo('runyuan','椰子鸡火锅',110,'coconutchicken')],
-  'd2-9':[mo('bahe','潮汕牛肉火锅',120,'beefhotpot'),mo('runyuan','椰子鸡火锅',110,'coconutchicken'),mo('chenpp','潮汕卤鹅、蚝烙',110,'braisedgoose')],
+  'd2-9':[mo('sijiyelin_ns','招牌椰子鸡、竹笙',110,'coconutchicken'),mo('chenpp','潮汕卤鹅、蚝烙',110,'braisedgoose')],
   'd2-11':[mo('','双皮奶、杨枝甘露',25,'doubleskin','CNY','海岸城一带的糖水铺'),mo('manji_sz','杨枝甘露、芒果班戟',35,'mangosago')],
   'd3-7':[mo('yatlok','烧鹅濑粉',120,'roastgoose','HKD'),mo('maks','鲜虾云吞面',75,'wonton','HKD'),mo('tsimchai','云吞面、鲮鱼球',60,'wonton','HKD'),mo('kampai','烧鹅饭',150,'roastgoose','HKD')],
-  'd3-8':[mo('lanfong','丝袜奶茶 + 猪扒包',45,'milktea','HKD'),mo('taicheong','蛋挞',25,'eggtart','HKD')],
+  'd3-8':[mo('tsuiwah_central','奶茶 + 菠萝油',60,['milktea','pineapplebun'],'HKD'),mo('taicheong','蛋挞',25,'eggtart','HKD')],
   'd3-12':[mo('ausmilk','炒蛋多士、炖奶',70,'adc','HKD'),mo('mido','焗猪扒饭、奶茶',90,'porkchoprice','HKD')],
   'd3-13':[mo('kaikai','杨枝甘露、芝麻糊',40,['mangosago','sesame'],'HKD'),mo('manji_hk','芒果班戟、杨枝甘露',55,'mangosago','HKD')],
   'd4-11':[mo('wanzai','海鲜代加工',150,'seafood'),mo('gongbei','生蚝、炒粉、宵夜',90,'oyster','CNY','拱北口岸一带大排档')],
@@ -188,7 +188,7 @@ const MEAL_OPTS={
   'd5-10':[mo('yeeshun','双皮奶、姜汁撞奶',40,['doubleskin','gingermilk'],'MOP'),mo('hangheung','芒果西米捞',45,'mangosago','MOP')],
   'd5-13':[mo('taileilok','猪扒包',45,'porkchopbun','MOP'),mo('mokyikei','榴莲雪糕、芒果雪糕',35,null,'MOP')],
   'd5-17':[mo('santos','葡国鸡、马介休球',200,['galinha','bacalhau'],'MOP'),mo('antonio','葡国菜、火焰芝士',400,'macfood','MOP'),mo('venetian','各式快餐',100,null,'MOP','威尼斯人美食广场')],
-  'd7-4':[mo('yinji','牛肉肠粉',30,'cheungfun'),mo('huahui','瘦肉蛋拉肠',25,'cheungfun')],
+  'd7-4':[mo('yinji','鲜虾肠粉、瘦肉蛋肠',30,'cheungfun'),mo('huahui','瘦肉蛋拉肠',25,'cheungfun')],
   'd7-5':[mo('nanxin','双皮奶、姜撞奶',25,['doubleskin','gingermilk']),mo('baihua','芝麻糊、双皮奶',25,['sesame','doubleskin'])],
   'd7-9':[mo('chiji','鲜虾云吞面',50,'wonton'),mo('huishijia','啫啫煲、烧鹅',150,'claypot'),mo('taotaoju','粤菜晚市',120,'taotaoju')],
   'd8-1':[mo('diandude','虾饺、金莎红米肠',90,'dimsum'),mo('taotaoju','虾饺皇、叉烧包',100,['taotaoju','charsiubao']),mo('panxi','园林早茶点心',110,'panxi'),mo('lianxiang','莲蓉包、点心',90,'charsiubao')],
@@ -200,6 +200,9 @@ const MEAL_OPTS={
 const PLACE_GAL={szbay:null};
 Object.values(MEAL_OPTS).forEach(list=>list.forEach(o=>{if(o.pl&&o.gal&&!PLACE_GAL[o.pl])PLACE_GAL[o.pl]=o.gal}));
 Object.assign(PLACE_GAL,{souvenir:['almond','bakkwa'],ladies:['eggwaffle','fishball']});
+// photos of sights (Wikimedia Commons, see CREDITS.md)
+Object.assign(GALLERY,{"nantou":[{"f":"img/nantou-1.jpg","a":"Iswzo","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:%E5%8D%97%E5%A4%B4%E5%8F%A4%E5%9F%8E%E5%8D%97%E9%97%A82022.jpg"},{"f":"img/nantou-2.jpg","a":"Mx. Granger","l":"CC0","p":"https://commons.wikimedia.org/wiki/File:%E5%8D%97%E5%A4%B4%E5%8F%A4%E5%9F%8E%E5%8D%9A%E7%89%A9%E9%A6%86.jpg"}],"mixc":[{"f":"img/mixc-1.jpg","a":"Charlie fong","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Huarun_Wanxiang_World_in_Nanshan2021.jpg"},{"f":"img/mixc-2.jpg","a":"Jasper201434","l":"CC BY 4.0","p":"https://commons.wikimedia.org/wiki/File:MIXC_WORLD_East_mall_atrium_in_March_2024.jpg"},{"f":"img/mixc-3.jpg","a":"Jasper201434","l":"CC BY 4.0","p":"https://commons.wikimedia.org/wiki/File:MIXC_WORLD_West_mall_atrium_in_March_2024.jpg"}],"haixin":[{"f":"img/haixin-1.jpg","a":"Shujianyang","l":"CC0","p":"https://commons.wikimedia.org/wiki/File:Hai_Xin_Bridge_of_Guangzhou_01.jpg"},{"f":"img/haixin-2.jpg","a":"Nissangeniss","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Haixin_Bridge_(20210630).jpg"},{"f":"img/haixin-3.jpg","a":"Shujianyang","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Haixin_Bridge_on_Pearl_River.jpg"}],"yanjiang":[{"f":"img/yanjiang-1.jpg","a":"钉钉","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Yanjiang_Road,_Guangzhou_1.jpg"},{"f":"img/yanjiang-2.jpg","a":"Zhangzhugang","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Guangzhou_Haizhu_Qiao_2014.01.23_18-06-27.jpg"},{"f":"img/yanjiang-3.jpg","a":"钉钉","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Haizhu_Bridge,_Guangzhou.jpg"}],"zumiao":[{"f":"img/zumiao-1.jpg","a":"Zhangzhugang","l":"CC BY-SA 3.0","p":"https://commons.wikimedia.org/wiki/File:Foshan_Zu_Miao_2012.11.20_15-41-28.jpg"},{"f":"img/zumiao-2.jpg","a":"Eduardo M. C.","l":"CC BY 2.0","p":"https://commons.wikimedia.org/wiki/File:Dragon_Performance,_Ancestral_Temple,_Foshan_(5929126412).jpg"},{"f":"img/zumiao-3.jpg","a":"钉钉","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Foshan_Ancestral_Temple_12.jpg"},{"f":"img/zumiao-4.jpg","a":"钉钉","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Foshan_Ancestral_Temple_1.jpg"}],"lingnan":[{"f":"img/lingnan-1.jpg","a":"PÑēüḾôňïę1357","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:%E4%BD%9B%E5%B1%B1%E4%B8%9C%E5%8D%8E%E9%87%8C%E5%85%A5%E5%8F%A3_2025.jpg"},{"f":"img/lingnan-2.jpg","a":"Haier7917","l":"CC BY-SA 3.0","p":"https://commons.wikimedia.org/wiki/File:%E4%BD%9B%E5%B1%B1%E4%B8%9C%E5%8D%8E%E9%87%8C.JPG"}]});
+Object.assign(PLACE_GAL,{nantou:'nantou',mixc:'mixc',haixin:'haixin',yanjiang:'yanjiang',zumiao:'zumiao',lingnan:'lingnan'});
 
 /* ---------------- default itinerary ---------------- */
 function it(t,kind,title,place,cost,cur,note,book,per){return {t,kind,title,place:place||'',cost:cost||0,cur:cur||'CNY',per:per||'p',note:note||'',book:book||''}}
@@ -219,7 +222,7 @@ const DEFAULT_DAYS=[
   Object.assign(it('16:10','sight','南头古城','nantou',0,'CNY','从华强北打车约30分钟。城门、窄巷、文创小店和小吃，免费。边走边吃，晚餐别吃太饱。'),{id:'d2-x1'}),
   it('17:30','move','的士 → 深圳湾公园（约15分钟）','szbay',30,'CNY','4个人一辆的士。','','g'),
   it('17:50','sight','深圳湾公园看日落','szbay',0,'CNY','日落大约18:00，对岸就是香港。'),
-  it('19:00','food','晚餐：潮汕牛肉火锅','bahe',120,'CNY','必点吊龙、匙柄、手打牛肉丸。周六晚上人多，要先线上取号。万象天地里餐厅也多，想在那边吃也可以。'),
+  it('19:00','food','晚餐：椰子鸡火锅（万象天地）','sijiyelin_ns',110,'CNY','就在万象天地里，吃完直接逛街区。周六饭点要排队，先在小程序取号。'),
   it('20:45','show','人才公园夜景 · 春笋大楼灯光秀','talent',0,'CNY','从万象天地打车约10分钟。周六晚上一般有灯光秀，以当天公告为准。'),
   it('21:30','sweet','糖水：双皮奶、杨枝甘露（海岸城一带）','',25),
   it('22:00','rest','回酒店，准备护照、港币或支付宝HK','H:sz',5),
@@ -234,7 +237,7 @@ const DEFAULT_DAYS=[
   it('09:30','sight','凌霄阁 · 摩天台看维港全景','peak',0,'HKD','套票已含摩天台。'),
   it('11:15','sight','半山扶梯 · 石板街 · 大馆','taikwun',0,'HKD','大馆免费参观。'),
   it('12:30','food','午餐：一乐烧鹅（烧鹅濑粉）','yatlok',120,'HKD','米其林推荐，店小要拼桌。'),
-  it('13:30','sweet','兰芳园：丝袜奶茶 + 猪扒包','lanfong',45,'HKD'),
+  it('13:30','sweet','翠华：奶茶 + 菠萝油','tsuiwah_central',60,'HKD','兰芳园周日休息，所以改去翠华。'),
   it('14:15','sight','PMQ 元创方 · 文武庙','pmq',0,'HKD'),
   it('15:30','move','天星小轮 中环 → 尖沙咀','starferry',6,'HKD','坐上层，维港景色最好。'),
   it('16:00','shop','1881 Heritage · 钟楼 · 海港城','h1881',0,'HKD'),

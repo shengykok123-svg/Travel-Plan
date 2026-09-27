@@ -1,6 +1,6 @@
 # Photo credits
 
-All photos in `img/` are from [Wikimedia Commons](https://commons.wikimedia.org/) under free licenses, resized to 640px. They show what each dish or hotel brand looks like and are not necessarily from the specific restaurant or hotel branch.
+All photos in `img/` are from [Wikimedia Commons](https://commons.wikimedia.org/) under free licenses, resized to 640px. They show what each dish, hotel brand or sight looks like and are not necessarily from the specific restaurant or hotel branch.
 
 | File | Author | License | Source |
 |---|---|---|---|
@@ -110,3 +110,20 @@ All photos in `img/` are from [Wikimedia Commons](https://commons.wikimedia.org/
 | img/atour-2.jpg | Windmemories | CC BY-SA 4.0 | [link](https://commons.wikimedia.org/wiki/File:20220302_Atour_Hotel_on_Chengdong_Road.jpg) |
 | img/vienna-1.jpg | Huangdan2060 | CC BY 3.0 | [link](https://commons.wikimedia.org/wiki/File:Vienna_International_Hotel_2021111303.jpg) |
 | img/vienna-2.jpg | N509FZ | CC BY-SA 4.0 | [link](https://commons.wikimedia.org/wiki/File:Vienna_International_Hotel,_Wenchang_(20230326180708).jpg) |
+| img/nantou-1.jpg | Iswzo | CC BY-SA 4.0 | [link](https://commons.wikimedia.org/wiki/File:%E5%8D%97%E5%A4%B4%E5%8F%A4%E5%9F%8E%E5%8D%97%E9%97%A82022.jpg) |
+| img/nantou-2.jpg | Mx. Granger | CC0 | [link](https://commons.wikimedia.org/wiki/File:%E5%8D%97%E5%A4%B4%E5%8F%A4%E5%9F%8E%E5%8D%9A%E7%89%A9%E9%A6%86.jpg) |
+| img/mixc-1.jpg | Charlie fong | CC BY-SA 4.0 | [link](https://commons.wikimedia.org/wiki/File:Huarun_Wanxiang_World_in_Nanshan2021.jpg) |
+| img/mixc-2.jpg | Jasper201434 | CC BY 4.0 | [link](https://commons.wikimedia.org/wiki/File:MIXC_WORLD_East_mall_atrium_in_March_2024.jpg) |
+| img/mixc-3.jpg | Jasper201434 | CC BY 4.0 | [link](https://commons.wikimedia.org/wiki/File:MIXC_WORLD_West_mall_atrium_in_March_2024.jpg) |
+| img/haixin-1.jpg | Shujianyang | CC0 | [link](https://commons.wikimedia.org/wiki/File:Hai_Xin_Bridge_of_Guangzhou_01.jpg) |
+| img/haixin-2.jpg | Nissangeniss | CC BY-SA 4.0 | [link](https://commons.wikimedia.org/wiki/File:Haixin_Bridge_(20210630).jpg) |
+| img/haixin-3.jpg | Shujianyang | CC BY-SA 4.0 | [link](https://commons.wikimedia.org/wiki/File:Haixin_Bridge_on_Pearl_River.jpg) |
+| img/yanjiang-1.jpg | 钉钉 | CC BY-SA 4.0 | [link](https://commons.wikimedia.org/wiki/File:Yanjiang_Road,_Guangzhou_1.jpg) |
+| img/yanjiang-2.jpg | Zhangzhugang | CC BY-SA 4.0 | [link](https://commons.wikimedia.org/wiki/File:Guangzhou_Haizhu_Qiao_2014.01.23_18-06-27.jpg) |
+| img/yanjiang-3.jpg | 钉钉 | CC BY-SA 4.0 | [link](https://commons.wikimedia.org/wiki/File:Haizhu_Bridge,_Guangzhou.jpg) |
+| img/zumiao-1.jpg | Zhangzhugang | CC BY-SA 3.0 | [link](https://commons.wikimedia.org/wiki/File:Foshan_Zu_Miao_2012.11.20_15-41-28.jpg) |
+| img/zumiao-2.jpg | Eduardo M. C. | CC BY 2.0 | [link](https://commons.wikimedia.org/wiki/File:Dragon_Performance,_Ancestral_Temple,_Foshan_(5929126412).jpg) |
+| img/zumiao-3.jpg | 钉钉 | CC BY-SA 4.0 | [link](https://commons.wikimedia.org/wiki/File:Foshan_Ancestral_Temple_12.jpg) |
+| img/zumiao-4.jpg | 钉钉 | CC BY-SA 4.0 | [link](https://commons.wikimedia.org/wiki/File:Foshan_Ancestral_Temple_1.jpg) |
+| img/lingnan-1.jpg | PÑēüḾôňïę1357 | CC BY-SA 4.0 | [link](https://commons.wikimedia.org/wiki/File:%E4%BD%9B%E5%B1%B1%E4%B8%9C%E5%8D%8E%E9%87%8C%E5%85%A5%E5%8F%A3_2025.jpg) |
+| img/lingnan-2.jpg | Haier7917 | CC BY-SA 3.0 | [link](https://commons.wikimedia.org/wiki/File:%E4%BD%9B%E5%B1%B1%E4%B8%9C%E5%8D%8E%E9%87%8C.JPG) |
