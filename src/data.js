@@ -176,7 +176,7 @@ function mo(pl,dish,cost,gal,cur,n){return {pl,dish,cost,gal,cur:cur||'CNY',n:n|
 const MEAL_OPTS={
   'd2-1':[mo('','广式肠粉 + 粥',30,'cheungfun','CNY','酒店附近的肠粉店'),mo('','菠萝油 + 奶茶 + 炒蛋',35,'pineapplebun','CNY','酒店附近的茶餐厅')],
   'd2-4':[mo('coco','粤菜 / 茶餐厅',80,'charsiu','CNY','COCO Park 一带'),mo('taier','酸菜鱼',80,'suancaiyu'),mo('runyuan','椰子鸡火锅',110,'coconutchicken')],
-  'd2-9':[mo('sijiyelin_ns','招牌椰子鸡、竹笙',110,'coconutchicken'),mo('chenpp','潮汕卤鹅、蚝烙',110,'braisedgoose')],
+  'd2-9':[mo('sijiyelin_ns','招牌椰子鸡、竹笙',110,'coconutchicken'),mo('tanyu_sz','烤鱼（在福田 COCO Park，打车约25分钟）',90,null),mo('chenpp','潮汕卤鹅、蚝烙',110,'braisedgoose')],
   'd2-11':[mo('','双皮奶、杨枝甘露',25,'doubleskin','CNY','海岸城一带的糖水铺'),mo('manji_sz','杨枝甘露、芒果班戟',35,'mangosago')],
   'd3-7':[mo('yatlok','烧鹅濑粉',120,'roastgoose','HKD'),mo('maks','鲜虾云吞面',75,'wonton','HKD'),mo('tsimchai','云吞面、鲮鱼球',60,'wonton','HKD'),mo('kampai','烧鹅饭',150,'roastgoose','HKD')],
   'd3-8':[mo('tsuiwah_central','奶茶 + 菠萝油',60,['milktea','pineapplebun'],'HKD'),mo('taicheong','蛋挞',25,'eggtart','HKD')],
