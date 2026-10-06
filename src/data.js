@@ -1,7 +1,7 @@
 // Trip data: places, hotels, foods, photo credits, meal options, default itinerary, map outline
 /* ---------------- static data ---------------- */
 const CITY={
-  sz:{n:'深圳',cur:'CNY'},hk:{n:'香港',cur:'HKD'},mo:{n:'澳门',cur:'MOP'},zh:{n:'珠海',cur:'CNY'},gz:{n:'广州',cur:'CNY'}
+  sz:{n:'深圳',cur:'CNY'},hk:{n:'香港',cur:'HKD'},mo:{n:'澳门',cur:'MOP'},zh:{n:'珠海',cur:'CNY'},gz:{n:'广州',cur:'CNY'},fs:{n:'佛山',cur:'CNY'}
 };
 const CUR={CNY:'¥',HKD:'HK$',MOP:'MOP ',MYR:'RM '};
 const KIND={move:'交通',sight:'景点',food:'餐饮',sweet:'甜品小吃',shop:'逛街',show:'夜景/表演',hotel:'住宿',rest:'休息'};
@@ -65,6 +65,11 @@ const PLACES={
   zh_st:{n:'珠海站（城际）',c:'zh',la:22.2135,ln:113.5475,r:4.1,rv:'就在拱北口岸旁，去广州南、长隆的城际都在这里坐。'},
   chimelong:{n:'珠海长隆海洋王国',c:'zh',la:22.100,ln:113.534,r:4.6,rv:'鲸鲨馆是世界级水族馆，表演精彩。刺激项目排队久，热门表演要提前入场占位。',h:'约10:00–20:00（以官方为准）'},
 
+  liangyuan_fs:{'n':'梁园','c':'fs','la':23.039,'ln':113.1145,'rv':'岭南四大名园之一，清代梁家的私家园林，有湖、石、竹和老宅，人少安静，适合拍照。','h':'09:00-17:00（16:40停止入园）'},
+  nanfengguzao_fs:{'n':'南风古灶（石湾）','c':'fs','la':23.0052,'ln':113.0773,'rv':'有500多年历史、至今还在烧的龙窑，周边是石湾陶瓷老街和创意园，可以体验做陶。','h':'08:30-17:30；夜游只在周五至周日 18:30-21:00'},
+  pingzhou_yuqijie_fs:{'n':'平洲玉器街（翠宝园一带）','c':'fs','la':23.0217,'ln':113.2098,'rv':'中国四大玉器市场之一，国家4A级景区，整条街都是翡翠店和加工作坊，可以看到师傅现场雕刻。','h':'街区全天开放，店铺大多09:00后开门，傍晚陆续关门'},
+  qiandenghu_fs:{'n':'千灯湖公园','c':'fs','la':23.0525,'ln':113.1472,'rv':'南海桂城的城市中央公园，湖边有步道和灯柱，晚上灯光很漂亮，是本地人散步的地方。','h':'全天开放'},
+  sznorth:{'n':'深圳北站','c':'sz','la':22.6094,'ln':114.0293,'rv':'深圳最大的高铁站，地铁4、5、6号线都到。站内人多，换乘要走一段路。'},
   gzsouth:{n:'广州南站',c:'gz',la:22.989,ln:113.269,r:4.0,rv:'华南最大的高铁站之一。出站到地铁要步行10分钟以上。'},
   yinji:{n:'银记肠粉（上下九）',c:'gz',la:23.1172,ln:113.2488,r:4.1,rv:'鲜虾肠、瘦肉蛋肠口碑好，价格平。老店装修朴素。'},
   nanxin:{n:'南信牛奶甜品专家',c:'gz',la:23.1135,ln:113.2429,r:4.2,rv:'双皮奶、姜撞奶经典老字号。座位多，翻台快。'},
@@ -74,8 +79,8 @@ const PLACES={
   tianzi:{n:'天字码头（珠江夜游）',c:'gz',la:23.119,ln:113.271,r:4.2,rv:'游船途经海心沙、广州塔，夜景好。不同船公司的价格和航线不同。'},
   yanjiang:{n:'沿江路 · 海珠桥',c:'gz',la:23.118,ln:113.269,rv:'北京路往南走就到珠江边，沿江路和长堤一带晚上看珠江和海珠桥夜景，免费。',h:'全天开放'},
   haixin:{n:'海心桥',c:'gz',la:23.113,ln:113.324,rv:'跨珠江的步行桥，连着花城广场和广州塔，晚上看亮灯的广州塔最近最好拍。',h:'全天开放'},
-  zumiao:{n:'佛山祖庙',c:'gz',la:23.0291,ln:113.1130,rv:'岭南古庙，里面有黄飞鸿纪念馆和叶问堂，有醒狮、功夫表演（按当天场次）。',h:'约08:30–18:00'},
-  lingnan:{n:'佛山岭南天地',c:'gz',la:23.0299,ln:113.1163,rv:'祖庙旁边的岭南老街区，骑楼、祠堂和小吃店，免费入内。',h:'街区全天开放'},
+  zumiao:{n:'佛山祖庙',c:'fs',la:23.0291,ln:113.1130,rv:'岭南古庙，里面有黄飞鸿纪念馆和叶问堂，有醒狮、功夫表演（按当天场次）。',h:'约08:30–18:00'},
+  lingnan:{n:'佛山岭南天地',c:'fs',la:23.0299,ln:113.1163,rv:'祖庙旁边的岭南老街区，骑楼、祠堂和小吃店，免费入内。',h:'街区全天开放'},
   diandude:{n:'点都德（北京路）',c:'gz',la:23.1238,ln:113.2692,r:4.3,rv:'广州最热门的早茶之一，虾饺、金莎红米肠、蛋挞受欢迎。8点前到可以少排队。'},
   chenclan:{n:'陈家祠',c:'gz',la:23.126,ln:113.246,r:4.6,rv:'岭南建筑装饰艺术的代表，木雕、石雕、砖雕很精致。约1小时。',h:'09:00–17:30'},
   shangxiajiu:{n:'上下九步行街',c:'gz',la:23.1168,ln:113.2505,r:4.1,rv:'骑楼街和老字号小吃多，商品偏平价。'},
@@ -102,13 +107,16 @@ const HOTELS={
     {id:'zh2',tier:'推荐 · 性价比',n:'全季酒店（珠海拱北口岸店）',area:'拱北 · 口岸步行10分钟',la:22.219,ln:113.552,p:320,p3:430,r:4.5,rv:'走路到拱北口岸约10分钟，干净舒适。去澳门、珠海站、长隆都方便。',pro:['离口岸和珠海站近','质量稳定'],con:['隔音一般']},
     {id:'zh3',tier:'舒适 · 房间大',n:'维也纳国际酒店（珠海拱北口岸店）',area:'拱北 · 口岸附近',la:22.2175,ln:113.5555,p:380,p3:480,r:4.5,rv:'房间比同价位大，早餐选择多。部分房间装修较旧，入住时可以要求换新装修的房。',pro:['房间大','早餐丰富'],con:['各间房装修新旧不一']}
   ],
+  fs:[
+    {'id':'fs1','tier':'舒适 · 新店','n':'全季酒店（佛山南海平洲店）','area':'南海 · 桂城平洲（夏南）','la':23.042,'ln':113.1769,'p':260,'p3':351,'r':4.8,'rv':'携程4.8分（约1,100条点评），2022年11月开业。住客常夸环境安静舒适、前台热情、设施新、停车方便。主要缺点是离地铁有点远，周边以住宅和工厂为主。','pro':['2022年开的新店，评分4.8，安静干净','自助中式早餐，有洗衣房和健身房'],'con':['没有直达地铁：最近的是南海有轨电车夏东/夏西站（各约1公里，步行约16分钟），广佛线礌岗站约2.2公里']}
+  ],
   gz:[
     {id:'gz1',tier:'基础 · 最省',n:'汉庭酒店（广州北京路步行街店）',area:'越秀 · 北京路',la:23.1262,ln:113.2722,p:350,p3:450,r:4.4,rv:'在北京路中心，吃喝方便。房间小。广交会期间价格上涨。',pro:['位置好','最便宜'],con:['房间小','广交会期间难订']},
     {id:'gz2',tier:'推荐 · 性价比',n:'全季酒店（广州北京路步行街店）',area:'越秀 · 北京路',la:23.1255,ln:113.2715,p:480,p3:620,r:4.6,rv:'在北京路中心，干净舒适，步行到早茶店和地铁站都近。广交会期间价格上涨。',pro:['位置好','质量稳定'],con:['广交会期间难订']},
     {id:'gz3',tier:'舒适 · 贵一点',n:'亚朵酒店（广州北京路店）',area:'越秀 · 北京路',la:23.128,ln:113.268,p:720,p3:900,r:4.7,rv:'服务和早餐好评多，步行到北京路、公园前地铁站方便。',pro:['早餐好','交通方便'],con:['广交会期间价格高']}
   ]
 };
-const HOTEL_ANCHOR={sz:'futian_st',zh:'bordergate',gz:'beijinglu'};
+const HOTEL_ANCHOR={sz:'futian_st',zh:'bordergate',gz:'beijinglu',fs:'zumiao'};
 
 const FOODS=[
   {n:'椰子鸡火锅',c:'sz',w:'sijiyelin_ns',p:'¥100–130/人',d:'椰青水做汤底煮文昌鸡，先喝汤再吃鸡，清甜不辣。深圳本地人很爱吃。',g:'coconutchicken'},
@@ -144,7 +152,7 @@ const FOODS=[
 // photos: freely licensed Wikimedia Commons images of each dish / hotel brand, published with the page
 const GALLERY={"beefhotpot":[{"f":"img/beefhotpot-1.jpg","a":"N509FZ","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Chaoshan_Beef_Hot_Pot_at_Baheli_Haiji,_ZGC1_(20221003132726).jpg"},{"f":"img/beefhotpot-2.jpg","a":"Clarayyt","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Chaoshan_Cuisine3.jpg"},{"f":"img/beefhotpot-3.jpg","a":"Guwiqiie","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:%E6%BD%AE%E6%B1%95%E7%89%9B%E8%82%89%E7%81%AB%E9%94%85.jpg"},{"f":"img/beefhotpot-4.jpg","a":"N509FZ","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Shantou_Baheli_Haiji_Beef_Hotpot_at_ZGC1_(20221003125830).jpg"}],"cheungfun":[{"f":"img/cheungfun-1.jpg","a":"ZhengZhou","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Dried_shrimp_rice_noodle_roll.jpg"},{"f":"img/cheungfun-2.jpg","a":"DragonSamYU","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Rice_Noodle_Roll_-_Chaozhou_-_20170302_(2).jpg"},{"f":"img/cheungfun-3.jpg","a":"No machine-readable author provided. GS417~commonswiki assum","l":"CC BY-SA 2.5","p":"https://commons.wikimedia.org/wiki/File:GD_Rice_Product_1.JPG"},{"f":"img/cheungfun-4.jpg","a":"Eukbimga","l":"CC BY-SA 3.0","p":"https://commons.wikimedia.org/wiki/File:HK_Food_Rice_Noodle_Roll_with_Sesame.JPG"}],"coconutchicken":[{"f":"img/coconutchicken-1.jpg","a":"HOISAIWIM TUNGWAH","l":"CC0","p":"https://commons.wikimedia.org/wiki/File:SZ_Shenzhen_shopping_mall_shop_%E5%8E%9F%E5%91%B3%E4%B8%BB%E7%BE%A9_%E6%A4%B0%E5%AD%90%E9%9B%9E_restaurant_July_2025_N13P_01.jpg"}],"suancaiyu":[{"f":"img/suancaiyu-1.jpg","a":"Alpha from Melbourne, Australia","l":"CC BY-SA 2.0","p":"https://commons.wikimedia.org/wiki/File:%E9%85%B8%E8%8F%9C%E9%B1%BC_Preserved_Mustard_Green_with_Fish_-_Charming_Spice_AUD24.80_(4104355401).jpg"},{"f":"img/suancaiyu-2.jpg","a":"N509FZ","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Suancaiyu_rice_value-set_at_Hehegu,_Dongzhimen_(20211220172415).jpg"}],"braisedgoose":[{"f":"img/braisedgoose-1.jpg","a":"NanakoT","l":"CC BY 2.0","p":"https://commons.wikimedia.org/wiki/File:%E6%BD%AE%E5%B7%9E%E6%BB%B7%E9%B5%9D%E7%89%87_(4884050087).jpg"},{"f":"img/braisedgoose-2.jpg","a":"Alpha from Melbourne, Australia","l":"CC BY-SA 2.0","p":"https://commons.wikimedia.org/wiki/File:%E5%8D%A4%E6%B0%B4%E9%B9%85%E7%89%87_Braised_Goose_Breast_-_%E6%9C%9D%E6%B1%9F%E6%98%A5_Chiu_Chow_Garden,_Taikoo_(2229895089).jpg"}],"roastgoose":[{"f":"img/roastgoose-1.jpg","a":"Sakaori","l":"CC BY 3.0","p":"https://commons.wikimedia.org/wiki/File:Roast_goose_in_yat_lok_restaurant.JPG"},{"f":"img/roastgoose-2.jpg","a":"Guangzhou Private Tours by Janvi","l":"CC BY 4.0","p":"https://commons.wikimedia.org/wiki/File:Cantonese_roast_goose_served_in_Guangzhou,_China,_June_2026.jpg"},{"f":"img/roastgoose-3.jpg","a":"Dinkun Chen","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Cantonese_roasted_goose.jpg"},{"f":"img/roastgoose-4.jpg","a":"Ceeseven","l":"CC BY-SA 3.0","p":"https://commons.wikimedia.org/wiki/File:Roast_Goose_Rice.JPG"}],"wonton":[{"f":"img/wonton-1.jpg","a":"cattan2011","l":"CC BY 2.0","p":"https://commons.wikimedia.org/wiki/File:Wonton_noodle-_Sai_Yung_Kee,_Hong_Kong.jpg"},{"f":"img/wonton-2.jpg","a":"N509FZ","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Wonton_noodles_at_Mak_An_Kee,_Chung_Kee_(20180913105025).jpg"},{"f":"img/wonton-3.jpg","a":"LN9267","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:The_Peak_Mak%27s_Noodle_Wonton_noodle_soup_09-11-2021.jpg"},{"f":"img/wonton-4.jpg","a":"Angeimoarm","l":"CC BY-SA 3.0","p":"https://commons.wikimedia.org/wiki/File:HK_Sai_Ying_Pun_Centre_Street_%E9%9B%B2%E5%90%9E_Wonton_noodle_July-2012.JPG"}],"milktea":[{"f":"img/milktea-1.jpg","a":"WiNG","l":"CC BY-SA 3.0","p":"https://commons.wikimedia.org/wiki/File:Hong_Kong-style_Milk_Tea.jpg"},{"f":"img/milktea-2.jpg","a":"Nikoletic126","l":"CC0","p":"https://commons.wikimedia.org/wiki/File:Hong_Kong_Milk_Tea,_Cha_Chaan_Teng-style_with_Black_and_White_cup.jpg"},{"f":"img/milktea-3.jpg","a":"K.C. Tang","l":"CC BY-SA 3.0","p":"https://commons.wikimedia.org/wiki/File:Hong_Kong_milk_tea.jpg"}],"porkchopbun":[{"f":"img/porkchopbun-1.jpg","a":"K.Y.K.Z.K.","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Pork_chop_bun_with_ice_milk_tea.jpg"},{"f":"img/porkchopbun-2.jpg","a":"Andy Li","l":"CC0","p":"https://commons.wikimedia.org/wiki/File:Pork_Chop_Bun_and_Hong_Kong_style_Milk_Tea_(hot)_-_CK_Bistro_2025-09-16.jpg"}],"pineapplebun":[{"f":"img/pineapplebun-1.jpg","a":"Dennis Wong","l":"CC BY 2.0","p":"https://commons.wikimedia.org/wiki/File:Pineapple_Bun_with_Butter_inside.jpg"},{"f":"img/pineapplebun-2.jpg","a":"Evancyk","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Pineapple_bun_and_milk_tea.jpg"},{"f":"img/pineapplebun-3.jpg","a":"Dennis Wong from Hong Kong, Hong Kong","l":"CC BY 2.0","p":"https://commons.wikimedia.org/wiki/File:Pineapple_bun.jpg"}],"eggtart":[{"f":"img/eggtart-1.jpg","a":"stu_spivack","l":"CC BY-SA 2.0","p":"https://commons.wikimedia.org/wiki/File:Hong_Kong_Dan_tat.jpg"},{"f":"img/eggtart-2.jpg","a":"Cathiniamoa","l":"CC BY-SA 3.0","p":"https://commons.wikimedia.org/wiki/File:HK_food_sweet_egg_tart_%E5%8A%A0%E5%88%A9%E5%B9%B4_Catherine_Bakery_May-2012.JPG"},{"f":"img/eggtart-3.jpg","a":"CCheungimm","l":"CC BY-SA 3.0","p":"https://commons.wikimedia.org/wiki/File:Two_Egg_Tarts_CC_02_HK.jpg"},{"f":"img/eggtart-4.jpg","a":"Mk2010","l":"CC BY-SA 3.0","p":"https://commons.wikimedia.org/wiki/File:Tai_Cheong_Bakery_(Hong_Kong).jpg"}],"nata":[{"f":"img/nata-1.jpg","a":"Pauloleong2002","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Portuguese_egg_tart_in_Macau.jpg"},{"f":"img/nata-2.jpg","a":"Jason Goh","l":"CC0","p":"https://commons.wikimedia.org/wiki/File:Portuguese_egg_tart.jpg"},{"f":"img/nata-3.jpg","a":"Iidxplus","l":"CC BY-SA 3.0","p":"https://commons.wikimedia.org/wiki/File:Lord_stow.jpg"},{"f":"img/nata-4.jpg","a":"LN9267","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Coloane_Lord_Stow%27s_Bakery_egg_tart_25-04-2019.png"}],"adc":[{"f":"img/adc-1.jpg","a":"圍棋一級","l":"CC BY-SA 3.0","p":"https://commons.wikimedia.org/wiki/File:Australia_Dairy_Company_outlook.JPG"},{"f":"img/adc-2.jpg","a":"City Foodsters","l":"CC BY 2.0","p":"https://commons.wikimedia.org/wiki/File:Australia_Dairy_Company_-_Ham_and_Egg_Sandwich.jpg"},{"f":"img/adc-3.jpg","a":"Peachyeung316","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Australia_Dairy_Company_Hong_Kong.jpg"}],"mangosago":[{"f":"img/mangosago-1.jpg","a":"relgar","l":"CC BY 2.0","p":"https://commons.wikimedia.org/wiki/File:Mango_pomelo_sago.jpg"},{"f":"img/mangosago-2.jpg","a":"Blowing Puffer Fish","l":"CC BY 2.0","p":"https://commons.wikimedia.org/wiki/File:Mango_Pomelo_Sago_by_Lei_Garden.jpg"},{"f":"img/mangosago-3.jpg","a":"Thomas.Lu","l":"CC BY 3.0","p":"https://commons.wikimedia.org/wiki/File:MangoPomeloSago_1.jpg"}],"sesame":[{"f":"img/sesame-1.jpg","a":"bryan... from Taipei, Taiwan","l":"CC BY-SA 2.0","p":"https://commons.wikimedia.org/wiki/File:Black_sesame_paste.jpg"},{"f":"img/sesame-2.jpg","a":"Gnuf from (optional)","l":"CC BY-SA 2.0","p":"https://commons.wikimedia.org/wiki/File:BlacksesameSoup.jpg"},{"f":"img/sesame-3.jpg","a":"2225Group8","l":"CC BY-SA 3.0","p":"https://commons.wikimedia.org/wiki/File:Chinese_tongsui_-_Sesame_paste.jpg"}],"eggwaffle":[{"f":"img/eggwaffle-1.jpg","a":"User:SarahStierch","l":"CC BY-SA 3.0","p":"https://commons.wikimedia.org/wiki/File:Egg_waffle_-_sarah_stierch.jpg"},{"f":"img/eggwaffle-2.jpg","a":"Morsesp3","l":"CC BY-SA 3.0","p":"https://commons.wikimedia.org/wiki/File:HK_Lower_Wong_Tai_Sin_Eatate_Tung_Tau_Tsuen_Road_n_Ching_Tak_Street_%E9%9B%9E%E8%9B%8B%E4%BB%94.JPG"},{"f":"img/eggwaffle-3.jpg","a":"Yatadeihom","l":"CC BY-SA 3.0","p":"https://commons.wikimedia.org/wiki/File:HK_food_products_%E9%9B%9E%E8%9B%8B%E4%BB%94_eggette_bubble_waffle_Kitchen_tools_Utensils_Sheung_Wan_shop_April-2012.JPG"}],"fishball":[{"f":"img/fishball-1.jpg","a":"Thomas.Lu","l":"CC BY 3.0","p":"https://commons.wikimedia.org/wiki/File:Curry_Fish_Balls_1A.jpg"},{"f":"img/fishball-2.jpg","a":"Ceeseven","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Curry_Fish_Balls.jpg"},{"f":"img/fishball-3.jpg","a":"Silvermetals","l":"CC BY 3.0","p":"https://commons.wikimedia.org/wiki/File:Curry_Fishball.JPG"}],"seafood":[{"f":"img/seafood-1.jpg","a":"TWMEAU rOEPPOUL","l":"CC0","p":"https://commons.wikimedia.org/wiki/File:GD_%E5%BB%A3%E6%9D%B1_Guangdong_%E7%8F%A0%E6%B5%B7_Zhuhai_%E9%A6%99%E6%B4%B2_Xiangzhou_%E7%81%A3%E4%BB%94%E6%B5%B7%E9%AE%AE%E8%A1%97_WanZai_Seafood_Street_November_2024_R12S_01.jpg"},{"f":"img/seafood-2.jpg","a":"TWMEAU rOEPPOUL","l":"CC0","p":"https://commons.wikimedia.org/wiki/File:GD_%E5%BB%A3%E6%9D%B1_Guangdong_%E7%8F%A0%E6%B5%B7_Zhuhai_%E9%A6%99%E6%B4%B2_Xiangzhou_%E7%81%A3%E4%BB%94%E6%B5%B7%E9%AE%AE%E8%A1%97_WanZai_Seafood_Street_November_2024_R12S_03.jpg"},{"f":"img/seafood-3.jpg","a":"TWMEAU rOEPPOUL","l":"CC0","p":"https://commons.wikimedia.org/wiki/File:GD_%E5%BB%A3%E6%9D%B1_Guangdong_%E7%8F%A0%E6%B5%B7_Zhuhai_%E9%A6%99%E6%B4%B2_Xiangzhou_%E7%81%A3%E4%BB%94%E6%B5%B7%E9%AE%AE%E8%A1%97_WanZai_Seafood_Street_November_2024_R12S_04.jpg"},{"f":"img/seafood-4.jpg","a":"TWMEAU rOEPPOUL","l":"CC0","p":"https://commons.wikimedia.org/wiki/File:GD_%E5%BB%A3%E6%9D%B1_Guangdong_%E7%8F%A0%E6%B5%B7_Zhuhai_tour_view_%E7%81%A3%E4%BB%94%E6%B5%B7%E9%AE%AE%E8%A1%97_WanZai_Seafood_Street_November_2024_R12S_100.jpg"}],"oyster":[{"f":"img/oyster-1.jpg","a":"Jason Lam","l":"CC BY-SA 2.0","p":"https://commons.wikimedia.org/wiki/File:Shucking_and_grilling_oysters_-_Drago%27s.jpg"},{"f":"img/oyster-2.jpg","a":"David Monniaux","l":"CC BY-SA 3.0","p":"https://commons.wikimedia.org/wiki/File:Oysters_p1040741.jpg"}],"dimsum":[{"f":"img/dimsum-1.jpg","a":"sfllaw of Flickr","l":"CC BY-SA 2.0","p":"https://commons.wikimedia.org/wiki/File:Xiajiao.jpg"},{"f":"img/dimsum-2.jpg","a":"Solomon203","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:3_pieces_of_har_gow_at_Plum_Blossom_Room_20230125.jpg"},{"f":"img/dimsum-3.jpg","a":"Rousgmwicna","l":"CC BY-SA 3.0","p":"https://commons.wikimedia.org/wiki/File:HK_dim_sum_food_-_streamed_%E8%9D%A6%E9%A4%83_Har_gow_prawn_dumping_white_flour_Feb-2014_MCK.jpg"},{"f":"img/dimsum-4.jpg","a":"MeiOLA 2290 WMENSZ","l":"CC0","p":"https://commons.wikimedia.org/wiki/File:GD_%E5%BB%A3%E6%9D%B1_Guangdong_%E5%BB%A3%E5%B7%9E_Guangzhou_%E8%8D%94%E7%81%A3%E5%8D%80_Liwan_%E9%BE%8D%E6%B4%A5%E8%A5%BF%E8%B7%AF_Longjin_West_Road_shop_%E6%B3%AE%E6%BA%AA%E9%85%92%E5%AE%B6_Pan_Xi_Restaurant_%E9%BB%9E%E5%BF%83_dim_sum_list_June_2025_R12S.jpg"}],"charsiu":[{"f":"img/charsiu-1.jpg","a":"Simon Shek","l":"CC BY-SA 3.0","p":"https://commons.wikimedia.org/wiki/File:Charsiu.jpg"},{"f":"img/charsiu-2.jpg","a":"Peachyeung316","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Char_Siu_and_Siu_Yuk_in_Tai_Po.jpg"}],"charsiubao":[{"f":"img/charsiubao-1.jpg","a":"Maksym Kozlenko","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Steamed_roast_pork_bun.jpg"},{"f":"img/charsiubao-2.jpg","a":"Puidsauh BOROMAW","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:HK_SW_%E4%B8%8A%E7%92%B0_Sheung_Wan_%E6%98%9F%E6%9C%88%E6%A8%93_Sky_Cuisine_Chinese_Restaurant_breakfast_steamed_food_dim_sum_%E5%8F%89%E7%87%92%E5%8C%85_Char_Siu_Bao_October_2022_Px3_03.jpg"},{"f":"img/charsiubao-3.jpg","a":"Takeaway","l":"CC BY-SA 3.0","p":"https://commons.wikimedia.org/wiki/File:Char_siu_bao.jpg"}],"congee":[{"f":"img/congee-1.jpg","a":"ZhengZhou","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Cantonese_Sampan_Congee_(Boat_Congee).jpeg"},{"f":"img/congee-2.jpg","a":"EllieWzpp","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Sampan_Congee.jpg"},{"f":"img/congee-3.jpg","a":"DragonSamYU","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Boat_Congee_-_Whampoa_Anchorage.jpg"}],"almond":[{"f":"img/almond-1.jpg","a":"Mx. Granger","l":"CC0","p":"https://commons.wikimedia.org/wiki/File:Almond_cookies_being_made_in_Macau.jpg"},{"f":"img/almond-2.jpg","a":"No machine-readable author provided. Mo707 assumed (based on","l":"CC BY-SA 3.0","p":"https://commons.wikimedia.org/wiki/File:Macau_Koi_Kei_Bakery_Almond_Biscuits_2.JPG"},{"f":"img/almond-3.jpg","a":"Yumeto","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:20260806_Almond_biscuits_at_Pastelaria_St._Paulo.jpg"}],"galinha":[{"f":"img/galinha-1.jpg","a":"Fancy-cats-are-happy-cats","l":"Public domain","p":"https://commons.wikimedia.org/wiki/File:African_chicken_macau.JPG"},{"f":"img/galinha-2.jpg","a":"Pauloleong2002","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Chicken_and_beef_in_Portuguese_style.jpg"},{"f":"img/galinha-3.jpg","a":"LeonardKong","l":"CC BY 2.0","p":"https://commons.wikimedia.org/wiki/File:%E8%91%A1%E5%BC%8F%E7%83%A7%E9%B8%A1%E9%87%80%E9%A5%AD_(8185173956).jpg"}],"bacalhau":[{"f":"img/bacalhau-1.jpg","a":"Ralbahitha","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Past%C3%A9is_de_Bacalhau_~_Salt_Cod_Fritters.jpg"}],"claypot":[{"f":"img/claypot-1.jpg","a":"Chumanchun","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:%E5%95%AB%E5%95%AB%E9%9B%9E%E7%85%B2.jpg"}],"porkchoprice":[{"f":"img/porkchoprice-1.jpg","a":"Ceeseven","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Baked_Pork_Chop_Rice_in_Hong_Kong_Cha_Chaan_Teng.jpg"},{"f":"img/porkchoprice-2.jpg","a":"bortescristian","l":"CC BY 2.0","p":"https://commons.wikimedia.org/wiki/File:Baked_Pork_Chop_Rice.jpg"}],"chickenbiscuit":[{"f":"img/chickenbiscuit-1.jpg","a":"Benjwong","l":"Public domain","p":"https://commons.wikimedia.org/wiki/File:Gaizai_crackers.jpg"},{"f":"img/chickenbiscuit-2.jpg","a":"Samsing Haui MAENMIN Haujng","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:HK_WC_%E7%81%A3%E4%BB%94%E9%81%93_Road_market_shop_%E9%9B%9E%E4%BB%94%E9%A4%85%E5%A4%A7%E7%8E%8B_night_October_2023_R12S_01.jpg"}],"wifecake":[{"f":"img/wifecake-1.jpg","a":"Eukbimga","l":"CC BY-SA 3.0","p":"https://commons.wikimedia.org/wiki/File:HK_Food_Sweetheart_Wife_Cakes_@_Sheung_Wan_Morrison_Street_%E8%80%81%E5%A9%86%E9%A4%85.jpg"},{"f":"img/wifecake-2.jpg","a":"Benjwong at English Wikipedia","l":"Public domain","p":"https://commons.wikimedia.org/wiki/File:Wifecake.jpg"},{"f":"img/wifecake-3.jpg","a":"Angeimoarm","l":"CC BY-SA 3.0","p":"https://commons.wikimedia.org/wiki/File:HK_food_%E8%80%81%E5%A9%86%E9%A4%85_Sweetheart_cake_July-2012.JPG"}],"doubleskin":[{"f":"img/doubleskin-1.jpg","a":"Guanlin (Gary) He","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Double_skin_milk.jpg"},{"f":"img/doubleskin-2.jpg","a":"Pauloleong2002","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Double_skin_milk_with_mango.jpg"},{"f":"img/doubleskin-3.jpg","a":"ZhengZhou","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Double_skin_milk_with_red_beans.jpg"}],"gingermilk":[{"f":"img/gingermilk-1.jpg","a":"Chika","l":"CC BY 2.0","p":"https://commons.wikimedia.org/wiki/File:Ginger_Milk_Pudding.jpg"}],"bakkwa":[{"f":"img/bakkwa-1.jpg","a":"shankar s. from Poona (pune), India, India","l":"CC BY 2.0","p":"https://commons.wikimedia.org/wiki/File:Pork_Jelly_Local_jerky_(7821987748).jpg"},{"f":"img/bakkwa-2.jpg","a":"No machine-readable author provided. Mo707 assumed (based on","l":"CC BY-SA 3.0","p":"https://commons.wikimedia.org/wiki/File:Macau_Food_Jerked_Beef.JPG"}],"macfood":[{"f":"img/macfood-1.jpg","a":"Pauloleong2002","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Portuguese_food_in_Macau_2.jpg"},{"f":"img/macfood-2.jpg","a":"Pauloleong2002","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Cuisine_in_Macau_1.jpg"},{"f":"img/macfood-3.jpg","a":"Pauloleong2002","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:%E8%91%A1%E5%BC%8F%E9%9B%9C%E7%87%B4.jpg"}],"taotaoju":[{"f":"img/taotaoju-1.jpg","a":"Gzdavidwong","l":"CC BY-SA 3.0","p":"https://commons.wikimedia.org/wiki/File:TaoTaoJu.JPG"},{"f":"img/taotaoju-2.jpg","a":"Jackl","l":"CC BY-SA 3.0","p":"https://commons.wikimedia.org/wiki/File:TaoTaoJu_daytime.jpg"}],"panxi":[{"f":"img/panxi-1.jpg","a":"MeiOLA 2290 WMENSZ","l":"CC0","p":"https://commons.wikimedia.org/wiki/File:GD_%E5%BB%A3%E6%9D%B1_Guangdong_%E5%BB%A3%E5%B7%9E_Guangzhou_%E8%8D%94%E7%81%A3%E5%8D%80_Liwan_%E9%BE%8D%E6%B4%A5%E8%A5%BF%E8%B7%AF_Longjin_West_Road_shop_%E6%B3%AE%E6%BA%AA%E9%85%92%E5%AE%B6_Pan_Xi_Restaurant_%E9%BB%9E%E5%BF%83_dim_sum_June_2025_R12S_30.jpg"},{"f":"img/panxi-2.jpg","a":"MeiOLA 2290 WMENSZ","l":"CC0","p":"https://commons.wikimedia.org/wiki/File:GD_%E5%BB%A3%E6%9D%B1_Guangdong_%E5%BB%A3%E5%B7%9E_Guangzhou_%E8%8D%94%E7%81%A3%E5%8D%80_Liwan_%E9%BE%8D%E6%B4%A5%E8%A5%BF%E8%B7%AF_Longjin_West_Road_shop_%E6%B3%AE%E6%BA%AA%E9%85%92%E5%AE%B6_Pan_Xi_Restaurant_%E9%BB%9E%E5%BF%83_dim_sum_June_2025_R12S_31.jpg"}],"hanting":[{"f":"img/hanting-1.jpg","a":"Suginami","l":"CC0","p":"https://commons.wikimedia.org/wiki/File:Hanting_hotel_in_China_2024.jpg"},{"f":"img/hanting-2.jpg","a":"N509FZ","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Hanting_Beijing_Guanyuanqiao_Hotel_(20240907182158).jpg"}],"jihotel":[{"f":"img/jihotel-1.jpg","a":"Shwangtianyuan","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Hanting_Hotel_and_Ji_Hotel_at_Chayuanchang-20240917.jpg"},{"f":"img/jihotel-2.jpg","a":"N509FZ","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:JI_Hotel_at_Tuanjiehu_(20221026135912).jpg"}],"atour":[{"f":"img/atour-1.jpg","a":"西安兵马俑","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:%E4%BA%9A%E6%9C%B5%E9%85%92%E5%BA%97%EF%BC%88%E4%B8%89%E9%98%B3%E5%B9%BF%E5%9C%BA%E5%BA%97%EF%BC%8920200911.jpg"},{"f":"img/atour-2.jpg","a":"Windmemories","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:20220302_Atour_Hotel_on_Chengdong_Road.jpg"}],"vienna":[{"f":"img/vienna-1.jpg","a":"Huangdan2060","l":"CC BY 3.0","p":"https://commons.wikimedia.org/wiki/File:Vienna_International_Hotel_2021111303.jpg"},{"f":"img/vienna-2.jpg","a":"N509FZ","l":"CC BY-SA 4.0","p":"https://commons.wikimedia.org/wiki/File:Vienna_International_Hotel,_Wenchang_(20230326180708).jpg"}]};
 const GAL_NAME={beefhotpot:'潮汕牛肉火锅',cheungfun:'肠粉',coconutchicken:'椰子鸡',suancaiyu:'酸菜鱼',braisedgoose:'潮汕卤鹅',roastgoose:'烧鹅',wonton:'云吞面',milktea:'港式奶茶',porkchopbun:'猪扒包',pineapplebun:'菠萝油',eggtart:'港式蛋挞',nata:'葡挞',adc:'澳洲牛奶公司',mangosago:'杨枝甘露',sesame:'芝麻糊',eggwaffle:'鸡蛋仔',fishball:'咖喱鱼蛋',seafood:'湾仔海鲜街',oyster:'生蚝',dimsum:'早茶点心',charsiu:'叉烧',charsiubao:'叉烧包',congee:'艇仔粥',almond:'杏仁饼',galinha:'葡国鸡 / 非洲鸡',bacalhau:'马介休球',claypot:'啫啫煲',porkchoprice:'焗猪扒饭',chickenbiscuit:'鸡仔饼',wifecake:'老婆饼',doubleskin:'双皮奶',gingermilk:'姜撞奶',bakkwa:'猪肉脯',macfood:'澳门葡国菜',taotaoju:'陶陶居',panxi:'泮溪酒家',hanting:'汉庭酒店',jihotel:'全季酒店',atour:'亚朵酒店',vienna:'维也纳酒店'};
-const HOTEL_BRAND={sz1:'hanting',zh1:'hanting',gz1:'hanting',sz2:'jihotel',zh2:'jihotel',gz2:'jihotel',sz3:'atour',gz3:'atour',zh3:'vienna'};
+const HOTEL_BRAND={fs1:'jihotel',sz1:'hanting',zh1:'hanting',gz1:'hanting',sz2:'jihotel',zh2:'jihotel',gz2:'jihotel',sz3:'atour',gz3:'atour',zh3:'vienna'};
 
 Object.assign(PLACES,{
   taier:{n:'太二酸菜鱼（COCO Park 一带分店）',c:'sz',la:22.5335,ln:114.0545,r:4.3,rv:'酸菜鱼招牌，鱼片嫩、酸辣开胃。这个品牌规定超过4人不接待，4个人刚好坐一桌。'},
@@ -306,60 +314,60 @@ const DEFAULT_DAYS=[
   it('20:30','move','城际回珠海站，走回酒店','H:zh',8,'CNY','散场时的士难叫，坐城际最方便。'),
   it('21:15','rest','收拾行李','H:zh',0)
  ]},
- {date:'2026-10-15',title:'珠海 → 广州',cities:['zh','gz'],stay:'gz',items:[
-  it('08:30','food','早餐，退房','H:zh',25),
-  it('09:30','move','城际 珠海站 → 广州南站（约1小时10分钟）','gzsouth',72,'CNY','','12306'),
-  it('11:00','move','地铁 → 酒店，寄存行李','H:gz',6),
-  it('12:00','food','午餐：银记肠粉','yinji',30),
-  it('12:45','sweet','甜品：南信 双皮奶、姜撞奶','nanxin',25),
-  it('13:30','sight','沙面岛：欧陆建筑','shamian',0,'CNY','约1.5小时。'),
-  it('15:30','sight','永庆坊 · 粤剧艺术博物馆','yongqing',0),
-  it('17:45','rest','回酒店休息','H:gz',4),
-  it('18:30','food','晚餐：北京路 池记云吞面 + 小吃','chiji',50),
-  Object.assign(it('19:30','show','沿江路 · 海珠桥 · 长堤 夜景散步','yanjiang',0,'CNY','从北京路走约15分钟到天字码头，再沿江往海珠桥走。想上船的话可以坐水上巴士过江，几块钱。'),{id:'d7-x1'}),
-  it('20:45','rest','回酒店','H:gz',0),
-  Object.assign(it('16:30','shop','上下九步行街 · 骑楼','shangxiajiu',0,'CNY','就在永庆坊旁边，走过去就到。'),{id:'d8-3'}),
-  Object.assign(it('17:00','food','点心：陈添记（鱼皮、艇仔粥）','chentianji',45,'CNY','下午点心，吃少一点，留肚子吃晚餐。'),{id:'d8-4'}),
-  Object.assign(it('19:15','sight','北京路 · 千年古道遗址','beijinglu',0,'CNY','吃完晚餐顺便看。'),{id:'d8-5'})
+ {date:'2026-10-15',title:'珠海 → 佛山（祖庙 · 岭南天地）',cities:['zh','fs'],stay:'fs',items:[
+  Object.assign(it('08:30','food','早餐，退房','H:zh',25,'CNY','','','p'),{id:'d7-1'}),
+  Object.assign(it('09:30','move','城际 珠海站 → 广州南站（约1小时10分钟）','gzsouth',72,'CNY','','12306','p'),{id:'d7-2'}),
+  Object.assign(it('10:50','move','滴滴 → 全季酒店（平洲），寄存行李（约20–25分钟）','H:fs',45,'CNY','酒店附近没有地铁，4个人带行李叫一辆6座滴滴最方便。14:00后才能入住，先寄存行李。','','g'),{id:'d7-3'}),
+  Object.assign(it('11:40','move','滴滴 → 佛山祖庙（约20分钟）','zumiao',30,'CNY','4个人一辆车，比地铁方便（地铁要先打车到礌岗站）。','','g'),{id:'d7-f1'}),
+  Object.assign(it('12:15','food','午餐：佛山小吃（鱼腐、陈村粉、盲公饼）','lingnan',50,'CNY','祖庙、岭南天地一带小吃店多。','','p'),{id:'d8-x3'}),
+  Object.assign(it('13:15','sight','佛山祖庙 · 黄飞鸿纪念馆 · 叶问堂','zumiao',20,'CNY','约2小时。黄飞鸿醒狮表演一般14:15、15:30有场次，以当天公告为准。','','p'),{id:'d8-x2'}),
+  Object.assign(it('15:30','sight','岭南天地 · 骑楼老街','lingnan',0,'CNY','就在祖庙旁边，免费。','','p'),{id:'d8-x4'}),
+  Object.assign(it('16:15','sight','梁园','liangyuan_fs',10,'CNY','岭南四大名园之一，人少安静。离岭南天地打车约5分钟，16:40停止入园。','','p'),{id:'d7-f2'}),
+  Object.assign(it('18:00','food','晚餐：顺德杨廷记（盐焗鸡、鱼皮角）','yangtingji_fs',65,'CNY','在岭南天地钟楼旁，吃完直接夜游。有记、天海等其他选择在“换一家”里，有记要17:00前到。','','p'),{id:'d7-f3'}),
+  Object.assign(it('19:30','show','岭南天地夜游','lingnan',0,'CNY','晚上亮灯后比白天好看，免费。','','p'),{id:'d7-f4'}),
+  Object.assign(it('20:45','rest','滴滴回酒店（约20分钟），办入住','H:fs',30,'CNY','4个人一辆车。','','g'),{id:'d7-f5'})
  ]},
- {date:'2026-10-16',title:'佛山半日 · 广州夜景',cities:['gz'],stay:'gz',items:[
-  it('08:00','food','早茶：点都德（虾饺、金莎红米肠、叉烧包）','diandude',90,'CNY','8点前到，少排队。'),
-  Object.assign(it('09:30','move','地铁 公园前 → 西朗，转广佛线 → 祖庙站（约1小时）','zumiao',7,'CNY','公园前站从酒店走过去约10分钟。'),{id:'d8-x1'}),
-  Object.assign(it('10:30','sight','佛山祖庙 · 黄飞鸿纪念馆 · 叶问堂','zumiao',20,'CNY','约2小时。醒狮、功夫表演按当天场次，进门先看时间表。门票为估价。'),{id:'d8-x2'}),
-  Object.assign(it('12:30','food','午餐：佛山小吃（鱼腐、陈村粉、盲公饼）','lingnan',50,'CNY','祖庙、岭南天地一带小吃店多。'),{id:'d8-x3'}),
-  Object.assign(it('13:30','sight','岭南天地 · 骑楼老街','lingnan',0,'CNY','就在祖庙旁边，免费。'),{id:'d8-x4'}),
-  Object.assign(it('15:00','move','广佛线 → 西朗，转1号线 → 陈家祠站','chenclan',7,'CNY','回程顺路。'),{id:'d8-x5'}),
-  Object.assign(it('16:00','sight','陈家祠','chenclan',10,'CNY','约17:30闭馆，最好16:30前进场。约1小时。'),{id:'d8-2'}),
-  Object.assign(it('17:15','move','地铁 陈家祠 → 珠江新城（约30分钟）','huacheng',5),{id:'d8-x6'}),
-  Object.assign(it('18:00','food','晚餐：炳胜品味（黑叉烧、烧鹅）','bingsheng',180,'CNY','','大众点评 / 电话订位'),{id:'d8-8'}),
-  Object.assign(it('19:30','show','花城广场 → 海心桥，看广州塔亮灯','haixin',0,'CNY','广州塔从外面看最漂亮，海心桥上拍照最好。免费。'),{id:'d8-7'}),
-  Object.assign(it('21:00','rest','回酒店，收拾行李','H:gz',6),{id:'d8-10'})
+ {date:'2026-10-16',title:'广州一日游（西关 · 珠江夜景）',cities:['gz'],stay:'fs',items:[
+  Object.assign(it('08:15','move','打车到礌岗站，广佛线 → 西塱，转1号线 → 长寿路（约1小时）','shangxiajiu',10,'CNY','酒店附近没有地铁：先打车6–8分钟到礌岗站（约¥12一车），再坐地铁。直接打车到西关约¥50–60一车。','','p'),{id:'d8-x1'}),
+  Object.assign(it('09:15','food','早茶：陶陶居（虾饺皇、叉烧包）','taotaoju',100,'CNY','在第十甫，长寿路站走过去约5分钟。周五早上也要排队，可先在小程序取号。','','p'),{id:'d8-1'}),
+  Object.assign(it('10:45','sight','陈家祠','chenclan',10,'CNY','从陶陶居打车约10分钟。约1小时。','','p'),{id:'d8-2'}),
+  Object.assign(it('12:00','sight','永庆坊 · 粤剧艺术博物馆','yongqing',0,'CNY','','','p'),{id:'d7-7'}),
+  Object.assign(it('13:00','food','午餐：银记肠粉','yinji',30,'CNY','','','p'),{id:'d7-4'}),
+  Object.assign(it('13:45','sweet','甜品：南信 双皮奶、姜撞奶','nanxin',25,'CNY','','','p'),{id:'d7-5'}),
+  Object.assign(it('14:15','shop','上下九步行街 · 骑楼','shangxiajiu',0,'CNY','就在南信旁边。','','p'),{id:'d8-3'}),
+  Object.assign(it('15:00','sight','沙面岛：欧陆建筑','shamian',0,'CNY','约1.5小时。','','p'),{id:'d7-6'}),
+  Object.assign(it('16:45','sight','北京路 · 千年古道遗址','beijinglu',0,'CNY','从沙面坐地铁或打车约15分钟。','','p'),{id:'d8-5'}),
+  Object.assign(it('17:45','food','晚餐：北京路 池记云吞面 + 小吃','chiji',50,'CNY','','','p'),{id:'d7-9'}),
+  Object.assign(it('18:45','show','沿江路 · 海珠桥 · 长堤 夜景散步','yanjiang',0,'CNY','从北京路走约15分钟到天字码头，再沿江往海珠桥走。','','p'),{id:'d7-x1'}),
+  Object.assign(it('19:45','move','地铁 海珠广场 → 广州塔 / 花城广场（约20分钟）','huacheng',5,'CNY','','','p'),{id:'d8-x6'}),
+  Object.assign(it('20:15','show','花城广场 → 海心桥，看广州塔亮灯','haixin',0,'CNY','广州塔从外面看最漂亮，海心桥上拍照最好。免费。','','p'),{id:'d8-7'}),
+  Object.assign(it('21:30','move','滴滴回佛山酒店（约40分钟）','H:fs',75,'CNY','4个人一辆车，跟坐地铁差不多钱。想坐地铁的话：3号线22:40前上车，沥滘转广佛线到礌岗，再打车。','','g'),{id:'d8-x5'}),
+  Object.assign(it('22:15','rest','回酒店，收拾行李','H:fs',0,'CNY','','','p'),{id:'d8-10'})
  ]},
- {date:'2026-10-17',title:'广州 → 深圳 · 22:00 起飞',cities:['gz','sz'],stay:'',items:[
-  it('08:00','food','早茶：广州酒家（文昌总店）','gzjj',110),
-  it('09:30','shop','买手信：鸡仔饼、老婆饼','gzjj',80,'CNY','广州酒家楼下就有手信店。'),
-  it('10:00','sight','石室圣心大教堂','sacredheart',0,'CNY','哥特式石头教堂，外观随时可以看，内部开放时间以现场为准。'),
-  it('10:45','shop','北京路最后逛逛','beijinglu',0),
-  it('11:30','rest','回酒店拿行李，退房','H:gz',0),
-  it('12:00','move','地铁 → 广州东站','gzeast',5,'CNY','带行李进站要安检，预留时间。'),
-  it('12:45','move','穗深城际 广州东 → 深圳机场站（约1.5–2小时）','szx',80,'CNY','班次和始发站以12306为准。','12306'),
-  it('14:45','move','到机场 T3，先寄存行李','szx',30,'CNY','机场有行李寄存服务，按件计费（估价）。这样下午可以空手去玩。'),
-  it('15:15','move','的士 → 宝安欢乐港湾（约20分钟）','joyharbour',40,'CNY','行李已经寄存，4个人一辆的士就够。','','g'),
-  it('15:45','sight','欢乐港湾海滨步道','joyharbour',0,'CNY','沿海边慢慢走，吹海风。'),
-  Object.assign(it('16:30','sweet','海边找间咖啡坐坐','joyharbour',30,'CNY','歇一歇，等日落。'),{id:'d9-x1'}),
-  it('17:40','show','海边看日落','joyharbour',0,'CNY','日落大约18:00。'),
-  it('18:05','food','最后一顿晚餐：欢乐港湾（潮汕菜 / 粤菜）','joyharbour',120),
-  it('19:00','move','的士 → 机场 T3','szx',40,'CNY','4个人一辆的士，在机场取行李。','','g'),
-  it('19:15','move','取行李，值机、托运、过安检','szx',0,'CNY','国际航班起飞前约3小时到机场。'),
-  it('22:00','move','航班起飞，回马来西亚','szx',0)
+ {date:'2026-10-17',title:'佛山 → 深圳 · 22:00 起飞',cities:['fs','sz'],stay:'',items:[
+  Object.assign(it('07:30','food','早茶：年年顺景（石磨肠粉、流沙包）','nianniansj_pz_fs',60,'CNY','离酒店打车约5分钟，07:30开门。不想出门就吃酒店的自助早餐（07:00–10:00）。','','p'),{id:'d9-1'}),
+  Object.assign(it('09:00','shop','平洲玉器街（只看不买）','pingzhou_yuqijie_fs',0,'CNY','全国有名的玉器市场，可以看师傅现场雕刻。店铺大多09:00后开门。买翡翠水很深，小心推销。','','p'),{id:'d9-2'}),
+  Object.assign(it('10:45','rest','回酒店收拾，退房','H:fs',30,'CNY','12:00前退房。从玉器街打车回酒店约10分钟。','','g'),{id:'d9-3'}),
+  Object.assign(it('11:45','move','滴滴 → 广州南站（约30分钟）','gzsouth',70,'CNY','4个人带行李叫一辆6座车。','','g'),{id:'d9-6'}),
+  Object.assign(it('12:40','move','高铁 广州南 → 深圳北（约30分钟）','sznorth',75,'CNY','车次很多，买12:30–12:50开的。','12306','p'),{id:'d9-7'}),
+  Object.assign(it('13:30','move','深圳北 → 机场 T3（滴滴约40分钟，或地铁5号线转11号线约50分钟）','szx',100,'CNY','带行李打车最方便，约¥100一车。','','g'),{id:'d9-y1'}),
+  Object.assign(it('14:30','move','到机场 T3，先寄存行李','szx',30,'CNY','寄存在4楼1号门A岛，24小时，第一小时免费，之后按件按天收费（估价）。这样下午可以空手去玩。','','p'),{id:'d9-8'}),
+  Object.assign(it('15:15','move','的士 → 宝安欢乐港湾（约20分钟）','joyharbour',40,'CNY','行李已经寄存，4个人一辆的士就够。','','g'),{id:'d9-9'}),
+  Object.assign(it('15:45','sight','欢乐港湾海滨步道','joyharbour',0,'CNY','沿海边慢慢走，吹海风。','','p'),{id:'d9-10'}),
+  Object.assign(it('16:30','sweet','海边找间咖啡坐坐','joyharbour',30,'CNY','歇一歇，等日落。','','p'),{id:'d9-x1'}),
+  Object.assign(it('17:40','show','海边看日落','joyharbour',0,'CNY','日落大约18:00。','','p'),{id:'d9-12'}),
+  Object.assign(it('18:05','food','最后一顿晚餐：欢乐港湾（潮汕菜 / 粤菜）','joyharbour',120,'CNY','','','p'),{id:'d9-13'}),
+  Object.assign(it('19:00','move','的士 → 机场 T3','szx',40,'CNY','4个人一辆的士，在机场取行李。','','g'),{id:'d9-14'}),
+  Object.assign(it('19:15','move','取行李，值机、托运、过安检','szx',0,'CNY','国际航班起飞前约3小时到机场。','','p'),{id:'d9-15'}),
+  Object.assign(it('22:00','move','航班起飞，回马来西亚','szx',0,'CNY','','','p'),{id:'d9-16'})
  ]}
 ];
 DEFAULT_DAYS.forEach((d,di)=>d.items.forEach((x,ii)=>{if(!x.id)x.id='d'+(di+1)+'-'+(ii+1)}));
 const DEFAULT={
   v:1,
-  settings:{people:4,rooms:2,myr:1/1.63,rates:{CNY:1,HKD:0.884764,MOP:0.855913},flight:1200,misc:500,hotel:{sz:'booked',zh:'zh1',gz:'gz1'}},
-  booked:{sz:{"n":"橙果酒店（深圳宝安中心翻身地铁站店）","addr":"深圳市宝安区翻身路81号（42区），地铁5号线翻身站B出口步行约10分钟","phone":"0755-33216699","ref":"","cin":"2026-10-09","cout":"2026-10-12","amt":911,"cur":"MYR","link":"","note":"14:00后入住，24小时前台，有自助早餐（以订单为准）。地图位置是大概位置。","la":22.5649,"ln":113.8904,"rooms":[],"prev":"sz1"}},
-  days:DEFAULT_DAYS,bookings:{'hotel-sz':1791331200000},actual:{'hotel-sz':{amt:911,cur:'MYR',per:'g'}},rev:'default'
+  settings:{people:4,rooms:2,myr:1/1.63,rates:{CNY:1,HKD:0.884764,MOP:0.855913},flight:1200,misc:500,hotel:{sz:'booked',zh:'zh1',gz:'gz1',fs:'booked'}},
+  booked:{fs:{"n":"全季酒店（佛山南海平洲店）","addr":"佛山市南海区桂城街道夏南一社区夏南路6号","phone":"0757-81280333","ref":"","cin":"2026-10-15","cout":"2026-10-17","amt":"","cur":"CNY","link":"","note":"14:00后入住，12:00前退房，中式自助早餐07:00–10:00。附近没有地铁：最近的广佛线礌岗站约2.2公里，打车6–8分钟。","la":23.042,"ln":113.1769,"rooms":[],"prev":"fs1"},sz:{"n":"橙果酒店（深圳宝安中心翻身地铁站店）","addr":"深圳市宝安区翻身路81号（42区），地铁5号线翻身站B出口步行约10分钟","phone":"0755-33216699","ref":"","cin":"2026-10-09","cout":"2026-10-12","amt":911,"cur":"MYR","link":"","note":"14:00后入住，24小时前台，有自助早餐（以订单为准）。地图位置是大概位置。","la":22.5649,"ln":113.8904,"rooms":[],"prev":"sz1"}},
+  days:DEFAULT_DAYS,bookings:{'hotel-sz':1791331200000,'hotel-fs':1791331200000},actual:{'hotel-sz':{amt:911,cur:'MYR',per:'g'}},rev:'default'
 };
 
 
@@ -372,5 +380,5 @@ const ISLANDS=[
   [[113.585,22.2765],[113.598,22.2765],[113.600,22.2825],[113.588,22.2835]]
 ];
 const RIVER=[[113.63,22.80],[113.58,22.88],[113.50,22.96],[113.42,23.03],[113.36,23.08],[113.31,23.105],[113.27,23.115],[113.24,23.11],[113.20,23.10]];
-const CITY_LABEL={gz:[113.38,23.17],sz:[114.12,22.62],hk:[114.20,22.40],mo:[113.47,22.17],zh:[113.46,22.30]};
+const CITY_LABEL={fs:[113.05,23.07],gz:[113.38,23.17],sz:[114.12,22.62],hk:[114.20,22.40],mo:[113.47,22.17],zh:[113.46,22.30]};
 

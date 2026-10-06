@@ -1,6 +1,8 @@
 /* ================= app (travel-journal UI) ================= */
-const CC={sz:'#c67139',hk:'#a8463f',mo:'#6f8150',zh:'#3f7f86',gz:'#b08628'};
-const CODE={sz:'SZX',hk:'HKG',mo:'MFM',zh:'ZUH',gz:'CAN'};
+const CC={sz:'#c67139',hk:'#a8463f',mo:'#6f8150',zh:'#3f7f86',gz:'#b08628',fs:'#7d5a8c'};
+const CODE={sz:'SZX',hk:'HKG',mo:'MFM',zh:'ZUH',gz:'CAN',fs:'FUO'};
+// the cities we sleep in, in trip order
+const stayCities=()=>[...new Set(trip.days.map(d=>d.stay).filter(c=>c&&HOTELS[c]))];
 const KC={move:'#82796a',sight:'#56633f',food:'#b2622d',sweet:'#a8506e',shop:'#4f6a8f',show:'#6b559a',hotel:'#3f7f86',rest:'#a19786'};
 const WD=['周日','周一','周二','周三','周四','周五','周六'];
 const TABS=[['overview','总览'],['itinerary','每日行程'],['now','旅途中'],['map','地图'],['food','美食'],['hotels','住宿'],['tickets','订票清单'],['budget','预算'],['settings','设置']];
@@ -107,7 +109,7 @@ function urgency(t){
 }
 function tickets(){const out=[],ppl=Math.max(1,+trip.settings.people||1);
   trip.days.forEach(d=>sortI(d.items).forEach(i=>{if(i.book)out.push({id:i.id,date:d.date,t:i.t,kind:i.kind,title:i.title,how:i.book,estAmt:+i.cost||0,estCur:i.cur,estPer:i.per,cost:+i.cost?(CUR[i.cur]||'')+n0(+i.cost)+(i.per==='g'?'/全组':'/人'):'免费'})}));
-  ['sz','zh','gz'].forEach(c=>{const ns=trip.days.filter(d=>d.stay===c);if(!ns.length)return;const h=hotelFor(c);const bk=h.booked?bookedOf(c):null;out.push({id:'hotel-'+c,estCny:night(h)*ns.length,date:ns[0].date,t:'',title:(bk?'已订酒店：':'订酒店：')+h.n,how:bk?[ns.length+' 晚',(bk.rooms||[]).length?(bk.rooms||[]).length+' 间房':'',bk.ref?'订单号 '+bk.ref:''].filter(Boolean).join(' · '):ns.length+' 晚 · '+roomText()+' · 携程 / Trip.com / Agoda'+(c==='gz'?'（广交会期间，最先订）':''),cost:'¥'+n0(night(h)*ns.length),hotel:true,bookedHotel:!!bk})});
+  stayCities().forEach(c=>{const ns=trip.days.filter(d=>d.stay===c);if(!ns.length)return;const h=hotelFor(c);const bk=h.booked?bookedOf(c):null;out.push({id:'hotel-'+c,estCny:night(h)*ns.length,date:ns[0].date,t:'',title:(bk?'已订酒店：':'订酒店：')+h.n,how:bk?[ns.length+' 晚',(bk.rooms||[]).length?(bk.rooms||[]).length+' 间房':'',bk.ref?'订单号 '+bk.ref:''].filter(Boolean).join(' · '):ns.length+' 晚 · '+roomText()+' · 携程 / Trip.com / Agoda'+(c==='gz'?'（广交会期间，最先订）':''),cost:'¥'+n0(night(h)*ns.length),hotel:true,bookedHotel:!!bk})});
   return out.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:tMin(a.t||'0:0')-tMin(b.t||'0:0'))}
 const nowTs=()=>S.sim!=null?S.sim:Date.now();
 function timeline(){const tl=[];trip.days.forEach((d,di)=>d.items.forEach(i=>tl.push({d,di,i,ts:TS(d.date,i.t)})));return tl.sort((a,b)=>a.ts-b.ts)}
@@ -179,8 +181,8 @@ document.addEventListener('wheel',e=>{const el=e.target.closest('.map');if(!el)r
 /* ---------- hero + tabs ---------- */
 function renderHero(){
   const B=calc(),tk=tickets(),done=tk.filter(t=>trip.bookings[t.id]).length,t=Date.now();
-  const segs=[['sz','深圳','3晚',1],['hk','香港','一日游',2],['zh','珠海','3晚',3],['mo','澳门','一日游',4],['zh','长隆','一日',5],['gz','广州','2晚',6]];
-  $('#route').innerHTML=segs.map((s,k)=>`<div class="stop-wrap">${k?'<div class="stop-link"></div>':''}<button type="button" class="stop" data-a="openDay" data-v="${s[3]}" title="看这天的行程"><div class="stamp" style="--c:${CC[s[0]]};--tilt:${[-8,6,-4,9,-6,4][k]}deg">${s[1]==='长隆'?'CL':CODE[s[0]]}</div><b>${s[1]}</b><small>${s[2]}</small></button></div>`).join('');
+  const segs=[['sz','深圳','3晚',1],['hk','香港','一日游',2],['zh','珠海','3晚',3],['mo','澳门','一日游',4],['zh','长隆','一日',5],['fs','佛山','2晚',6],['gz','广州','一日游',7]];
+  $('#route').innerHTML=segs.map((s,k)=>`<div class="stop-wrap">${k?'<div class="stop-link"></div>':''}<button type="button" class="stop" data-a="openDay" data-v="${s[3]}" title="看这天的行程"><div class="stamp" style="--c:${CC[s[0]]};--tilt:${[-8,6,-4,9,-6,4,-7][k]}deg">${s[1]==='长隆'?'CL':CODE[s[0]]}</div><b>${s[1]}</b><small>${s[2]}</small></button></div>`).join('');
   let head,big,unit,sub;
   if(t<START){const ms=START-t;head='距离抵达深圳还有';big=Math.floor(ms/864e5);unit='天';sub=`${Math.floor(ms/36e5)%24} 小时 ${Math.floor(ms/6e4)%60} 分`}
   else if(t<=END){const di=Math.min(trip.days.length,Math.floor((t-TS('2026-10-09','00:00'))/864e5)+1);head='旅途进行中';big=di;unit='/ 9 天';sub='点“旅途中”看现在和接下来'}
@@ -198,7 +200,7 @@ function renderHero(){
 /* ---------- P.01 overview ---------- */
 function pOverview(){
   const B=calc();
-  const hotels=['sz','zh','gz'].map(c=>{const h=hotelFor(c),n=trip.days.filter(d=>d.stay===c).length;return `<span><span class="cdot" style="--c:${CC[c]}"></span>${CITY[c].n} ${n}晚 · ${esc(short(h.n))}</span>`}).join('');
+  const hotels=stayCities().map(c=>{const h=hotelFor(c),n=trip.days.filter(d=>d.stay===c).length;return `<span><span class="cdot" style="--c:${CC[c]}"></span>${CITY[c].n} ${n}晚 · ${esc(short(h.n))}</span>`}).join('');
   const cards=trip.days.map((d,k)=>{const p=dp(d.date),s=sortI(d.items),c0=CC[(d.cities||['sz'])[0]];
     const hl=s.filter(i=>['sight','show','food'].includes(i.kind)).slice(0,4).map(i=>`<div><span>${fmtT(i.t)}</span><span>${esc(i.title.replace(MEAL_RE,''))}</span></div>`).join('');
     const pp=(B.perDay[k].act+B.perDay[k].h)/B.ppl;
@@ -375,17 +377,17 @@ function pFood(){
 
 /* ---------- P.06 hotels ---------- */
 function pHotels(){const ppl=Math.max(1,+trip.settings.people||1);
-  const cities=['sz','zh','gz'].map(c=>{const ns=trip.days.filter(d=>d.stay===c);
-    const cards=HOTELS[c].map((h,hk)=>{const sel=trip.settings.hotel[c]===h.id,nc=night(h),g=gal(HOTEL_BRAND[h.id]);
+  const cities=stayCities().map(c=>{const ns=trip.days.filter(d=>d.stay===c);
+    const cards=HOTELS[c].filter(h=>!(bookedOf(c)&&bookedOf(c).n===h.n)).map((h,hk)=>{const sel=trip.settings.hotel[c]===h.id,nc=night(h),g=gal(HOTEL_BRAND[h.id]);
       return `<button type="button" class="hcard${sel?' sel':''}" data-a="hotel" data-c="${c}" data-v="${h.id}" style="--tilt:${[-1.2,.8,-.6][hk%3]}deg;--c:${CC[c]}" aria-pressed="${sel}"><div class="tp"></div>
         <div class="pic">${g[0]?`<span class="im" style="background-image:url(${esc(g[0].f)})"></span>`:''}<span class="tier">${esc(h.tier)}</span></div>
         ${sel?'<span class="stampmark">已选 ✓</span>':''}
         <div class="in"><div class="nm">${esc(h.n)}</div><div class="ar">${esc(h.area)} · <b>★ ${h.r.toFixed(1)}</b></div><p>${esc(h.rv)}</p>
           <div class="pc">${h.pro.map(x=>`<span class="p">＋ ${esc(x)}</span>`).join('')}${h.con.map(x=>`<span class="c">－ ${esc(x)}</span>`).join('')}</div>
           <div class="ft"><div><b>¥${n0(nc)}<small> /晚</small></b><div class="tot">合计 ¥${n0(nc*ns.length)} · 每人 ¥${n0(nc*ns.length/ppl)}</div></div><span class="sb">${sel?'✓ 已选择':'选这家'}</span></div></div></button>`}).join('');
-    return `<div><div class="hcity-h"><div class="hcode" style="--c:${CC[c]}">${CODE[c]}</div><h3>${CITY[c].n}</h3><span class="nw" style="font-size:13px;color:var(--mute)">${ns.length} 晚 · ${ns.length?dp(ns[0].date).md+' – '+dp(ns[ns.length-1].date).md+' 入住':''}</span>${CLOUD.on&&CLOUD.me&&!bookedOf(c)?(()=>{const rs=CLOUD.members.filter(m=>(m.roomInfo||{})[c]);return rs.length?`<span class="roomlist">房号：${rs.map(m=>esc(m.name)+' '+esc(m.roomInfo[c])).join(' · ')}</span>`:''})():''}</div>${bookedBlock(c)}${bookedOf(c)?`<div class="hsub">${isBooked(c)?'其他选择（点一下就改用这家）':'推荐选择'}</div>`:''}<div class="hgrid">${cards}</div></div>`}).join('');
+    return `<div><div class="hcity-h"><div class="hcode" style="--c:${CC[c]}">${CODE[c]}</div><h3>${CITY[c].n}</h3><span class="nw" style="font-size:13px;color:var(--mute)">${ns.length} 晚 · ${ns.length?dp(ns[0].date).md+' – '+dp(ns[ns.length-1].date).md+' 入住':''}</span>${CLOUD.on&&CLOUD.me&&!bookedOf(c)?(()=>{const rs=CLOUD.members.filter(m=>(m.roomInfo||{})[c]);return rs.length?`<span class="roomlist">房号：${rs.map(m=>esc(m.name)+' '+esc(m.roomInfo[c])).join(' · ')}</span>`:''})():''}</div>${bookedBlock(c)}${bookedOf(c)&&cards?`<div class="hsub">${isBooked(c)?'其他选择（点一下就改用这家）':'推荐选择'}</div>`:''}<div class="hgrid">${cards}</div></div>`}).join('');
   return `<section class="page" style="display:flex;flex-direction:column;gap:40px"><div>${ph('P.06','住宿选择','每座城市三家可选，价格为每晚估价。订好之后可以填上我们自己订的酒店和分房，行程、地图、预算和订票清单都会跟着改。')}
-    <div style="font-size:13px;color:var(--mute);margin-top:-8px">${ppl} 人住 ${roomText()}${mix().tri?' · 三人房数量少，订之前在携程上筛选“三人间 / 家庭房”或打电话问酒店。':''}广州那两晚碰上广交会，已按上涨后的价格估算。</div></div>${cities}</section>`}
+    <div style="font-size:13px;color:var(--mute);margin-top:-8px">${ppl} 人住 ${roomText()}${mix().tri?' · 三人房数量少，订之前在携程上筛选“三人间 / 家庭房”或打电话问酒店。':''}佛山那两晚也在广交会期间，房价以订单为准。</div></div>${cities}</section>`}
 
 /* ---------- P.07 tickets ---------- */
 function pTickets(){const tk=tickets(),done=tk.filter(t=>trip.bookings[t.id]).length,pct=tk.length?Math.round(done/tk.length*100):0;

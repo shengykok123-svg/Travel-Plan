@@ -14,7 +14,7 @@ function bookedHotel(c){const b=bookedOf(c);if(!b)return null;const ns=stayNight
     perNight:+b.amt?cny(b.amt,b.cur)/ns:null}}
 // who is in which room, for profiles and member cards
 function roomOf(c,id){const b=bookedOf(c);if(!b||!id)return null;return (b.rooms||[]).find(r=>(r.who||[]).includes(id))||null}
-function roomsOfMember(id){const o={};['sz','zh','gz'].forEach(c=>{const r=roomOf(c,id);if(r)o[c]=r});return o}
+function roomsOfMember(id){const o={};stayCities().forEach(c=>{const r=roomOf(c,id);if(r)o[c]=r});return o}
 const whoName=x=>{const m=(typeof CLOUD!=='undefined'&&CLOUD.on)?CLOUD.members.find(z=>z.email===x):null;return m?m.name:String(x)};
 const meId=()=>(typeof CLOUD!=='undefined'&&CLOUD.on&&CLOUD.me)?CLOUD.me.email:null;
 
