@@ -221,7 +221,7 @@ Object.assign(PLACES,{
   Object.values(MEAL_OPTS).forEach(list=>list.forEach(o=>{if(o.pl&&o.gal&&!PLACE_GAL[o.pl])PLACE_GAL[o.pl]=o.gal}));
 }
 
-/* ---------------- Foshan (last two nights at 全季 平洲): dinner on 10/15, 早茶 near the hotel on 10/17 ---------------- */
+/* ---------------- Foshan (last two nights at 全季 平洲): dinner on 10/15, 早茶 near 祖庙 on 10/17 ---------------- */
 Object.assign(PLACES,{
   jinyuan_fs:{n:'金源酒家（佛山福宁路）',c:'fs',la:23.0256,ln:113.1201,r:4,rv:'广佛少数还保留手推车点心的老茶楼，6点开门，点心一碟大多十元左右。生炒鲩鱼卷、千层糕是招牌。有食客说炸物偏干。',h:'06:00-14:30, 17:00-21:00'},
   yingji_fs:{n:'应记面家（佛山莲花路店）',c:'fs',la:23.0342,ln:113.1156,r:4,rv:'1936年创办的云吞面老字号，鲜虾云吞面是招牌，汤底用虾壳和大地鱼熬。人均20多元，很多本地人说是佛山最好吃的云吞面。',h:'06:30-22:30'},
@@ -242,5 +242,5 @@ Object.assign(PLACES,{
   baishengda_fs:{n:'百盛达商务酒店 中餐厅（桂城海六路）',c:'fs',la:23.0578,ln:113.1432,rv:'桂城街坊常去的酒店茶市，环境宽敞，点心选择多。',h:'茶市 07:45-14:00'}
 });
 MEAL_OPTS['d7-f3']=[mo('yangtingji_fs','古法盐焗鸡、鱼皮角、乳鸽',65,null),mo('tianhai_fs','柱侯鸡、三丝鱼肚羹、白切鸡',70,null),mo('youji_fs','白切猪手、秘制茄瓜、香酥竹肠',75,null),mo('jinyuan_fs','生炒鲩鱼卷、八宝鸭、鱼肚羹',70,null),mo('taigenbao_fs','海鲜粥水煲、煎焗鱼唇',100,'congee'),mo('hongbixian_fs','腊味煲仔饭、啫啫煲',55,'claypot'),mo('shisanyi_fs','佛山蒸菜、鱼皮、五区小吃',45,null),mo('yingji_fs','鲜虾云吞面、及第粥',25,'wonton')];
-MEAL_OPTS['d9-1']=[mo('nianniansj_pz_fs','石磨肠粉、流沙包、核桃包',60,'cheungfun'),mo('junyu_fs','平洲福肉饼、手工虾饺',60,'dimsum'),mo('dianzhi_pz_fs','虾饺、烧卖、叉烧包',59,'charsiubao'),mo('yupinshuangxi_fs','水晶虾饺、金酱凤爪、糖蛋散',65,'dimsum'),mo('liufu_zx_fs','糯米鸡、咸水角',35,'dimsum'),mo('nianniansj_yp_fs','石磨肠粉、推车点心',69,'cheungfun'),mo('baishengda_fs','一盅两件、虾饺、烧卖',55,'dimsum')];
+MEAL_OPTS['d9-1']=[mo('jinyuan_fs','手推车点心、千层糕、水晶饺',40,'dimsum'),mo('tianhai_fs','一盅两件、荔肝卷、虾饺',45,'dimsum'),mo('yayuan_fs','手工布拉肠粉（选猪肉或鸡蛋）',15,'cheungfun'),mo('yingji_fs','鲜虾云吞面、煎云吞',25,'wonton'),mo('dakeyi_fs','状元及第粥、油炸鬼、猪肉肠',20,'congee'),mo('huangfeihong_fs','虾饺、烧卖、凤爪、叉烧包',70,'charsiubao'),mo('chunfeng_fs','手工点心',38,'dimsum'),mo('beixiangyuan_fs','紫苏煎饺、紫菜蒸饺',15,null)];
 [MEAL_OPTS['d7-f3'],MEAL_OPTS['d9-1']].forEach(list=>list.forEach(o=>{if(o.pl&&o.gal&&!PLACE_GAL[o.pl])PLACE_GAL[o.pl]=o.gal}));
