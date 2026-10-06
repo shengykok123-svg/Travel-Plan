@@ -642,6 +642,42 @@ body.picker-open{overflow:hidden}
 .cp{border:0;background:var(--surface);border-radius:999px;padding:1px 8px;font-size:11px;cursor:pointer;margin-left:4px}
 .muted-v{color:var(--n5);font-weight:400}
 .roomlist{flex-basis:100%;font-size:13px;color:var(--sage8);background:var(--sage2);border-radius:999px;padding:3px 12px;align-self:flex-start;width:fit-content}
+/* our own booked hotel */
+.bk-add{display:block;width:100%;margin:-6px 0 20px;padding:14px 20px}
+.bkcard{position:relative;background:var(--paper);border-radius:26px;padding:18px 20px 16px;margin:-6px 0 22px;box-shadow:var(--sh-md);border-left:8px solid var(--c);display:flex;flex-direction:column;gap:12px}
+.bkcard.on{box-shadow:0 12px 32px rgba(46,43,37,.2);outline:3px solid var(--sage6);outline-offset:-3px}
+.bkcard .tp{position:absolute;top:-10px;left:30px;width:78px;height:22px;border-radius:3px;background:var(--c);opacity:.45;transform:rotate(-4deg)}
+.bkcard .stampmark{position:static;transform:rotate(-8deg);align-self:flex-start;flex:none}
+.bk-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.bk-eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--sage7)}
+.bk-n{font-family:var(--disp);font-weight:700;font-synthesis:none;font-size:21px;line-height:1.3;text-wrap:balance}
+.bk-dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;margin:0;font-size:14px}
+.bk-dl dt{color:var(--mute);font-size:12px;padding-top:2px;white-space:nowrap}
+.bk-dl dd{margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-width:0;overflow-wrap:anywhere}
+.bk-rooms{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.bk-room{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;background:var(--surface);border-radius:16px;padding:8px 12px;font-size:13px}
+.bk-room b{font-family:'Caprasimo',serif;font-weight:400;font-size:18px}
+.bk-room>span{color:var(--mute)}
+.bk-who{flex-basis:100%;display:flex;flex-wrap:wrap;gap:4px}
+.bk-who i{font-style:normal;background:var(--paper);border-radius:999px;padding:1px 9px;color:var(--ink)}
+.bk-who i.me{background:var(--sage2);color:var(--sage8);font-weight:700}
+.bk-who em{font-style:normal;color:var(--n5)}
+.bk-hint{margin:0;font-size:12px;color:var(--mute)}
+.bk-acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.hsub{font-size:13px;font-weight:700;color:var(--mute);margin:0 0 12px}
+.bk-form{margin:-6px 0 22px}
+.bk-ftitle{font-family:var(--disp);font-weight:700;font-synthesis:none;font-size:18px}
+.bk-ftitle.sm{font-size:15px;margin-bottom:8px}
+.bk-rooms-edit{display:flex;flex-direction:column;gap:10px}
+.bk-rrow{display:grid;grid-template-columns:minmax(90px,1fr) minmax(100px,1fr) minmax(0,3fr) auto;gap:8px;align-items:end;background:var(--paper);border-radius:16px;padding:10px 12px}
+.bk-rrow select{border:1px solid var(--div);background:var(--paper);border-radius:999px;padding:7px 12px;font-size:14px;min-width:0}
+fieldset.bk-whos{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 12px;min-width:0}
+fieldset.bk-whos legend{font-size:12px;color:var(--mute2);padding:0;margin-bottom:4px}
+.bk-whos .chk{flex-direction:row;align-items:center;gap:5px;font-size:14px;color:var(--ink)}
+.bk-whos .chk input{width:16px;height:16px;accent-color:var(--acc)}
+@media (max-width:620px){.bk-rrow{grid-template-columns:1fr 1fr}.bk-rrow .bk-whos{grid-column:1/-1}.bk-rrow>.mini-btn{grid-column:1/-1;justify-self:end}}
+.rno-auto{display:flex;flex-direction:column;gap:2px;background:var(--paper);border-radius:14px;padding:6px 10px;font-size:13px}
+.rno-auto small{font-size:11px;color:var(--mute)}
 
 /* roles */
 .badge.role-super{background:var(--acc);color:var(--paper)}
@@ -1469,6 +1505,123 @@ document.addEventListener('submit',e=>{const id=e.target.dataset&&e.target.datas
   const t=tickets().find(x=>x.id===id);const v={amt,cur:f.get('cur'),per:f.get('per')};
   commit(x=>{x.actual=x.actual||{};x.actual[id]=v},'已记下实付价格',(t?t.title:id)+' 实付 '+(CUR[v.cur]||'')+amt+(v.per==='g'?'（全组）':'（每人）'))});
 
+/* ---------------- hotels we booked ourselves: details + room assignment ----------------
+   trip.booked[city] = {n, addr, phone, cin, cout, ref, amt, cur, link, note, la, ln, prev,
+                        rooms:[{no, type, who:[member id or name]}]}
+   trip.settings.hotel[city] === 'booked' means the booked one is in use (itinerary, map, budget, booking list).
+   Booked-ticks and paid prices are kept per hotel in trip.hotelMemo, so switching hotels never carries them over. */
+const ROOM_TYPES={twin:'双床房',double:'大床房',triple:'三人房',family:'家庭房',other:'其他'};
+const bookedOf=c=>{const b=(trip.booked||{})[c];return b&&b.n?b:null};
+const isBooked=c=>trip.settings.hotel[c]==='booked'&&!!bookedOf(c);
+const stayNights=c=>trip.days.filter(d=>d.stay===c);
+// a Google Maps link carries "@lat,lng" or "?q=lat,lng"; anything else just isn't placed exactly
+function parseLL(url){const s=String(url||'');const m=s.match(/@(-?\d{1,2}\.\d+),(-?\d{1,3}\.\d+)/)||s.match(/[?&](?:q|query|ll|center)=(-?\d{1,2}\.\d+),\s*(-?\d{1,3}\.\d+)/);return m?{la:+m[1],ln:+m[2]}:null}
+function bookedHotel(c){const b=bookedOf(c);if(!b)return null;const ns=stayNights(c).length||1,a=PLACES[HOTEL_ANCHOR[c]]||{};
+  const exact=b.la&&b.ln;return {id:'booked',booked:true,city:c,n:b.n,area:b.addr||'',la:exact?b.la:a.la,ln:exact?b.ln:a.ln,exact,rv:b.note||'我们自己订好的酒店。',
+    perNight:+b.amt?cny(b.amt,b.cur)/ns:null}}
+// who is in which room, for profiles and member cards
+function roomOf(c,id){const b=bookedOf(c);if(!b||!id)return null;return (b.rooms||[]).find(r=>(r.who||[]).includes(id))||null}
+function roomsOfMember(id){const o={};['sz','zh','gz'].forEach(c=>{const r=roomOf(c,id);if(r)o[c]=r});return o}
+const whoName=x=>{const m=(typeof CLOUD!=='undefined'&&CLOUD.on)?CLOUD.members.find(z=>z.email===x):null;return m?m.name:String(x)};
+const meId=()=>(typeof CLOUD!=='undefined'&&CLOUD.on&&CLOUD.me)?CLOUD.me.email:null;
+
+// move the booked tick / paid price of the hotel we leave into the memo, bring back the new one's
+function swapHotel(t,c,to){const from=t.settings.hotel[c];if(from===to)return;const k='hotel-'+c;
+  t.hotelMemo=t.hotelMemo||{};const memo=t.hotelMemo[c]=t.hotelMemo[c]||{};
+  memo[from]={b:t.bookings[k]||null,by:(t.bookedBy||{})[k]||null,a:(t.actual||{})[k]||null,who:(t.assign||{})[k]||null};
+  const r=memo[to]||{};delete memo[to];
+  delete t.bookings[k];if(t.bookedBy)delete t.bookedBy[k];if(t.actual)delete t.actual[k];if(t.assign)delete t.assign[k];
+  if(r.b)t.bookings[k]=r.b;if(r.by)(t.bookedBy=t.bookedBy||{})[k]=r.by;if(r.a)(t.actual=t.actual||{})[k]=r.a;if(r.who)(t.assign=t.assign||{})[k]=r.who;
+  t.settings.hotel[c]=to}
+
+/* ---- the card on the hotels page ---- */
+function bookedBlock(c){const b=bookedOf(c),on=isBooked(c),ro=viewerOnly();
+  if(S.bkEdit===c)return bookedForm(c);
+  if(!b)return ro?'':`<button type="button" class="addbtn bk-add" data-a="bkEdit" data-v="${c}">＋ 我们已经订好了，填写酒店资料和分房</button>`;
+  const ns=stayNights(c),me=meId(),myr=+trip.settings.myr||0,amtC=+b.amt?cny(b.amt,b.cur):0;
+  const mapU=b.link||'https://www.google.com/maps/search/?api=1&query='+enc(b.n+' '+(b.addr||'')+' '+CITY[c].n);
+  const cp=(v,l)=>v?`<button type="button" class="cp" data-a="bkCopy" data-v="${esc(v)}" aria-label="复制${l}">复制</button>`:'';
+  const rooms=(b.rooms||[]).filter(r=>r.no||(r.who||[]).length);
+  return `<div class="bkcard${on?' on':''}" style="--c:${CC[c]}"><div class="tp"></div>
+    <div class="bk-h"><div><div class="bk-eyebrow">我们已订的酒店</div><div class="bk-n">${esc(b.n)}</div></div>${on?'<span class="stampmark">已订 ✓</span>':''}</div>
+    <dl class="bk-dl">
+      ${b.addr?`<dt>地址</dt><dd>${esc(b.addr)} ${cp(b.addr,'地址')} <a class="lk g" href="${esc(mapU)}" target="_blank" rel="noopener">地图</a></dd>`:`<dt>地图</dt><dd><a class="lk g" href="${esc(mapU)}" target="_blank" rel="noopener">在地图上找</a></dd>`}
+      ${b.phone?`<dt>电话</dt><dd class="tab-num">${esc(b.phone)} ${cp(b.phone,'电话')}</dd>`:''}
+      <dt>入住</dt><dd>${b.cin?esc(b.cin.slice(5).replace('-','/')):'?'} – ${b.cout?esc(b.cout.slice(5).replace('-','/')):'?'} 退房 · ${ns.length} 晚</dd>
+      ${b.ref?`<dt>订单号</dt><dd class="tab-num">${esc(b.ref)} ${cp(b.ref,'订单号')}</dd>`:''}
+      ${amtC?`<dt>总价</dt><dd><b>${CUR[b.cur]||''}${n0(+b.amt)}</b> 全组 · 每人约 ¥${n0(amtC/Math.max(1,+trip.settings.people||1))} ≈ RM ${n0(amtC*myr/Math.max(1,+trip.settings.people||1))}</dd>`:''}
+      ${b.note?`<dt>备注</dt><dd>${esc(b.note)}</dd>`:''}
+    </dl>
+    ${rooms.length?`<div class="bk-rooms">${rooms.map(r=>`<div class="bk-room"><b class="tab-num">${r.no?esc(r.no):'房号未知'}</b><span>${ROOM_TYPES[r.type]||''}</span><span class="bk-who">${(r.who||[]).map(x=>`<i${x===me?' class="me"':''}>${esc(whoName(x))}${x===me?'（你）':''}</i>`).join('')||'<em>还没分人</em>'}</span></div>`).join('')}</div>`:'<p class="bk-hint">还没填分房。</p>'}
+    ${b.exact?'':'<p class="bk-hint">地图上先用市中心位置代替；贴上带坐标的 Google 地图链接就会放到准确位置。</p>'}
+    ${ro?'':`<div class="bk-acts">${on?'':`<button type="button" class="btn" data-a="bkUse" data-v="${c}">用这家</button>`}<button type="button" class="btn ghost" data-a="bkEdit" data-v="${c}">编辑资料 / 分房</button><button type="button" class="mini-btn${S.bkDel===c?' armed':''}" data-a="bkDel" data-v="${c}">${S.bkDel===c?'再点一次删除':'删除'}</button></div>`}
+  </div>`}
+
+function bookedDraft(c){const b=bookedOf(c);if(S.bkDraft&&S.bkDraft.c===c)return S.bkDraft;
+  const ns=stayNights(c),last=ns.length?dp(ns[ns.length-1].date).dt:null;let out='';if(last){last.setDate(last.getDate()+1);out=last.getFullYear()+'-'+pad(last.getMonth()+1)+'-'+pad(last.getDate())}
+  const n=Math.max(1,+trip.settings.rooms||1);
+  return {c,...(b?JSON.parse(JSON.stringify(b)):{n:'',addr:'',phone:'',ref:'',amt:'',cur:'CNY',link:'',note:'',cin:ns.length?ns[0].date:'',cout:out}),
+    rooms:b&&b.rooms&&b.rooms.length?JSON.parse(JSON.stringify(b.rooms)):Array.from({length:n},()=>({no:'',type:'twin',who:[]}))}}
+function bookedForm(c){const d=bookedDraft(c),cloud=typeof CLOUD!=='undefined'&&CLOUD.on&&CLOUD.members.length;
+  const F=(name,label,v,extra)=>`<label${extra&&extra.full?' class="full"':''}>${label}<input name="${name}" value="${esc(v==null?'':v)}"${extra&&extra.attrs||''}></label>`;
+  const room=(r,i)=>`<div class="bk-rrow" data-i="${i}">
+      <label>房间号<input name="r${i}_no" value="${esc(r.no||'')}" maxlength="12" placeholder="例如 1203"></label>
+      <label>房型<select name="r${i}_type">${Object.entries(ROOM_TYPES).map(([k,n])=>`<option value="${k}"${r.type===k?' selected':''}>${n}</option>`).join('')}</select></label>
+      ${cloud?`<fieldset class="bk-whos"><legend>住客</legend>${CLOUD.members.map(m=>`<label class="chk"><input type="checkbox" name="r${i}_who" value="${esc(m.email)}"${(r.who||[]).includes(m.email)?' checked':''}> ${esc(m.name)}</label>`).join('')}</fieldset>`
+        :`<label class="bk-whos">住客（名字用逗号分开）<input name="r${i}_who" value="${esc((r.who||[]).join('、'))}" placeholder="例如：阿明、小美"></label>`}
+      <button type="button" class="mini-btn" data-a="bkRmRoom" data-v="${i}" aria-label="删除这间房">删除</button></div>`;
+  return `<form class="edit-panel bk-form" id="bk-form" data-c="${c}">
+    <div class="full bk-ftitle">${CITY[c].n} · 我们已订的酒店</div>
+    ${F('n','酒店名称 *',d.n,{full:true,attrs:' required maxlength="80" placeholder="例如：汉庭酒店（深圳会展中心店）"'})}
+    ${F('addr','地址',d.addr,{full:true,attrs:' maxlength="120"'})}
+    ${F('phone','酒店电话',d.phone,{attrs:' maxlength="30" inputmode="tel"'})}
+    ${F('ref','订单号',d.ref,{attrs:' maxlength="40"'})}
+    ${F('cin','入住日期',d.cin,{attrs:' type="date"'})}
+    ${F('cout','退房日期',d.cout,{attrs:' type="date"'})}
+    ${F('amt','总价（全组）',d.amt,{attrs:' type="number" min="0" step="0.01" inputmode="decimal"'})}
+    <label>币种<select name="cur">${[['CNY','人民币'],['HKD','港币'],['MOP','澳门元'],['MYR','马币']].map(([k,n])=>`<option value="${k}"${d.cur===k?' selected':''}>${n}</option>`).join('')}</select></label>
+    ${F('link','地图链接（Google / 高德，可不填）',d.link,{full:true,attrs:' type="url" maxlength="400" placeholder="https://maps.app.goo.gl/…"'})}
+    ${F('note','备注（早餐、停车、入住要求等）',d.note,{full:true,attrs:' maxlength="200"'})}
+    <div class="full bk-rooms-edit"><div class="bk-ftitle sm">分房${cloud?'（勾选住客，大家的个人资料会自动显示房号）':''}</div>${d.rooms.map(room).join('')}
+      <button type="button" class="addbtn" data-a="bkAddRoom">＋ 加一间房</button></div>
+    <div class="acts"><button type="button" class="btn ghost" data-a="bkCancel">取消</button><button type="submit" class="btn">保存</button></div>
+  </form>`}
+// read what is typed so far (used before adding/removing a room row, and on save)
+function readBkForm(form){const f=new FormData(form),c=form.dataset.c,cloud=typeof CLOUD!=='undefined'&&CLOUD.on&&CLOUD.members.length;
+  const idx=[...form.querySelectorAll('.bk-rrow')].map(x=>+x.dataset.i);const g=k=>String(f.get(k)||'').trim();
+  return {c,n:g('n'),addr:g('addr'),phone:g('phone'),ref:g('ref'),cin:g('cin'),cout:g('cout'),amt:g('amt'),cur:g('cur')||'CNY',link:g('link'),note:g('note'),
+    rooms:idx.map(i=>({no:g('r'+i+'_no'),type:g('r'+i+'_type')||'twin',who:cloud?f.getAll('r'+i+'_who').map(String):g('r'+i+'_who').split(/[,，、\s]+/).filter(Boolean)}))}}
+
+document.addEventListener('submit',e=>{if(e.target.id!=='bk-form')return;e.preventDefault();const d=readBkForm(e.target),c=d.c;
+  if(!d.n){toast('请填写酒店名称');return}
+  // one person sits in one room only: keep the first room they were ticked in
+  const seen=new Set();d.rooms.forEach(r=>{r.who=r.who.filter(x=>!seen.has(x)&&seen.add(x))});
+  d.rooms=d.rooms.filter(r=>r.no||r.who.length);
+  const ll=parseLL(d.link);const rec={n:d.n.slice(0,80),addr:d.addr.slice(0,120),phone:d.phone.slice(0,30),ref:d.ref.slice(0,40),cin:d.cin,cout:d.cout,
+    amt:+d.amt>0?Math.round(+d.amt*100)/100:'',cur:d.cur,link:/^https?:\/\//.test(d.link)?d.link.slice(0,400):'',note:d.note.slice(0,200),rooms:d.rooms,...(ll?{la:ll.la,ln:ll.ln}:{})};
+  const isNew=!bookedOf(c);S.bkEdit=null;S.bkDraft=null;
+  commit(t=>{t.booked=t.booked||{};const prev=(t.booked[c]&&t.booked[c].prev)||(t.settings.hotel[c]!=='booked'?t.settings.hotel[c]:'');
+    t.booked[c]={...rec,prev};swapHotel(t,c,'booked');const k='hotel-'+c;
+    if(!t.bookings[k])t.bookings[k]=Date.now();if(typeof CLOUD!=='undefined'&&CLOUD.email){t.bookedBy=t.bookedBy||{};t.bookedBy[k]=t.bookedBy[k]||CLOUD.email}
+    t.actual=t.actual||{};if(rec.amt)t.actual[k]={amt:rec.amt,cur:rec.cur,per:'g'};else delete t.actual[k]},
+    isNew?'已保存，订票清单和预算也更新了':'已更新酒店资料',(isNew?'填写了已订酒店：':'更新了已订酒店：')+CITY[c].n+' '+rec.n)});
+
+// actions, called from the main click handler
+function bookedAction(a,v,el){
+  switch(a){
+    case 'bkEdit':S.bkEdit=v;S.bkDraft=null;S.bkDel=null;render();{const f=$('#bk-form');if(f){f.scrollIntoView({block:'center'});f.querySelector('input').focus({preventScroll:true})}}return true;
+    case 'bkCancel':S.bkEdit=null;S.bkDraft=null;render();return true;
+    case 'bkAddRoom':case 'bkRmRoom':{const f=$('#bk-form');if(!f)return true;const d=readBkForm(f);
+      if(a==='bkAddRoom')d.rooms.push({no:'',type:'twin',who:[]});else{const pos=[...f.querySelectorAll('.bk-rrow')].findIndex(x=>x.dataset.i===v);if(pos>=0)d.rooms.splice(pos,1)}
+      S.bkDraft=d;render();return true}
+    case 'bkUse':{const b=bookedOf(v);if(b)commit(t=>swapHotel(t,v,'booked'),'改用我们已订的酒店',CITY[v].n+'酒店换成 '+b.n);return true}
+    case 'bkDel':{if(S.bkDel!==v){S.bkDel=v;render();setTimeout(()=>{if(S.bkDel===v){S.bkDel=null;render()}},2500);return true}
+      S.bkDel=null;const b=bookedOf(v);commit(t=>{const to=(t.booked[v]&&t.booked[v].prev)||HOTELS[v][0].id;if(t.settings.hotel[v]==='booked')swapHotel(t,v,HOTELS[v].some(h=>h.id===to)?to:HOTELS[v][0].id);
+        delete t.booked[v];if(t.hotelMemo&&t.hotelMemo[v])delete t.hotelMemo[v].booked},'已删除已订酒店',(b?'删除了已订酒店：'+b.n:'删除了已订酒店'));return true}
+    case 'bkCopy':{const fb=()=>toast(v);try{navigator.clipboard.writeText(v).then(()=>toast('已复制'),fb)}catch(err){fb()}return true}
+  }
+  return false}
+
 /* ================= app (travel-journal UI) ================= */
 const CC={sz:'#c67139',hk:'#a8463f',mo:'#6f8150',zh:'#3f7f86',gz:'#b08628'};
 const CODE={sz:'SZX',hk:'HKG',mo:'MFM',zh:'ZUH',gz:'CAN'};
@@ -1503,11 +1656,11 @@ const MEAL_RE=/^(早午餐|早餐|午餐|晚餐|早茶|甜品|下午茶|最后�
 
 /* ---------- state ---------- */
 const LS='gba-trip-redesign-v1',LS_OLD='gba-trip-2026-v3';
-function norm(o){const d=clone(DEFAULT),s=o.settings||{};return {v:1,rev:o.rev||'x',updatedAt:o.updatedAt||0,settings:{...d.settings,...s,rates:{...d.settings.rates,...(s.rates||{})},hotel:{...d.settings.hotel,...(s.hotel||{})}},days:Array.isArray(o.days)&&o.days.length?o.days:d.days,bookings:o.bookings||{},assign:o.assign||{},bookedBy:o.bookedBy||{},customOpts:o.customOpts||{},customOrig:o.customOrig||{},actual:o.actual||{}}}
+function norm(o){const d=clone(DEFAULT),s=o.settings||{};return {v:1,rev:o.rev||'x',updatedAt:o.updatedAt||0,settings:{...d.settings,...s,rates:{...d.settings.rates,...(s.rates||{})},hotel:{...d.settings.hotel,...(s.hotel||{})}},days:Array.isArray(o.days)&&o.days.length?o.days:d.days,bookings:o.bookings||{},assign:o.assign||{},bookedBy:o.bookedBy||{},customOpts:o.customOpts||{},customOrig:o.customOrig||{},actual:o.actual||{},booked:o.booked||{},hotelMemo:o.hotelMemo||{}}}
 let trip=null;
 try{const s=localStorage.getItem(LS)||localStorage.getItem(LS_OLD);if(s){const o=JSON.parse(s);if(o&&o.days)trip=norm(o)}}catch(e){}
 if(!trip)trip=norm(clone(DEFAULT));
-const S={picker:false,addOpt:null,formPhotos:[],delOpt:null,budView:'pp',tab:'overview',day:0,edit:null,swap:null,pick:null,mapDay:'all',foodCity:'all',foodDay:'all',lb:null,sim:null,delArm:null,resetArm:false,views:{},active:null,json:''};
+const S={bkEdit:null,bkDraft:null,bkDel:null,picker:false,addOpt:null,formPhotos:[],delOpt:null,budView:'pp',tab:'overview',day:0,edit:null,swap:null,pick:null,mapDay:'all',foodCity:'all',foodDay:'all',lb:null,sim:null,delArm:null,resetArm:false,views:{},active:null,json:''};
 
 /* ---------- shared sync (claude.ai) ---------- */
 let docRef=null,writing=false,dirty=false,saveTimer=null,readOnly=false,pending=false;
@@ -1543,9 +1696,9 @@ async function flush(){
 }catch(e){}})();
 
 /* ---------- domain helpers ---------- */
-const hotelFor=c=>{const l=HOTELS[c];if(!l)return null;return l.find(h=>h.id===trip.settings.hotel[c])||l[0]};
+const hotelFor=c=>{if(isBooked(c))return bookedHotel(c);const l=HOTELS[c];if(!l)return null;return l.find(h=>h.id===trip.settings.hotel[c])||l[0]};
 function mix(){const p=Math.max(1,+trip.settings.people||1),r=Math.max(1,+trip.settings.rooms||1);const tri=Math.min(r,Math.max(0,p-r*2));return {twin:r-tri,tri,rooms:r}}
-const night=H=>{if(!H)return 0;const m=mix();return m.twin*H.p+m.tri*(H.p3||Math.round(H.p*1.35))};
+const night=H=>{if(!H)return 0;if(H.booked)return H.perNight!=null?H.perNight:night(HOTELS[H.city][0]);const m=mix();return m.twin*H.p+m.tri*(H.p3||Math.round(H.p*1.35))};
 function roomText(){const m=mix(),a=[];if(m.twin)a.push(m.twin+'间双床房');if(m.tri)a.push(m.tri+'间三人房');return a.join(' + ')}
 function place(pid){if(!pid)return null;if(pid.startsWith('H:')){const c=pid.slice(2),h=hotelFor(c);if(!h)return null;return {id:pid,n:h.n,c,la:h.la,ln:h.ln,r:h.r,rv:h.rv,hotel:true,hid:h.id,h:'入住一般14:00后，可以先寄存行李'}}const p=PLACES[pid];return p?{id:pid,...p}:null}
 const cny=(v,cur)=>(Number(v)||0)*(cur==='MYR'?1/(+trip.settings.myr||.59):(trip.settings.rates[cur]||1));
@@ -1578,7 +1731,7 @@ function urgency(t){
 }
 function tickets(){const out=[],ppl=Math.max(1,+trip.settings.people||1);
   trip.days.forEach(d=>sortI(d.items).forEach(i=>{if(i.book)out.push({id:i.id,date:d.date,t:i.t,kind:i.kind,title:i.title,how:i.book,estAmt:+i.cost||0,estCur:i.cur,estPer:i.per,cost:+i.cost?(CUR[i.cur]||'')+n0(+i.cost)+(i.per==='g'?'/全组':'/人'):'免费'})}));
-  ['sz','zh','gz'].forEach(c=>{const ns=trip.days.filter(d=>d.stay===c);if(!ns.length)return;const h=hotelFor(c);out.push({id:'hotel-'+c,estCny:night(h)*ns.length,date:ns[0].date,t:'',title:'订酒店：'+h.n,how:ns.length+' 晚 · '+roomText()+' · 携程 / Trip.com / Agoda'+(c==='gz'?'（广交会期间，最先订）':''),cost:'¥'+n0(night(h)*ns.length),hotel:true})});
+  ['sz','zh','gz'].forEach(c=>{const ns=trip.days.filter(d=>d.stay===c);if(!ns.length)return;const h=hotelFor(c);const bk=h.booked?bookedOf(c):null;out.push({id:'hotel-'+c,estCny:night(h)*ns.length,date:ns[0].date,t:'',title:(bk?'已订酒店：':'订酒店：')+h.n,how:bk?[ns.length+' 晚',(bk.rooms||[]).length?(bk.rooms||[]).length+' 间房':'',bk.ref?'订单号 '+bk.ref:''].filter(Boolean).join(' · '):ns.length+' 晚 · '+roomText()+' · 携程 / Trip.com / Agoda'+(c==='gz'?'（广交会期间，最先订）':''),cost:'¥'+n0(night(h)*ns.length),hotel:true})});
   return out.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:tMin(a.t||'0:0')-tMin(b.t||'0:0'))}
 const nowTs=()=>S.sim!=null?S.sim:Date.now();
 function timeline(){const tl=[];trip.days.forEach((d,di)=>d.items.forEach(i=>tl.push({d,di,i,ts:TS(d.date,i.t)})));return tl.sort((a,b)=>a.ts-b.ts)}
@@ -1745,7 +1898,7 @@ function pItinerary(){
         <div class="day-top"><div style="min-width:0">
           <div class="eyebrow">第 ${di+1} 天 · ${p.md} ${p.wd}</div>
           <h2><span class="hl">${esc(d.title)}</span></h2>
-          <div class="day-meta"><span class="nw">住：${H?esc(short(H.n)):'不住宿（回程）'}</span><span class="nw">每人约 <b>¥${n0(pp)}</b> ≈ RM ${n0(pp*trip.settings.myr)}</span><span class="nw">${d.items.length} 项安排</span></div>
+          <div class="day-meta"><span class="nw">住：${H?esc(short(H.n)):'不住宿（回程）'}${H&&H.booked&&roomOf(d.stay,meId())?` · 你的房间 <b>${esc(roomOf(d.stay,meId()).no||'?')}</b>`:''}</span><span class="nw">每人约 <b>¥${n0(pp)}</b> ≈ RM ${n0(pp*trip.settings.myr)}</span><span class="nw">${d.items.length} 项安排</span></div>
         </div><div class="day-nav"><button type="button" class="rbtn" data-a="goDay" data-v="${di-1}" aria-label="前一天"${di===0?' disabled':''}>←</button><button type="button" class="rbtn go" data-a="goDay" data-v="${di+1}" aria-label="后一天"${di===trip.days.length-1?' disabled':''}>→</button></div></div>
         <div>${rows}</div>
         <div style="padding-left:78px;margin-top:10px"><button type="button" class="addbtn" data-a="add">＋ 加一项安排</button></div>
@@ -1854,8 +2007,8 @@ function pHotels(){const ppl=Math.max(1,+trip.settings.people||1);
         <div class="in"><div class="nm">${esc(h.n)}</div><div class="ar">${esc(h.area)} · <b>★ ${h.r.toFixed(1)}</b></div><p>${esc(h.rv)}</p>
           <div class="pc">${h.pro.map(x=>`<span class="p">＋ ${esc(x)}</span>`).join('')}${h.con.map(x=>`<span class="c">－ ${esc(x)}</span>`).join('')}</div>
           <div class="ft"><div><b>¥${n0(nc)}<small> /晚</small></b><div class="tot">合计 ¥${n0(nc*ns.length)} · 每人 ¥${n0(nc*ns.length/ppl)}</div></div><span class="sb">${sel?'✓ 已选择':'选这家'}</span></div></div></button>`}).join('');
-    return `<div><div class="hcity-h"><div class="hcode" style="--c:${CC[c]}">${CODE[c]}</div><h3>${CITY[c].n}</h3><span class="nw" style="font-size:13px;color:var(--mute)">${ns.length} 晚 · ${ns.length?dp(ns[0].date).md+' – '+dp(ns[ns.length-1].date).md+' 入住':''}</span>${CLOUD.on&&CLOUD.me?(()=>{const rs=CLOUD.members.filter(m=>(m.roomInfo||{})[c]);return rs.length?`<span class="roomlist">房号：${rs.map(m=>esc(m.name)+' '+esc(m.roomInfo[c])).join(' · ')}</span>`:''})():''}</div><div class="hgrid">${cards}</div></div>`}).join('');
-  return `<section class="page" style="display:flex;flex-direction:column;gap:40px"><div>${ph('P.06','住宿选择','每座城市三家可选，价格为每晚估价。选好的酒店会自动算进预算和订票清单。')}
+    return `<div><div class="hcity-h"><div class="hcode" style="--c:${CC[c]}">${CODE[c]}</div><h3>${CITY[c].n}</h3><span class="nw" style="font-size:13px;color:var(--mute)">${ns.length} 晚 · ${ns.length?dp(ns[0].date).md+' – '+dp(ns[ns.length-1].date).md+' 入住':''}</span>${CLOUD.on&&CLOUD.me&&!bookedOf(c)?(()=>{const rs=CLOUD.members.filter(m=>(m.roomInfo||{})[c]);return rs.length?`<span class="roomlist">房号：${rs.map(m=>esc(m.name)+' '+esc(m.roomInfo[c])).join(' · ')}</span>`:''})():''}</div>${bookedBlock(c)}${bookedOf(c)?`<div class="hsub">${isBooked(c)?'其他选择（点一下就改用这家）':'推荐选择'}</div>`:''}<div class="hgrid">${cards}</div></div>`}).join('');
+  return `<section class="page" style="display:flex;flex-direction:column;gap:40px"><div>${ph('P.06','住宿选择','每座城市三家可选，价格为每晚估价。订好之后可以填上我们自己订的酒店和分房，行程、地图、预算和订票清单都会跟着改。')}
     <div style="font-size:13px;color:var(--mute);margin-top:-8px">${ppl} 人住 ${roomText()}${mix().tri?' · 三人房数量少，订之前在携程上筛选“三人间 / 家庭房”或打电话问酒店。':''}广州那两晚碰上广交会，已按上涨后的价格估算。</div></div>${cities}</section>`}
 
 /* ---------- P.07 tickets ---------- */
@@ -1957,6 +2110,7 @@ document.addEventListener('click',e=>{
   if(e.target.closest('[data-stop]')&&el.classList.contains('lb'))return;
   if(e.target.closest('a'))return;
   const a=el.dataset.a,v=el.dataset.v;
+  if(bookedAction(a,v,el))return;
   switch(a){
     case 'tab':setTab(v);break;
     case 'openDay':openDay(+v);break;
@@ -1991,7 +2145,7 @@ document.addEventListener('click',e=>{
     case 'budView':S.budView=v;render();break;
     case 'flip':el.classList.toggle('on');break;
     case 'toMap':e.stopPropagation();S.tab='map';S.mapDay='all';S.pick=v;render();scrollTo({top:$('.tabs').offsetTop,behavior:'smooth'});break;
-    case 'hotel':{const c=el.dataset.c,h=el.dataset.v;if(trip.settings.hotel[c]!==h)commit(t=>{t.settings.hotel[c]=h},'已选 '+short(HOTELS[c].find(x=>x.id===h).n),CITY[c].n+'酒店换成 '+HOTELS[c].find(x=>x.id===h).n);break}
+    case 'hotel':{const c=el.dataset.c,h=el.dataset.v;if(trip.settings.hotel[c]!==h)commit(t=>swapHotel(t,c,h),'已选 '+short(HOTELS[c].find(x=>x.id===h).n),CITY[c].n+'酒店换成 '+HOTELS[c].find(x=>x.id===h).n);break}
     case 'book':{const id=v,was=!!trip.bookings[id],tt=(tickets().find(x=>x.id===id)||{}).title||id;commit(t=>{t.bookedBy=t.bookedBy||{};if(t.bookings[id]){delete t.bookings[id];delete t.bookedBy[id]}else{t.bookings[id]=Date.now();if(CLOUD.email)t.bookedBy[id]=CLOUD.email}},was?'已取消标记':'已标记为已订',(was?'取消了已订：':'标记已订：')+tt);break}
     case 'export':S.json=JSON.stringify(trip);$('#json-box').value=S.json;toast('已导出到文本框');break;
     case 'copy':{const b=$('#json-box');if(!b.value)b.value=JSON.stringify(trip);const fb=()=>{b.focus();b.select();toast('已选中，按 Ctrl+C 复制')};try{navigator.clipboard.writeText(b.value).then(()=>toast('已复制'),fb)}catch(err){fb()}break}
@@ -2118,7 +2272,7 @@ function profileFields(m,isNew){m=m||{};const col=m.color||AVATAR_COLORS[(CLOUD.
     <label>中国电话号码（可不填，随时能改）<input name="cnPhone" value="${esc(m.cnPhone||'')}" maxlength="24" inputmode="tel" placeholder="+86 138 1234 5678"></label>
     <fieldset><legend>头像颜色</legend><div class="swatches">${AVATAR_COLORS.map(c=>`<label class="sw"><input type="radio" name="color" value="${c}"${c===col?' checked':''}><span style="--c:${c}"></span></label>`).join('')}</div></fieldset>
     <label>住哪种房<select name="room">${Object.entries(ROOM_NAME).map(([k,n])=>`<option value="${k}"${(m.room||'')===k?' selected':''}>${n}</option>`).join('')}</select></label>
-    ${isNew?'':`<fieldset class="full roomset"><legend>房间号（入住后填，大家都看得到）</legend><div class="rooms3">${['sz','zh','gz'].map(c=>`<label>${CITY[c].n}<input name="room_${c}" value="${esc((m.roomInfo||{})[c]||'')}" maxlength="30" placeholder="例如 1203"></label>`).join('')}</div><label class="full">房间备注<input name="room_note" value="${esc((m.roomInfo||{}).note||'')}" maxlength="120" placeholder="例如：跟阿明同房，要加床"></label></fieldset>`}
+    ${isNew?'':`<fieldset class="full roomset"><legend>房间号（从「住宿」页的分房自动带出）</legend><div class="rooms3">${['sz','zh','gz'].map(c=>{const r=roomOf(c,m.email);return `<div class="rno-auto"><small>${CITY[c].n}</small><b>${r?esc(r.no||'房号未知')+(ROOM_TYPES[r.type]?' · '+ROOM_TYPES[r.type]:''):(bookedOf(c)?'还没分到房':'酒店还没填')}</b></div>`}).join('')}</div><label class="full">房间备注<input name="room_note" value="${esc((m.roomInfo||{}).note||'')}" maxlength="120" placeholder="例如：跟阿明同房，要加床"></label></fieldset>`}
     <label class="full">饮食禁忌 / 过敏（可不填）<input name="diet" value="${esc(m.diet||'')}" maxlength="100" placeholder="例如：不吃牛、海鲜过敏"></label>`}
 function profileForm(m){return `<form class="pform" id="me-form">${profileFields(m,false)}
     <label class="full">改密码（不改就留空）<input name="newPassword" type="password" minlength="6" autocomplete="new-password" placeholder="至少 6 位"></label>
@@ -2150,7 +2304,7 @@ async function doAuth(form,kind){const f=new FormData(form);
   if(!r.ok){cloudUI.obErr=r.body.error||'出错了，请再试一次';renderOnboard();return}
   cloudUI.obErr='';await cloudBoot();toast(kind==='register'?'欢迎加入！':'已登录')}
 async function saveProfile(form){const f=new FormData(form);
-  const body={name:f.get('name'),phone:f.get('phone'),cnPhone:f.get('cnPhone')||'',roomInfo:{sz:f.get('room_sz')||'',zh:f.get('room_zh')||'',gz:f.get('room_gz')||'',note:f.get('room_note')||''},color:f.get('color'),room:f.get('room'),diet:f.get('diet'),newPassword:f.get('newPassword')||''};
+  const body={name:f.get('name'),phone:f.get('phone'),cnPhone:f.get('cnPhone')||'',roomInfo:{...((CLOUD.me&&CLOUD.me.roomInfo)||{}),note:f.get('room_note')||''},color:f.get('color'),room:f.get('room'),diet:f.get('diet'),newPassword:f.get('newPassword')||''};
   const r=await api('/me',{method:'PUT',body});
   if(!r.ok){cloudUI.obErr=r.body.error||'保存失败';render();return}
   cloudUI.obErr='';cloudUI.editMe=false;CLOUD.me=r.body.member;await refreshMembers();renderMeChip();render();toast(body.newPassword?'资料和密码已保存':'资料已保存')}
@@ -2164,7 +2318,7 @@ function pTeam(){
       <div class="mtop">${avatar(m,52)}<div style="min-width:0"><div class="mname">${esc(m.name)}${m.role&&m.role!=='editor'?` <span class="badge role-${m.role}">${ROLE_NAME[m.role]}</span>`:''}${mine?' <span class="badge you">你</span>':''}</div><div class="memail">${ROLE_NAME[m.role||'editor']}</div></div></div>
       <div class="mrow2"><span>电话</span><b class="tab-num">${esc(m.phone)}</b></div>
       <div class="mrow2"><span>中国电话</span><b class="tab-num">${m.cnPhone?`${esc(m.cnPhone)} <button type="button" class="cp" data-a="cl-copy" data-v="${esc(m.cnPhone)}" aria-label="复制中国电话">复制</button>`:'<span class="muted-v">还没填</span>'}</b></div>
-      <div class="mrow2"><span>房间</span><b>${ROOM_NAME[m.room||'']}${(()=>{const ri=m.roomInfo||{};const t=['sz','zh','gz'].filter(c=>ri[c]).map(c=>CITY[c].n+' '+esc(ri[c])).join(' · ');return t?`<small class="rno">${t}</small>`:''})()}</b></div>
+      <div class="mrow2"><span>房间</span><b>${(()=>{const rs=roomsOfMember(m.email),ri=m.roomInfo||{};const types=[...new Set(Object.values(rs).map(r=>ROOM_TYPES[r.type]).filter(Boolean))];const t=['sz','zh','gz'].map(c=>rs[c]?CITY[c].n+' '+esc(rs[c].no||'?'):ri[c]?CITY[c].n+' '+esc(ri[c]):'').filter(Boolean).join(' · ');return (types.length?types.join(' / '):ROOM_NAME[m.room||''])+(t?`<small class="rno">${t}</small>`:'')})()}</b></div>
       ${(m.roomInfo||{}).note?`<div class="mrow2"><span>房间备注</span><b>${esc(m.roomInfo.note)}</b></div>`:''}
       ${m.diet?`<div class="mrow2"><span>饮食</span><b>${esc(m.diet)}</b></div>`:''}
       <div class="mrow2"><span>待订</span><b>${todo} 项</b></div>

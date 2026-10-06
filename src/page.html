@@ -634,6 +634,42 @@ body.picker-open{overflow:hidden}
 .cp{border:0;background:var(--surface);border-radius:999px;padding:1px 8px;font-size:11px;cursor:pointer;margin-left:4px}
 .muted-v{color:var(--n5);font-weight:400}
 .roomlist{flex-basis:100%;font-size:13px;color:var(--sage8);background:var(--sage2);border-radius:999px;padding:3px 12px;align-self:flex-start;width:fit-content}
+/* our own booked hotel */
+.bk-add{display:block;width:100%;margin:-6px 0 20px;padding:14px 20px}
+.bkcard{position:relative;background:var(--paper);border-radius:26px;padding:18px 20px 16px;margin:-6px 0 22px;box-shadow:var(--sh-md);border-left:8px solid var(--c);display:flex;flex-direction:column;gap:12px}
+.bkcard.on{box-shadow:0 12px 32px rgba(46,43,37,.2);outline:3px solid var(--sage6);outline-offset:-3px}
+.bkcard .tp{position:absolute;top:-10px;left:30px;width:78px;height:22px;border-radius:3px;background:var(--c);opacity:.45;transform:rotate(-4deg)}
+.bkcard .stampmark{position:static;transform:rotate(-8deg);align-self:flex-start;flex:none}
+.bk-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.bk-eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--sage7)}
+.bk-n{font-family:var(--disp);font-weight:700;font-synthesis:none;font-size:21px;line-height:1.3;text-wrap:balance}
+.bk-dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;margin:0;font-size:14px}
+.bk-dl dt{color:var(--mute);font-size:12px;padding-top:2px;white-space:nowrap}
+.bk-dl dd{margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-width:0;overflow-wrap:anywhere}
+.bk-rooms{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.bk-room{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;background:var(--surface);border-radius:16px;padding:8px 12px;font-size:13px}
+.bk-room b{font-family:'Caprasimo',serif;font-weight:400;font-size:18px}
+.bk-room>span{color:var(--mute)}
+.bk-who{flex-basis:100%;display:flex;flex-wrap:wrap;gap:4px}
+.bk-who i{font-style:normal;background:var(--paper);border-radius:999px;padding:1px 9px;color:var(--ink)}
+.bk-who i.me{background:var(--sage2);color:var(--sage8);font-weight:700}
+.bk-who em{font-style:normal;color:var(--n5)}
+.bk-hint{margin:0;font-size:12px;color:var(--mute)}
+.bk-acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.hsub{font-size:13px;font-weight:700;color:var(--mute);margin:0 0 12px}
+.bk-form{margin:-6px 0 22px}
+.bk-ftitle{font-family:var(--disp);font-weight:700;font-synthesis:none;font-size:18px}
+.bk-ftitle.sm{font-size:15px;margin-bottom:8px}
+.bk-rooms-edit{display:flex;flex-direction:column;gap:10px}
+.bk-rrow{display:grid;grid-template-columns:minmax(90px,1fr) minmax(100px,1fr) minmax(0,3fr) auto;gap:8px;align-items:end;background:var(--paper);border-radius:16px;padding:10px 12px}
+.bk-rrow select{border:1px solid var(--div);background:var(--paper);border-radius:999px;padding:7px 12px;font-size:14px;min-width:0}
+fieldset.bk-whos{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 12px;min-width:0}
+fieldset.bk-whos legend{font-size:12px;color:var(--mute2);padding:0;margin-bottom:4px}
+.bk-whos .chk{flex-direction:row;align-items:center;gap:5px;font-size:14px;color:var(--ink)}
+.bk-whos .chk input{width:16px;height:16px;accent-color:var(--acc)}
+@media (max-width:620px){.bk-rrow{grid-template-columns:1fr 1fr}.bk-rrow .bk-whos{grid-column:1/-1}.bk-rrow>.mini-btn{grid-column:1/-1;justify-self:end}}
+.rno-auto{display:flex;flex-direction:column;gap:2px;background:var(--paper);border-radius:14px;padding:6px 10px;font-size:13px}
+.rno-auto small{font-size:11px;color:var(--mute)}
 
 /* roles */
 .badge.role-super{background:var(--acc);color:var(--paper)}

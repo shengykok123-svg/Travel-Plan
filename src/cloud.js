@@ -79,7 +79,7 @@ function profileFields(m,isNew){m=m||{};const col=m.color||AVATAR_COLORS[(CLOUD.
     <label>中国电话号码（可不填，随时能改）<input name="cnPhone" value="${esc(m.cnPhone||'')}" maxlength="24" inputmode="tel" placeholder="+86 138 1234 5678"></label>
     <fieldset><legend>头像颜色</legend><div class="swatches">${AVATAR_COLORS.map(c=>`<label class="sw"><input type="radio" name="color" value="${c}"${c===col?' checked':''}><span style="--c:${c}"></span></label>`).join('')}</div></fieldset>
     <label>住哪种房<select name="room">${Object.entries(ROOM_NAME).map(([k,n])=>`<option value="${k}"${(m.room||'')===k?' selected':''}>${n}</option>`).join('')}</select></label>
-    ${isNew?'':`<fieldset class="full roomset"><legend>房间号（入住后填，大家都看得到）</legend><div class="rooms3">${['sz','zh','gz'].map(c=>`<label>${CITY[c].n}<input name="room_${c}" value="${esc((m.roomInfo||{})[c]||'')}" maxlength="30" placeholder="例如 1203"></label>`).join('')}</div><label class="full">房间备注<input name="room_note" value="${esc((m.roomInfo||{}).note||'')}" maxlength="120" placeholder="例如：跟阿明同房，要加床"></label></fieldset>`}
+    ${isNew?'':`<fieldset class="full roomset"><legend>房间号（从「住宿」页的分房自动带出）</legend><div class="rooms3">${['sz','zh','gz'].map(c=>{const r=roomOf(c,m.email);return `<div class="rno-auto"><small>${CITY[c].n}</small><b>${r?esc(r.no||'房号未知')+(ROOM_TYPES[r.type]?' · '+ROOM_TYPES[r.type]:''):(bookedOf(c)?'还没分到房':'酒店还没填')}</b></div>`}).join('')}</div><label class="full">房间备注<input name="room_note" value="${esc((m.roomInfo||{}).note||'')}" maxlength="120" placeholder="例如：跟阿明同房，要加床"></label></fieldset>`}
     <label class="full">饮食禁忌 / 过敏（可不填）<input name="diet" value="${esc(m.diet||'')}" maxlength="100" placeholder="例如：不吃牛、海鲜过敏"></label>`}
 function profileForm(m){return `<form class="pform" id="me-form">${profileFields(m,false)}
     <label class="full">改密码（不改就留空）<input name="newPassword" type="password" minlength="6" autocomplete="new-password" placeholder="至少 6 位"></label>
@@ -111,7 +111,7 @@ async function doAuth(form,kind){const f=new FormData(form);
   if(!r.ok){cloudUI.obErr=r.body.error||'出错了，请再试一次';renderOnboard();return}
   cloudUI.obErr='';await cloudBoot();toast(kind==='register'?'欢迎加入！':'已登录')}
 async function saveProfile(form){const f=new FormData(form);
-  const body={name:f.get('name'),phone:f.get('phone'),cnPhone:f.get('cnPhone')||'',roomInfo:{sz:f.get('room_sz')||'',zh:f.get('room_zh')||'',gz:f.get('room_gz')||'',note:f.get('room_note')||''},color:f.get('color'),room:f.get('room'),diet:f.get('diet'),newPassword:f.get('newPassword')||''};
+  const body={name:f.get('name'),phone:f.get('phone'),cnPhone:f.get('cnPhone')||'',roomInfo:{...((CLOUD.me&&CLOUD.me.roomInfo)||{}),note:f.get('room_note')||''},color:f.get('color'),room:f.get('room'),diet:f.get('diet'),newPassword:f.get('newPassword')||''};
   const r=await api('/me',{method:'PUT',body});
   if(!r.ok){cloudUI.obErr=r.body.error||'保存失败';render();return}
   cloudUI.obErr='';cloudUI.editMe=false;CLOUD.me=r.body.member;await refreshMembers();renderMeChip();render();toast(body.newPassword?'资料和密码已保存':'资料已保存')}
@@ -125,7 +125,7 @@ function pTeam(){
       <div class="mtop">${avatar(m,52)}<div style="min-width:0"><div class="mname">${esc(m.name)}${m.role&&m.role!=='editor'?` <span class="badge role-${m.role}">${ROLE_NAME[m.role]}</span>`:''}${mine?' <span class="badge you">你</span>':''}</div><div class="memail">${ROLE_NAME[m.role||'editor']}</div></div></div>
       <div class="mrow2"><span>电话</span><b class="tab-num">${esc(m.phone)}</b></div>
       <div class="mrow2"><span>中国电话</span><b class="tab-num">${m.cnPhone?`${esc(m.cnPhone)} <button type="button" class="cp" data-a="cl-copy" data-v="${esc(m.cnPhone)}" aria-label="复制中国电话">复制</button>`:'<span class="muted-v">还没填</span>'}</b></div>
-      <div class="mrow2"><span>房间</span><b>${ROOM_NAME[m.room||'']}${(()=>{const ri=m.roomInfo||{};const t=['sz','zh','gz'].filter(c=>ri[c]).map(c=>CITY[c].n+' '+esc(ri[c])).join(' · ');return t?`<small class="rno">${t}</small>`:''})()}</b></div>
+      <div class="mrow2"><span>房间</span><b>${(()=>{const rs=roomsOfMember(m.email),ri=m.roomInfo||{};const types=[...new Set(Object.values(rs).map(r=>ROOM_TYPES[r.type]).filter(Boolean))];const t=['sz','zh','gz'].map(c=>rs[c]?CITY[c].n+' '+esc(rs[c].no||'?'):ri[c]?CITY[c].n+' '+esc(ri[c]):'').filter(Boolean).join(' · ');return (types.length?types.join(' / '):ROOM_NAME[m.room||''])+(t?`<small class="rno">${t}</small>`:'')})()}</b></div>
       ${(m.roomInfo||{}).note?`<div class="mrow2"><span>房间备注</span><b>${esc(m.roomInfo.note)}</b></div>`:''}
       ${m.diet?`<div class="mrow2"><span>饮食</span><b>${esc(m.diet)}</b></div>`:''}
       <div class="mrow2"><span>待订</span><b>${todo} 项</b></div>

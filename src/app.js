@@ -32,11 +32,11 @@ const MEAL_RE=/^(早午餐|早餐|午餐|晚餐|早茶|甜品|下午茶|最后�
 
 /* ---------- state ---------- */
 const LS='gba-trip-redesign-v1',LS_OLD='gba-trip-2026-v3';
-function norm(o){const d=clone(DEFAULT),s=o.settings||{};return {v:1,rev:o.rev||'x',updatedAt:o.updatedAt||0,settings:{...d.settings,...s,rates:{...d.settings.rates,...(s.rates||{})},hotel:{...d.settings.hotel,...(s.hotel||{})}},days:Array.isArray(o.days)&&o.days.length?o.days:d.days,bookings:o.bookings||{},assign:o.assign||{},bookedBy:o.bookedBy||{},customOpts:o.customOpts||{},customOrig:o.customOrig||{},actual:o.actual||{}}}
+function norm(o){const d=clone(DEFAULT),s=o.settings||{};return {v:1,rev:o.rev||'x',updatedAt:o.updatedAt||0,settings:{...d.settings,...s,rates:{...d.settings.rates,...(s.rates||{})},hotel:{...d.settings.hotel,...(s.hotel||{})}},days:Array.isArray(o.days)&&o.days.length?o.days:d.days,bookings:o.bookings||{},assign:o.assign||{},bookedBy:o.bookedBy||{},customOpts:o.customOpts||{},customOrig:o.customOrig||{},actual:o.actual||{},booked:o.booked||{},hotelMemo:o.hotelMemo||{}}}
 let trip=null;
 try{const s=localStorage.getItem(LS)||localStorage.getItem(LS_OLD);if(s){const o=JSON.parse(s);if(o&&o.days)trip=norm(o)}}catch(e){}
 if(!trip)trip=norm(clone(DEFAULT));
-const S={picker:false,addOpt:null,formPhotos:[],delOpt:null,budView:'pp',tab:'overview',day:0,edit:null,swap:null,pick:null,mapDay:'all',foodCity:'all',foodDay:'all',lb:null,sim:null,delArm:null,resetArm:false,views:{},active:null,json:''};
+const S={bkEdit:null,bkDraft:null,bkDel:null,picker:false,addOpt:null,formPhotos:[],delOpt:null,budView:'pp',tab:'overview',day:0,edit:null,swap:null,pick:null,mapDay:'all',foodCity:'all',foodDay:'all',lb:null,sim:null,delArm:null,resetArm:false,views:{},active:null,json:''};
 
 /* ---------- shared sync (claude.ai) ---------- */
 let docRef=null,writing=false,dirty=false,saveTimer=null,readOnly=false,pending=false;
@@ -72,9 +72,9 @@ async function flush(){
 }catch(e){}})();
 
 /* ---------- domain helpers ---------- */
-const hotelFor=c=>{const l=HOTELS[c];if(!l)return null;return l.find(h=>h.id===trip.settings.hotel[c])||l[0]};
+const hotelFor=c=>{if(isBooked(c))return bookedHotel(c);const l=HOTELS[c];if(!l)return null;return l.find(h=>h.id===trip.settings.hotel[c])||l[0]};
 function mix(){const p=Math.max(1,+trip.settings.people||1),r=Math.max(1,+trip.settings.rooms||1);const tri=Math.min(r,Math.max(0,p-r*2));return {twin:r-tri,tri,rooms:r}}
-const night=H=>{if(!H)return 0;const m=mix();return m.twin*H.p+m.tri*(H.p3||Math.round(H.p*1.35))};
+const night=H=>{if(!H)return 0;if(H.booked)return H.perNight!=null?H.perNight:night(HOTELS[H.city][0]);const m=mix();return m.twin*H.p+m.tri*(H.p3||Math.round(H.p*1.35))};
 function roomText(){const m=mix(),a=[];if(m.twin)a.push(m.twin+'间双床房');if(m.tri)a.push(m.tri+'间三人房');return a.join(' + ')}
 function place(pid){if(!pid)return null;if(pid.startsWith('H:')){const c=pid.slice(2),h=hotelFor(c);if(!h)return null;return {id:pid,n:h.n,c,la:h.la,ln:h.ln,r:h.r,rv:h.rv,hotel:true,hid:h.id,h:'入住一般14:00后，可以先寄存行李'}}const p=PLACES[pid];return p?{id:pid,...p}:null}
 const cny=(v,cur)=>(Number(v)||0)*(cur==='MYR'?1/(+trip.settings.myr||.59):(trip.settings.rates[cur]||1));
@@ -107,7 +107,7 @@ function urgency(t){
 }
 function tickets(){const out=[],ppl=Math.max(1,+trip.settings.people||1);
   trip.days.forEach(d=>sortI(d.items).forEach(i=>{if(i.book)out.push({id:i.id,date:d.date,t:i.t,kind:i.kind,title:i.title,how:i.book,estAmt:+i.cost||0,estCur:i.cur,estPer:i.per,cost:+i.cost?(CUR[i.cur]||'')+n0(+i.cost)+(i.per==='g'?'/全组':'/人'):'免费'})}));
-  ['sz','zh','gz'].forEach(c=>{const ns=trip.days.filter(d=>d.stay===c);if(!ns.length)return;const h=hotelFor(c);out.push({id:'hotel-'+c,estCny:night(h)*ns.length,date:ns[0].date,t:'',title:'订酒店：'+h.n,how:ns.length+' 晚 · '+roomText()+' · 携程 / Trip.com / Agoda'+(c==='gz'?'（广交会期间，最先订）':''),cost:'¥'+n0(night(h)*ns.length),hotel:true})});
+  ['sz','zh','gz'].forEach(c=>{const ns=trip.days.filter(d=>d.stay===c);if(!ns.length)return;const h=hotelFor(c);const bk=h.booked?bookedOf(c):null;out.push({id:'hotel-'+c,estCny:night(h)*ns.length,date:ns[0].date,t:'',title:(bk?'已订酒店：':'订酒店：')+h.n,how:bk?[ns.length+' 晚',(bk.rooms||[]).length?(bk.rooms||[]).length+' 间房':'',bk.ref?'订单号 '+bk.ref:''].filter(Boolean).join(' · '):ns.length+' 晚 · '+roomText()+' · 携程 / Trip.com / Agoda'+(c==='gz'?'（广交会期间，最先订）':''),cost:'¥'+n0(night(h)*ns.length),hotel:true})});
   return out.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:tMin(a.t||'0:0')-tMin(b.t||'0:0'))}
 const nowTs=()=>S.sim!=null?S.sim:Date.now();
 function timeline(){const tl=[];trip.days.forEach((d,di)=>d.items.forEach(i=>tl.push({d,di,i,ts:TS(d.date,i.t)})));return tl.sort((a,b)=>a.ts-b.ts)}
@@ -274,7 +274,7 @@ function pItinerary(){
         <div class="day-top"><div style="min-width:0">
           <div class="eyebrow">第 ${di+1} 天 · ${p.md} ${p.wd}</div>
           <h2><span class="hl">${esc(d.title)}</span></h2>
-          <div class="day-meta"><span class="nw">住：${H?esc(short(H.n)):'不住宿（回程）'}</span><span class="nw">每人约 <b>¥${n0(pp)}</b> ≈ RM ${n0(pp*trip.settings.myr)}</span><span class="nw">${d.items.length} 项安排</span></div>
+          <div class="day-meta"><span class="nw">住：${H?esc(short(H.n)):'不住宿（回程）'}${H&&H.booked&&roomOf(d.stay,meId())?` · 你的房间 <b>${esc(roomOf(d.stay,meId()).no||'?')}</b>`:''}</span><span class="nw">每人约 <b>¥${n0(pp)}</b> ≈ RM ${n0(pp*trip.settings.myr)}</span><span class="nw">${d.items.length} 项安排</span></div>
         </div><div class="day-nav"><button type="button" class="rbtn" data-a="goDay" data-v="${di-1}" aria-label="前一天"${di===0?' disabled':''}>←</button><button type="button" class="rbtn go" data-a="goDay" data-v="${di+1}" aria-label="后一天"${di===trip.days.length-1?' disabled':''}>→</button></div></div>
         <div>${rows}</div>
         <div style="padding-left:78px;margin-top:10px"><button type="button" class="addbtn" data-a="add">＋ 加一项安排</button></div>
@@ -383,8 +383,8 @@ function pHotels(){const ppl=Math.max(1,+trip.settings.people||1);
         <div class="in"><div class="nm">${esc(h.n)}</div><div class="ar">${esc(h.area)} · <b>★ ${h.r.toFixed(1)}</b></div><p>${esc(h.rv)}</p>
           <div class="pc">${h.pro.map(x=>`<span class="p">＋ ${esc(x)}</span>`).join('')}${h.con.map(x=>`<span class="c">－ ${esc(x)}</span>`).join('')}</div>
           <div class="ft"><div><b>¥${n0(nc)}<small> /晚</small></b><div class="tot">合计 ¥${n0(nc*ns.length)} · 每人 ¥${n0(nc*ns.length/ppl)}</div></div><span class="sb">${sel?'✓ 已选择':'选这家'}</span></div></div></button>`}).join('');
-    return `<div><div class="hcity-h"><div class="hcode" style="--c:${CC[c]}">${CODE[c]}</div><h3>${CITY[c].n}</h3><span class="nw" style="font-size:13px;color:var(--mute)">${ns.length} 晚 · ${ns.length?dp(ns[0].date).md+' – '+dp(ns[ns.length-1].date).md+' 入住':''}</span>${CLOUD.on&&CLOUD.me?(()=>{const rs=CLOUD.members.filter(m=>(m.roomInfo||{})[c]);return rs.length?`<span class="roomlist">房号：${rs.map(m=>esc(m.name)+' '+esc(m.roomInfo[c])).join(' · ')}</span>`:''})():''}</div><div class="hgrid">${cards}</div></div>`}).join('');
-  return `<section class="page" style="display:flex;flex-direction:column;gap:40px"><div>${ph('P.06','住宿选择','每座城市三家可选，价格为每晚估价。选好的酒店会自动算进预算和订票清单。')}
+    return `<div><div class="hcity-h"><div class="hcode" style="--c:${CC[c]}">${CODE[c]}</div><h3>${CITY[c].n}</h3><span class="nw" style="font-size:13px;color:var(--mute)">${ns.length} 晚 · ${ns.length?dp(ns[0].date).md+' – '+dp(ns[ns.length-1].date).md+' 入住':''}</span>${CLOUD.on&&CLOUD.me&&!bookedOf(c)?(()=>{const rs=CLOUD.members.filter(m=>(m.roomInfo||{})[c]);return rs.length?`<span class="roomlist">房号：${rs.map(m=>esc(m.name)+' '+esc(m.roomInfo[c])).join(' · ')}</span>`:''})():''}</div>${bookedBlock(c)}${bookedOf(c)?`<div class="hsub">${isBooked(c)?'其他选择（点一下就改用这家）':'推荐选择'}</div>`:''}<div class="hgrid">${cards}</div></div>`}).join('');
+  return `<section class="page" style="display:flex;flex-direction:column;gap:40px"><div>${ph('P.06','住宿选择','每座城市三家可选，价格为每晚估价。订好之后可以填上我们自己订的酒店和分房，行程、地图、预算和订票清单都会跟着改。')}
     <div style="font-size:13px;color:var(--mute);margin-top:-8px">${ppl} 人住 ${roomText()}${mix().tri?' · 三人房数量少，订之前在携程上筛选“三人间 / 家庭房”或打电话问酒店。':''}广州那两晚碰上广交会，已按上涨后的价格估算。</div></div>${cities}</section>`}
 
 /* ---------- P.07 tickets ---------- */
@@ -486,6 +486,7 @@ document.addEventListener('click',e=>{
   if(e.target.closest('[data-stop]')&&el.classList.contains('lb'))return;
   if(e.target.closest('a'))return;
   const a=el.dataset.a,v=el.dataset.v;
+  if(bookedAction(a,v,el))return;
   switch(a){
     case 'tab':setTab(v);break;
     case 'openDay':openDay(+v);break;
@@ -520,7 +521,7 @@ document.addEventListener('click',e=>{
     case 'budView':S.budView=v;render();break;
     case 'flip':el.classList.toggle('on');break;
     case 'toMap':e.stopPropagation();S.tab='map';S.mapDay='all';S.pick=v;render();scrollTo({top:$('.tabs').offsetTop,behavior:'smooth'});break;
-    case 'hotel':{const c=el.dataset.c,h=el.dataset.v;if(trip.settings.hotel[c]!==h)commit(t=>{t.settings.hotel[c]=h},'已选 '+short(HOTELS[c].find(x=>x.id===h).n),CITY[c].n+'酒店换成 '+HOTELS[c].find(x=>x.id===h).n);break}
+    case 'hotel':{const c=el.dataset.c,h=el.dataset.v;if(trip.settings.hotel[c]!==h)commit(t=>swapHotel(t,c,h),'已选 '+short(HOTELS[c].find(x=>x.id===h).n),CITY[c].n+'酒店换成 '+HOTELS[c].find(x=>x.id===h).n);break}
     case 'book':{const id=v,was=!!trip.bookings[id],tt=(tickets().find(x=>x.id===id)||{}).title||id;commit(t=>{t.bookedBy=t.bookedBy||{};if(t.bookings[id]){delete t.bookings[id];delete t.bookedBy[id]}else{t.bookings[id]=Date.now();if(CLOUD.email)t.bookedBy[id]=CLOUD.email}},was?'已取消标记':'已标记为已订',(was?'取消了已订：':'标记已订：')+tt);break}
     case 'export':S.json=JSON.stringify(trip);$('#json-box').value=S.json;toast('已导出到文本框');break;
     case 'copy':{const b=$('#json-box');if(!b.value)b.value=JSON.stringify(trip);const fb=()=>{b.focus();b.select();toast('已选中，按 Ctrl+C 复制')};try{navigator.clipboard.writeText(b.value).then(()=>toast('已复制'),fb)}catch(err){fb()}break}
