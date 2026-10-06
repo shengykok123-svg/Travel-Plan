@@ -32,7 +32,7 @@ const MEAL_RE=/^(早午餐|早餐|午餐|晚餐|早茶|甜品|下午茶|最后�
 
 /* ---------- state ---------- */
 const LS='gba-trip-redesign-v1',LS_OLD='gba-trip-2026-v3';
-function norm(o){const d=clone(DEFAULT),s=o.settings||{};return {v:1,rev:o.rev||'x',updatedAt:o.updatedAt||0,settings:{...d.settings,...s,rates:{...d.settings.rates,...(s.rates||{})},hotel:{...d.settings.hotel,...(s.hotel||{})}},days:Array.isArray(o.days)&&o.days.length?o.days:d.days,bookings:o.bookings||{},assign:o.assign||{},bookedBy:o.bookedBy||{},customOpts:o.customOpts||{},customOrig:o.customOrig||{},actual:o.actual||{},booked:o.booked||{},hotelMemo:o.hotelMemo||{}}}
+function norm(o){const d=clone(DEFAULT),s=o.settings||{};return {v:1,rev:o.rev||'x',updatedAt:o.updatedAt||0,settings:{...d.settings,...s,rates:{...d.settings.rates,...(s.rates||{})},hotel:{...d.settings.hotel,...(s.hotel||{})}},days:Array.isArray(o.days)&&o.days.length?o.days:d.days,bookings:o.bookings||{},assign:o.assign||{},bookedBy:o.bookedBy||{},customOpts:o.customOpts||{},customOrig:o.customOrig||{},actual:o.actual||{},booked:o.booked||d.booked||{},hotelMemo:o.hotelMemo||{}}}
 let trip=null;
 try{const s=localStorage.getItem(LS)||localStorage.getItem(LS_OLD);if(s){const o=JSON.parse(s);if(o&&o.days)trip=norm(o)}}catch(e){}
 if(!trip)trip=norm(clone(DEFAULT));
@@ -97,7 +97,7 @@ const GREG={};let greg=0;
 function regGal(imgs,title,note){const id='g'+(++greg);GREG[id]={imgs,title,note};return id}
 function urgency(t){
   const s=t.title+' '+t.how;
-  if(t.hotel)return {must:true,why:'4个人订2间双床房；广州碰上广交会，房间紧张。现在就订，选可免费取消。'};
+  if(t.hotel)return {must:true,why:t.bookedHotel?'已经订好了，酒店资料和分房在「住宿」页。':'4个人订2间双床房；广州碰上广交会，房间紧张。现在就订，选可免费取消。'};
   if(/12306/.test(t.how))return {must:true,why:'约提前15天开售，4个人要连座，周末和热门班次容易卖完。开售当天就买。'};
   if(/博物馆/.test(s))return {must:true,why:'免费但要实名预约，名额有限，提前3–7天。'};
   if(/长隆/.test(s))return {must:true,why:'网上买比现场便宜，入园直接刷护照，不用排队买票。提前1–3天。'};
@@ -107,7 +107,7 @@ function urgency(t){
 }
 function tickets(){const out=[],ppl=Math.max(1,+trip.settings.people||1);
   trip.days.forEach(d=>sortI(d.items).forEach(i=>{if(i.book)out.push({id:i.id,date:d.date,t:i.t,kind:i.kind,title:i.title,how:i.book,estAmt:+i.cost||0,estCur:i.cur,estPer:i.per,cost:+i.cost?(CUR[i.cur]||'')+n0(+i.cost)+(i.per==='g'?'/全组':'/人'):'免费'})}));
-  ['sz','zh','gz'].forEach(c=>{const ns=trip.days.filter(d=>d.stay===c);if(!ns.length)return;const h=hotelFor(c);const bk=h.booked?bookedOf(c):null;out.push({id:'hotel-'+c,estCny:night(h)*ns.length,date:ns[0].date,t:'',title:(bk?'已订酒店：':'订酒店：')+h.n,how:bk?[ns.length+' 晚',(bk.rooms||[]).length?(bk.rooms||[]).length+' 间房':'',bk.ref?'订单号 '+bk.ref:''].filter(Boolean).join(' · '):ns.length+' 晚 · '+roomText()+' · 携程 / Trip.com / Agoda'+(c==='gz'?'（广交会期间，最先订）':''),cost:'¥'+n0(night(h)*ns.length),hotel:true})});
+  ['sz','zh','gz'].forEach(c=>{const ns=trip.days.filter(d=>d.stay===c);if(!ns.length)return;const h=hotelFor(c);const bk=h.booked?bookedOf(c):null;out.push({id:'hotel-'+c,estCny:night(h)*ns.length,date:ns[0].date,t:'',title:(bk?'已订酒店：':'订酒店：')+h.n,how:bk?[ns.length+' 晚',(bk.rooms||[]).length?(bk.rooms||[]).length+' 间房':'',bk.ref?'订单号 '+bk.ref:''].filter(Boolean).join(' · '):ns.length+' 晚 · '+roomText()+' · 携程 / Trip.com / Agoda'+(c==='gz'?'（广交会期间，最先订）':''),cost:'¥'+n0(night(h)*ns.length),hotel:true,bookedHotel:!!bk})});
   return out.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:tMin(a.t||'0:0')-tMin(b.t||'0:0'))}
 const nowTs=()=>S.sim!=null?S.sim:Date.now();
 function timeline(){const tl=[];trip.days.forEach((d,di)=>d.items.forEach(i=>tl.push({d,di,i,ts:TS(d.date,i.t)})));return tl.sort((a,b)=>a.ts-b.ts)}

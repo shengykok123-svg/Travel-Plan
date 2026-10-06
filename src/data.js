@@ -174,7 +174,7 @@ Object.assign(PLACES,{
 // swappable meal choices, keyed by itinerary item id. The first option is the default.
 function mo(pl,dish,cost,gal,cur,n){return {pl,dish,cost,gal,cur:cur||'CNY',n:n||''}}
 const MEAL_OPTS={
-  'd2-1':[mo('','广式肠粉 + 粥',30,'cheungfun','CNY','酒店附近的肠粉店'),mo('','菠萝油 + 奶茶 + 炒蛋',35,'pineapplebun','CNY','酒店附近的茶餐厅')],
+  'd2-1':[mo('','广式肠粉 + 粥',30,'cheungfun','CNY','会展中心一带的肠粉店'),mo('','菠萝油 + 奶茶 + 炒蛋',35,'pineapplebun','CNY','会展中心一带的茶餐厅')],
   'd2-4':[mo('coco','粤菜 / 茶餐厅',80,'charsiu','CNY','COCO Park 一带'),mo('taier','酸菜鱼',80,'suancaiyu'),mo('runyuan','椰子鸡火锅',110,'coconutchicken')],
   'd2-9':[mo('sijiyelin_ns','招牌椰子鸡、竹笙',110,'coconutchicken'),mo('tanyu_sz','烤鱼（在福田 COCO Park，打车约25分钟）',90,null),mo('chenpp','潮汕卤鹅、蚝烙',110,'braisedgoose')],
   'd2-11':[mo('','双皮奶、杨枝甘露',25,'doubleskin','CNY','海岸城一带的糖水铺'),mo('manji_sz','杨枝甘露、芒果班戟',35,'mangosago')],
@@ -210,14 +210,14 @@ const DEFAULT_DAYS=[
  {date:'2026-10-09',title:'深夜抵达深圳',cities:['sz'],stay:'sz',items:[
   it('23:55','move','飞机抵达宝安机场 T3','szx',0),
   it('24:20','move','入境、取行李，开通 eSIM，测试支付宝','szx',0,'CNY','深夜入境人少，大约20–40分钟。'),
-  it('24:50','move','滴滴 / 的士 → 福田酒店（约40分钟）','H:sz',220,'CNY','这个时间地铁已经停运。4个人带行李，建议用滴滴叫6座商务车，或者叫2辆的士。','','g'),
-  it('25:30','hotel','酒店入住，休息','H:sz',0,'CNY','订房时备注“凌晨1–2点才到”，免得房间被取消。')
+  it('24:50','move','滴滴 / 的士 → 宝安橙果酒店（约15–20分钟）','H:sz',80,'CNY','这个时间地铁已经停运。酒店在宝安中心，离机场很近。4个人带行李，用滴滴叫6座车或叫2辆的士。','','g'),
+  it('25:30','hotel','酒店入住，休息','H:sz',0,'CNY','订房时备注“凌晨1–2点才到”，免得房间被取消。酒店24小时前台。')
  ]},
  {date:'2026-10-10',title:'深圳市区 · 深圳湾',cities:['sz'],stay:'sz',items:[
-  it('09:30','food','早午餐：广式肠粉 + 粥（酒店附近）','',30,'CNY','前一晚睡得晚，早上睡饱再出发。'),
-  it('10:30','sight','莲花山公园登顶','lianhua',0,'CNY','山顶俯瞰福田中心区，约1.5小时。'),
-  it('12:00','sight','市民中心 · 深圳图书馆','civic',0),
-  it('13:00','food','午餐：COCO Park 一带','coco',80,'CNY','粤菜、茶餐厅选择多。'),
+  it('09:45','food','早午餐：广式肠粉 + 粥（会展中心一带）','',30,'CNY','到了福田再吃。前一晚睡得晚，早上睡饱再出发。'),
+  it('10:45','sight','莲花山公园登顶','lianhua',0,'CNY','山顶俯瞰福田中心区，约1.5小时。'),
+  it('12:15','sight','市民中心 · 深圳图书馆','civic',0),
+  it('13:15','food','午餐：COCO Park 一带','coco',80,'CNY','粤菜、茶餐厅选择多。'),
   it('14:30','shop','华强北电子市场','hqb',0,'CNY','逛1小时左右，15:30打车去南头古城。买电子产品另算预算。'),
   Object.assign(it('16:10','sight','南头古城','nantou',0,'CNY','从华强北打车约30分钟。城门、窄巷、文创小店和小吃，免费。边走边吃，晚餐别吃太饱。'),{id:'d2-x1'}),
   it('17:30','move','的士 → 深圳湾公园（约15分钟）','szbay',30,'CNY','4个人一辆的士。','','g'),
@@ -225,12 +225,13 @@ const DEFAULT_DAYS=[
   it('19:00','food','晚餐：椰子鸡火锅（万象天地）','sijiyelin_ns',110,'CNY','就在万象天地里，吃完直接逛街区。周六饭点要排队，先在小程序取号。'),
   it('20:45','show','人才公园夜景 · 春笋大楼灯光秀','talent',0,'CNY','从万象天地打车约10分钟。周六晚上一般有灯光秀，以当天公告为准。'),
   it('21:30','sweet','糖水：双皮奶、杨枝甘露（海岸城一带）','',25),
-  it('22:00','rest','回酒店，准备护照、港币或支付宝HK','H:sz',5),
+  it('22:00','rest','的士回宝安酒店（约20分钟），准备护照、港币或支付宝HK','H:sz',45,'CNY','4个人一辆的士。明天一早要出发，早点睡。','','g'),
+  Object.assign(it('09:00','move','地铁 翻身 → 福田（约40分钟）','futian_st',6,'CNY','翻身站在酒店附近（步行约10分钟），按高德地图导航换乘。'),{id:'d2-x4'}),
   Object.assign(it('18:45','move','的士 → 深圳万象天地（约10分钟）','mixc',25,'CNY','4个人一辆的士。','','g'),{id:'d2-x2'}),
   Object.assign(it('20:00','shop','深圳万象天地 · 街区夜逛','mixc',0,'CNY','开放式街区，小巷里有设计店和咖啡馆，晚上灯光好看。'),{id:'d2-x3'})
  ]},
  {date:'2026-10-11',title:'香港一日游',cities:['hk','sz'],stay:'sz',items:[
-  it('07:00','food','早餐：福田站附近（包点、便利店）','futian_st',20),
+  it('07:00','food','早餐：福田站附近（包点、便利店）','futian_st',20,'CNY','买了边走边吃，7:10前进站过关。'),
   it('07:40','move','高铁 福田 → 香港西九龙（约15分钟）','wkl',75,'CNY','出入境都在站内完成，预留30分钟过关。','12306 App（护照注册），约提前15天开售'),
   it('08:30','move','港铁 柯士甸 → 中环，步行到花园道','peaktram',15,'HKD','用八达通或支付宝HK乘车。'),
   it('09:00','sight','山顶缆车上山','peaktram',168,'HKD','缆车往返 + 摩天台套票（估价）。周日早上排队最短。','山顶缆车官网 / Klook，买电子票'),
@@ -248,11 +249,12 @@ const DEFAULT_DAYS=[
   it('20:20','shop','旺角女人街 · 小吃（鸡蛋仔、咖喱鱼蛋）','ladies',40,'HKD'),
   it('21:25','move','港铁 → 柯士甸，步行到西九龙站','wkl',10,'HKD'),
   it('21:50','move','高铁 西九龙 → 福田','futian_st',75,'CNY','⚠ 周日晚上回深圳的人很多，末班时间以12306为准。赶不上就坐东铁线到罗湖过关（开到午夜）。','12306，开售当天就买，周日晚上最抢手'),
-  it('22:30','rest','回酒店','H:sz',0)
+  it('22:30','rest','回宝安酒店（地铁约45分钟，太晚就打车约¥70）','H:sz',10,'CNY','地铁末班车时间以当天为准；打车的话4个人一辆。'),
+  Object.assign(it('06:20','move','的士 → 福田站（约35分钟）','futian_st',70,'CNY','地铁首班大约6:30，赶7:40的高铁要打车。也可以把高铁改晚一班再坐地铁。','','g'),{id:'d3-x1'})
  ]},
  {date:'2026-10-12',title:'深圳 → 珠海',cities:['sz','zh'],stay:'zh',items:[
-  it('08:30','food','早餐，退房','H:sz',25),
-  it('09:15','move','地铁 → 蛇口海上世界','seaworld',6),
+  it('08:30','food','早餐，退房','H:sz',25,'CNY','酒店有自助早餐（订单不含的话约¥15/人）。'),
+  it('09:15','move','的士 → 蛇口海上世界（约25分钟，带行李）','seaworld',60,'CNY','带着行李，打车比地铁方便。4个人一辆的士。','','g'),
   it('10:00','sight','海上世界：明华轮 · 海边步道','seaworld',0),
   it('11:15','food','简单午餐（码头附近）','shekou',45),
   it('12:00','move','船 蛇口邮轮母港 → 珠海九洲港（约1小时）','jiuzhou',110,'CNY','提前40分钟到码头。班次以购票页面为准。','携程 / 蛇口邮轮母港小程序，用护照实名'),
@@ -355,8 +357,9 @@ const DEFAULT_DAYS=[
 DEFAULT_DAYS.forEach((d,di)=>d.items.forEach((x,ii)=>{if(!x.id)x.id='d'+(di+1)+'-'+(ii+1)}));
 const DEFAULT={
   v:1,
-  settings:{people:4,rooms:2,myr:1/1.63,rates:{CNY:1,HKD:0.884764,MOP:0.855913},flight:1200,misc:500,hotel:{sz:'sz1',zh:'zh1',gz:'gz1'}},
-  days:DEFAULT_DAYS,bookings:{},rev:'default'
+  settings:{people:4,rooms:2,myr:1/1.63,rates:{CNY:1,HKD:0.884764,MOP:0.855913},flight:1200,misc:500,hotel:{sz:'booked',zh:'zh1',gz:'gz1'}},
+  booked:{sz:{"n":"橙果酒店（深圳宝安中心翻身地铁站店）","addr":"深圳市宝安区翻身路81号（42区），地铁5号线翻身站B出口步行约10分钟","phone":"0755-33216699","ref":"","cin":"2026-10-09","cout":"2026-10-12","amt":911,"cur":"MYR","link":"","note":"14:00后入住，24小时前台，有自助早餐（以订单为准）。地图位置是大概位置。","la":22.5649,"ln":113.8904,"rooms":[],"prev":"sz1"}},
+  days:DEFAULT_DAYS,bookings:{'hotel-sz':1791331200000},actual:{'hotel-sz':{amt:911,cur:'MYR',per:'g'}},rev:'default'
 };
 
 
