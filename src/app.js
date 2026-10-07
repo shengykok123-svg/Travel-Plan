@@ -181,7 +181,7 @@ document.addEventListener('wheel',e=>{const el=e.target.closest('.map');if(!el)r
 /* ---------- hero + tabs ---------- */
 function renderHero(){
   const B=calc(),tk=tickets(),done=tk.filter(t=>trip.bookings[t.id]).length,t=Date.now();
-  const segs=[['sz','深圳','3晚',1],['hk','香港','一日游',2],['zh','珠海','2晚',3],['mo','澳门','一日游',4],['fs','佛山','3晚',5],['gz','长隆','一日',6],['gz','广州','一日游',7]];
+  const segs=routeSegs();
   $('#route').innerHTML=segs.map((s,k)=>`<div class="stop-wrap">${k?'<div class="stop-link"></div>':''}<button type="button" class="stop" data-a="openDay" data-v="${s[3]}" title="看这天的行程"><div class="stamp" style="--c:${CC[s[0]]};--tilt:${[-8,6,-4,9,-6,4,-7][k]}deg">${s[1]==='长隆'?'CL':CODE[s[0]]}</div><b>${s[1]}</b><small>${s[2]}</small></button></div>`).join('');
   let head,big,unit,sub;
   if(t<START){const ms=START-t;head='距离抵达深圳还有';big=Math.floor(ms/864e5);unit='天';sub=`${Math.floor(ms/36e5)%24} 小时 ${Math.floor(ms/6e4)%60} 分`}
@@ -389,6 +389,16 @@ function pHotels(){const ppl=Math.max(1,+trip.settings.people||1);
   return `<section class="page" style="display:flex;flex-direction:column;gap:40px"><div>${ph('P.06','住宿选择','每座城市三家可选，价格为每晚估价。订好之后可以填上我们自己订的酒店和分房，行程、地图、预算和订票清单都会跟着改。')}
     <div style="font-size:13px;color:var(--mute);margin-top:-8px">${ppl} 人住 ${roomText()}${mix().tri?' · 三人房数量少，订之前在携程上筛选“三人间 / 家庭房”或打电话问酒店。':''}佛山那两晚也在广交会期间，房价以订单为准。</div></div>${cities}</section>`}
 
+// route stamps on the overview: a stop per city we sleep in, plus day trips (titles with 一日游) and the 长隆 day
+function routeSegs(){const out=[];const nights=c=>trip.days.filter(d=>d.stay===c).length;
+  trip.days.forEach((d,k)=>{let key,c,label,sub;
+    if(/长隆/.test(d.title)){c=d.cities[0];key='CL';label='长隆';sub='一日'}
+    else if(/一日游/.test(d.title)){c=d.cities[0];key='trip:'+c;label=CITY[c].n;sub='一日游'}
+    else if(d.stay){c=d.stay;key='stay:'+c;label=CITY[c].n;sub=nights(c)+'晚'}
+    else return;
+    const last=out[out.length-1];if(last&&last.key===key)return;
+    out.push({key,c,label,sub,k:k===0&&trip.days.length>1?1:k})});
+  return out.map(x=>[x.c,x.label,x.sub,x.k])}
 /* ---------- P.07 tickets ---------- */
 // filters and sorting for the booking list
 const TK_KIND={hotel:'酒店',move:'交通',ticket:'门票',food:'订位'};
