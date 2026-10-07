@@ -1547,7 +1547,7 @@ const bookedOf=c=>{const b=(trip.booked||{})[c];return b&&b.n?b:null};
 const isBooked=c=>trip.settings.hotel[c]==='booked'&&!!bookedOf(c);
 const stayNights=c=>trip.days.filter(d=>d.stay===c);
 // a Google Maps link carries "@lat,lng" or "?q=lat,lng"; anything else just isn't placed exactly
-function parseLL(url){const s=String(url||'');const m=s.match(/@(-?\d{1,2}\.\d+),(-?\d{1,3}\.\d+)/)||s.match(/[?&](?:q|query|ll|center)=(-?\d{1,2}\.\d+),\s*(-?\d{1,3}\.\d+)/);return m?{la:+m[1],ln:+m[2]}:null}
+function parseLL(url){const s=String(url||'');const m=s.match(/!3d(-?\d{1,2}\.\d+)!4d(-?\d{1,3}\.\d+)/)||s.match(/@(-?\d{1,2}\.\d+),(-?\d{1,3}\.\d+)/)||s.match(/[?&](?:q|query|ll|center)=(-?\d{1,2}\.\d+),\s*(-?\d{1,3}\.\d+)/);return m?{la:+m[1],ln:+m[2]}:null}
 function bookedHotel(c){const b=bookedOf(c);if(!b)return null;const ns=stayNights(c).length||1,a=PLACES[HOTEL_ANCHOR[c]]||{};
   const exact=b.la&&b.ln;return {id:'booked',booked:true,city:c,n:b.n,area:b.addr||'',la:exact?b.la:a.la,ln:exact?b.ln:a.ln,exact,rv:b.note||'我们自己订好的酒店。',
     perNight:+b.amt?cny(b.amt,b.cur)/ns:null}}
@@ -1585,7 +1585,7 @@ function bookedBlock(c){const b=bookedOf(c),on=isBooked(c),ro=viewerOnly();
       ${b.note?`<dt>备注</dt><dd>${esc(b.note)}</dd>`:''}
     </dl>
     ${rooms.length?`<div class="bk-rooms">${rooms.map(r=>`<div class="bk-room"><b class="tab-num">${r.no?esc(r.no):'房号未知'}</b><span>${ROOM_TYPES[r.type]||''}</span><span class="bk-who">${(r.who||[]).map(x=>`<i${x===me?' class="me"':''}>${esc(whoName(x))}${x===me?'（你）':''}</i>`).join('')||'<em>还没分人</em>'}</span></div>`).join('')}</div>`:'<p class="bk-hint">还没填分房。</p>'}
-    ${b.exact?'':'<p class="bk-hint">地图上先用市中心位置代替；贴上带坐标的 Google 地图链接就会放到准确位置。</p>'}
+    ${b.exact?'':'<p class="bk-hint">地图上先用市中心位置代替。要放到准确位置：在电脑版 Google 地图打开酒店，复制浏览器地址栏的完整网址（里面有 @纬度,经度）贴到地图链接。maps.app.goo.gl 短链接没有坐标。</p>'}
     ${ro?'':`<div class="bk-acts">${on?'':`<button type="button" class="btn" data-a="bkUse" data-v="${c}">用这家</button>`}<button type="button" class="btn ghost" data-a="bkEdit" data-v="${c}">编辑资料 / 分房</button><button type="button" class="mini-btn${S.bkDel===c?' armed':''}" data-a="bkDel" data-v="${c}">${S.bkDel===c?'再点一次删除':'删除'}</button></div>`}
   </div>`}
 
@@ -1633,7 +1633,8 @@ document.addEventListener('submit',e=>{if(e.target.id!=='bk-form')return;e.preve
     amt:+d.amt>0?Math.round(+d.amt*100)/100:'',cur:d.cur,link:/^https?:\/\//.test(d.link)?d.link.slice(0,400):'',note:d.note.slice(0,200),rooms:d.rooms,...(ll?{la:ll.la,ln:ll.ln}:{})};
   const isNew=!bookedOf(c);S.bkEdit=null;S.bkDraft=null;
   commit(t=>{t.booked=t.booked||{};const prev=(t.booked[c]&&t.booked[c].prev)||(t.settings.hotel[c]!=='booked'?t.settings.hotel[c]:'');
-    t.booked[c]={...rec,prev};swapHotel(t,c,'booked');const k='hotel-'+c;
+    const old=t.booked[c],keep=!('la' in rec)&&old&&old.la&&old.ln&&old.n===rec.n;
+    t.booked[c]={...rec,prev,...(keep?{la:old.la,ln:old.ln}:{})};swapHotel(t,c,'booked');const k='hotel-'+c;
     if(!t.bookings[k])t.bookings[k]=Date.now();if(typeof CLOUD!=='undefined'&&CLOUD.email){t.bookedBy=t.bookedBy||{};t.bookedBy[k]=t.bookedBy[k]||CLOUD.email}
     t.actual=t.actual||{};if(rec.amt)t.actual[k]={amt:rec.amt,cur:rec.cur,per:'g'};else delete t.actual[k]},
     isNew?'已保存，订票清单和预算也更新了':'已更新酒店资料',(isNew?'填写了已订酒店：':'更新了已订酒店：')+CITY[c].n+' '+rec.n)});
