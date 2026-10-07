@@ -181,7 +181,7 @@ document.addEventListener('wheel',e=>{const el=e.target.closest('.map');if(!el)r
 /* ---------- hero + tabs ---------- */
 function renderHero(){
   const B=calc(),tk=tickets(),done=tk.filter(t=>trip.bookings[t.id]).length,t=Date.now();
-  const segs=[['sz','深圳','3晚',1],['hk','香港','一日游',2],['zh','珠海','3晚',3],['mo','澳门','一日游',4],['zh','长隆','一日',5],['fs','佛山','2晚',6],['gz','广州','一日游',7]];
+  const segs=[['sz','深圳','3晚',1],['hk','香港','一日游',2],['zh','珠海','2晚',3],['mo','澳门','一日游',4],['fs','佛山','3晚',5],['gz','长隆','一日',6],['gz','广州','一日游',7]];
   $('#route').innerHTML=segs.map((s,k)=>`<div class="stop-wrap">${k?'<div class="stop-link"></div>':''}<button type="button" class="stop" data-a="openDay" data-v="${s[3]}" title="看这天的行程"><div class="stamp" style="--c:${CC[s[0]]};--tilt:${[-8,6,-4,9,-6,4,-7][k]}deg">${s[1]==='长隆'?'CL':CODE[s[0]]}</div><b>${s[1]}</b><small>${s[2]}</small></button></div>`).join('');
   let head,big,unit,sub;
   if(t<START){const ms=START-t;head='距离抵达深圳还有';big=Math.floor(ms/864e5);unit='天';sub=`${Math.floor(ms/36e5)%24} 小时 ${Math.floor(ms/6e4)%60} 分`}
