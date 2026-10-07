@@ -38,7 +38,7 @@ function norm(o){const d=clone(DEFAULT),s=o.settings||{};return {v:1,rev:o.rev||
 let trip=null;
 try{const s=localStorage.getItem(LS)||localStorage.getItem(LS_OLD);if(s){const o=JSON.parse(s);if(o&&o.days)trip=norm(o)}}catch(e){}
 if(!trip)trip=norm(clone(DEFAULT));
-const S={bkEdit:null,bkDraft:null,bkDel:null,picker:false,addOpt:null,formPhotos:[],delOpt:null,budView:'pp',tab:'overview',day:0,edit:null,swap:null,pick:null,mapDay:'all',foodCity:'all',foodDay:'all',lb:null,sim:null,delArm:null,resetArm:false,views:{},active:null,json:''};
+const S={tk:(()=>{try{return Object.assign({st:'all',kind:'all',who:'all',day:'all',sort:'date',q:''},JSON.parse(localStorage.getItem('tp_tk')||'{}'),{q:''})}catch(e){return {st:'all',kind:'all',who:'all',day:'all',sort:'date',q:''}}})(),bkEdit:null,bkDraft:null,bkDel:null,picker:false,addOpt:null,formPhotos:[],delOpt:null,budView:'pp',tab:'overview',day:0,edit:null,swap:null,pick:null,mapDay:'all',foodCity:'all',foodDay:'all',lb:null,sim:null,delArm:null,resetArm:false,views:{},active:null,json:''};
 
 /* ---------- shared sync (claude.ai) ---------- */
 let docRef=null,writing=false,dirty=false,saveTimer=null,readOnly=false,pending=false;
@@ -390,11 +390,49 @@ function pHotels(){const ppl=Math.max(1,+trip.settings.people||1);
     <div style="font-size:13px;color:var(--mute);margin-top:-8px">${ppl} 人住 ${roomText()}${mix().tri?' · 三人房数量少，订之前在携程上筛选“三人间 / 家庭房”或打电话问酒店。':''}佛山那两晚也在广交会期间，房价以订单为准。</div></div>${cities}</section>`}
 
 /* ---------- P.07 tickets ---------- */
+// filters and sorting for the booking list
+const TK_KIND={hotel:'酒店',move:'交通',ticket:'门票',food:'订位'};
+const tkKind=t=>t.hotel?'hotel':t.kind==='move'?'move':(t.kind==='food'||t.kind==='sweet')?'food':'ticket';
+const tkCny=t=>{const a=actualOf(t.id),ppl=Math.max(1,+trip.settings.people||1);if(a)return cny(a.amt,a.cur)*(a.per==='g'?1:ppl);if(t.hotel)return t.estCny||0;return cny(t.estAmt,t.estCur)*(t.estPer==='g'?1:ppl)};
+const tkSale=t=>{const p=dp(t.date).dt;if(/12306/.test(t.how)){const d=new Date(p);d.setDate(d.getDate()-14);return d.getTime()}return p.getTime()};
+const tkWhen=t=>dp(t.date).dt.getTime()+tMin(t.t||'0:0')*6e4;
+let tkRow=null;
+function tkPass(t){const f=S.tk,on=!!trip.bookings[t.id];
+  if(f.st==='todo'&&on)return false;if(f.st==='done'&&!on)return false;
+  if(f.kind!=='all'&&tkKind(t)!==f.kind)return false;
+  if(f.day!=='all'&&t.date!==f.day)return false;
+  if(f.who!=='all'){const own=(trip.assign||{})[t.id]||'';if(f.who==='none'?own:f.who==='me'?own!==CLOUD.email:own!==f.who)return false}
+  if(f.q){const q=f.q.toLowerCase();if(!(t.title+' '+t.how).toLowerCase().includes(q))return false}
+  return true}
+function tkSorted(list){const by=S.tk.sort,a=list.slice();
+  const cmp={date:(x,y)=>tkWhen(x)-tkWhen(y),sale:(x,y)=>tkSale(x)-tkSale(y)||tkWhen(x)-tkWhen(y),priceHi:(x,y)=>tkCny(y)-tkCny(x),priceLo:(x,y)=>tkCny(x)-tkCny(y),
+    todo:(x,y)=>(!!trip.bookings[x.id]-!!trip.bookings[y.id])||tkWhen(x)-tkWhen(y)}[by]||((x,y)=>tkWhen(x)-tkWhen(y));
+  return a.sort(cmp)}
+function tkGroups(tk){const list=tk.filter(tkPass);
+  if(!list.length)return '<div class="tk-empty">没有符合条件的项目。<button type="button" class="mini-btn" data-a="tkReset">清除筛选</button></div>';
+  return [['必须提前订','酒店、高铁、热门门票和订位',list.filter(t=>urgency(t).must)],['当天或前一天订也可以','视天气和体力决定',list.filter(t=>!urgency(t).must)]].filter(g=>g[2].length)
+    .map(([ti,sub,l])=>`<div><div class="tk-gh"><h3>${ti}</h3><span>${sub} · ${l.filter(t=>trip.bookings[t.id]).length}/${l.length}</span></div><div class="notebook tk-page"><div class="holes"></div>${tkSorted(l).map(tkRow).join('')}</div></div>`).join('')}
+function tkTools(tk){const f=S.tk,chip=(key,v,label,n)=>`<button type="button" class="chip" data-a="tkSet" data-k="${key}" data-v="${esc(v)}" aria-pressed="${f[key]===v}">${label}${n!=null?` <small class="tk-n">${n}</small>`:''}</button>`;
+  const cnt=p=>tk.filter(p).length,days=[...new Set(tk.map(t=>t.date))].sort();
+  const cloud=CLOUD.on&&CLOUD.me;const active=f.st!=='all'||f.kind!=='all'||f.who!=='all'||f.day!=='all'||f.q;
+  return `<div class="tk-tools">
+    <div class="tk-row"><input type="search" id="tk-q" class="tk-q" placeholder="搜索：高铁、长隆、酒店…" value="${esc(f.q)}" aria-label="搜索订票项目">
+      <label class="tk-sel">排序<select data-tk="sort" aria-label="排序">${[['date','按日期'],['sale','按开售 / 截止时间'],['priceHi','价钱：高 → 低'],['priceLo','价钱：低 → 高'],['todo','未订的排前面']].map(([k,l])=>`<option value="${k}"${f.sort===k?' selected':''}>${l}</option>`).join('')}</select></label>
+      <label class="tk-sel">日期<select data-tk="day" aria-label="按日期筛选"><option value="all">全部日期</option>${days.map(d=>`<option value="${d}"${f.day===d?' selected':''}>${dp(d).md} ${dp(d).wd}</option>`).join('')}</select></label>
+      ${active?'<button type="button" class="mini-btn" data-a="tkReset">清除筛选</button>':''}</div>
+    <div class="tk-row"><span class="tk-lab">状态</span>${chip('st','all','全部',tk.length)}${chip('st','todo','未订',cnt(t=>!trip.bookings[t.id]))}${chip('st','done','已订',cnt(t=>trip.bookings[t.id]))}</div>
+    <div class="tk-row"><span class="tk-lab">类型</span>${chip('kind','all','全部')}${Object.entries(TK_KIND).map(([k,l])=>chip('kind',k,l,cnt(t=>tkKind(t)===k))).join('')}</div>
+    ${cloud?`<div class="tk-row"><span class="tk-lab">负责</span>${chip('who','all','全部')}${chip('who','me','我负责',cnt(t=>(trip.assign||{})[t.id]===CLOUD.email))}${chip('who','none','还没分配',cnt(t=>!(trip.assign||{})[t.id]))}${CLOUD.members.filter(m=>m.email!==CLOUD.email).map(m=>chip('who',m.email,esc(m.name),cnt(t=>(trip.assign||{})[t.id]===m.email))).join('')}</div>`:''}
+  </div>`}
+function tkSave(){try{const {q,...rest}=S.tk;localStorage.setItem('tp_tk',JSON.stringify(rest))}catch(e){}}
+document.addEventListener('input',e=>{if(e.target.id!=='tk-q')return;S.tk.q=e.target.value.trim();const g=$('#tk-groups');if(g)g.innerHTML=tkGroups(tickets())});
+document.addEventListener('change',e=>{const k=e.target.dataset&&e.target.dataset.tk;if(!k)return;S.tk[k]=e.target.value;tkSave();render()});
+
 function pTickets(){const tk=tickets(),done=tk.filter(t=>trip.bookings[t.id]).length,pct=tk.length?Math.round(done/tk.length*100):0;
   const row=t=>{const on=!!trip.bookings[t.id],p=dp(t.date),u=urgency(t);let sale='';if(/12306/.test(t.how)){const s=new Date(p.dt);s.setDate(s.getDate()-14);sale=`约 ${s.getMonth()+1}/${s.getDate()} 开售`}
     return `<button type="button" class="tkr${on?' done':''}" data-a="book" data-v="${esc(t.id)}" aria-pressed="${on}"><span class="box">${on?'✓':''}</span><span class="w">${p.md}${t.t?' '+fmtT(t.t):''}</span>
       <span class="m"><b>${esc(t.title)}</b><small>${esc(t.how)}${sale?` · <span class="sale">${sale}</span>`:''}</small><small class="why">${esc(u.why)}</small></span><span class="c">${esc(t.cost)}</span>${on?`<span class="stampmark terra">已订 ✓${trip.bookedBy&&trip.bookedBy[t.id]?' · '+esc(memberName(trip.bookedBy[t.id])):''}</span>`:''}</button>${priceLine(t)}${CLOUD.on&&CLOUD.me?ownerLine(t):''}`};
-  const groups=[['必须提前订','酒店、高铁、热门门票和订位',tk.filter(t=>urgency(t).must)],['当天或前一天订也可以','视天气和体力决定',tk.filter(t=>!urgency(t).must)]].filter(g=>g[2].length).map(([ti,sub,list])=>`<div><div class="tk-gh"><h3>${ti}</h3><span>${sub} · ${list.filter(t=>trip.bookings[t.id]).length}/${list.length}</span></div><div class="notebook tk-page"><div class="holes"></div>${list.map(row).join('')}</div></div>`).join('');
+  tkRow=row;const groups=`${tkTools(tk)}<div id="tk-groups" style="display:flex;flex-direction:column;gap:30px">${tkGroups(tk)}</div>`;
   return `<section class="page" style="display:flex;flex-direction:column;gap:30px">${ph('P.07','订票清单','点一下标记为已订，会盖上一个印章。酒店按你在「住宿」里选的那家计算。')}
     <div class="tk-sum"><div class="tape terra" style="top:-12px;right:40px;transform:rotate(6deg)"></div>
       <div class="ring"><svg viewBox="0 0 110 110" width="110" height="110"><circle cx="55" cy="55" r="46" fill="none" stroke="#ccdbb2" stroke-width="12"/><circle cx="55" cy="55" r="46" fill="none" stroke="#c67139" stroke-width="12" stroke-linecap="round" stroke-dasharray="289" style="stroke-dashoffset:${(289*(1-pct/100)).toFixed(1)};transition:stroke-dashoffset .7s cubic-bezier(.3,.7,.3,1)"/></svg><b>${pct}%</b></div>
@@ -521,6 +559,8 @@ document.addEventListener('click',e=>{
     case 'foodDay':S.foodDay=v==='all'?'all':+v;render();break;
     case 'foodCity':S.foodCity=v;render();break;
     case 'budView':S.budView=v;render();break;
+    case 'tkSet':S.tk[el.dataset.k]=v;tkSave();render();break;
+    case 'tkReset':S.tk={...S.tk,st:'all',kind:'all',who:'all',day:'all',q:''};tkSave();render();break;
     case 'flip':el.classList.toggle('on');break;
     case 'toMap':e.stopPropagation();S.tab='map';S.mapDay='all';S.pick=v;render();scrollTo({top:$('.tabs').offsetTop,behavior:'smooth'});break;
     case 'hotel':{const c=el.dataset.c,h=el.dataset.v;if(trip.settings.hotel[c]!==h)commit(t=>swapHotel(t,c,h),'已选 '+short(HOTELS[c].find(x=>x.id===h).n),CITY[c].n+'酒店换成 '+HOTELS[c].find(x=>x.id===h).n);break}
