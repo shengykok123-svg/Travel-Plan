@@ -30,7 +30,7 @@ const xhsU=n=>'https://www.rednote.com/search_result?keyword='+enc(n.replace(/�
 const gmapU=n=>'https://www.google.com/maps/search/?api=1&query='+enc(n.replace(/[（）()·]/g,' ').trim());
 // what to search on rednote for an itinerary item: the venue if there is one, otherwise the item itself
 function xhsQuery(i,pl,d){if(i.kind==='move'&&!/船|缆车|天星|城际|高铁/.test(i.title))return '';if(i.kind==='rest')return '';const city=CITY[pl?pl.c:((d&&d.cities)||['gz'])[0]].n;if(pl)return pl.n+' '+city;const t=i.title.replace(MEAL_RE,'').replace(/（[^）]*）|([^)]*)/g,' ').trim();return t?t+' '+city:''}
-const MEAL_RE=/^(早午餐|早餐|午餐|晚餐|早茶|甜品|下午茶|宵夜|小吃|告别晚餐|最后一顿晚餐)[：:]\s*/;
+const MEAL_RE=/^(早午茶|早午餐|早餐|午餐|晚餐|早茶|甜品|下午茶|宵夜|小吃|告别晚餐|最后一顿晚餐)[：:]\s*/;
 
 /* ---------- state ---------- */
 const LS='gz-trip-2026-v1',LS_OLD='gz-trip-2026-v0';

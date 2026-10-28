@@ -40,12 +40,6 @@ Photos are from Wikimedia Commons, used under the licenses listed. Click a photo
 - img/panxi-1.jpg — MeiOLA 2290 WMENSZ · CC0 · https://commons.wikimedia.org/wiki/File:GD_%E5%BB%A3%E6%9D%B1_Guangdong_%E5%BB%A3%E5%B7%9E_Guangzhou_%E8%8D%94%E7%81%A3%E5%8D%80_Liwan_%E9%BE%8D%E6%B4%A5%E8%A5%BF%E8%B7%AF_Longjin_West_Road_shop_%E6%B3%AE%E6%BA%AA%E9%85%92%E5%AE%B6_Pan_Xi_Restaurant_%E9%BB%9E%E5%BF%83_dim_sum_June_2025_R12S_30.jpg
 - img/panxi-2.jpg — MeiOLA 2290 WMENSZ · CC0 · https://commons.wikimedia.org/wiki/File:GD_%E5%BB%A3%E6%9D%B1_Guangdong_%E5%BB%A3%E5%B7%9E_Guangzhou_%E8%8D%94%E7%81%A3%E5%8D%80_Liwan_%E9%BE%8D%E6%B4%A5%E8%A5%BF%E8%B7%AF_Longjin_West_Road_shop_%E6%B3%AE%E6%BA%AA%E9%85%92%E5%AE%B6_Pan_Xi_Restaurant_%E9%BB%9E%E5%BF%83_dim_sum_June_2025_R12S_31.jpg
 
-## 云吞面
-- img/wonton-1.jpg — cattan2011 · CC BY 2.0 · https://commons.wikimedia.org/wiki/File:Wonton_noodle-_Sai_Yung_Kee,_Hong_Kong.jpg
-- img/wonton-2.jpg — N509FZ · CC BY-SA 4.0 · https://commons.wikimedia.org/wiki/File:Wonton_noodles_at_Mak_An_Kee,_Chung_Kee_(20180913105025).jpg
-- img/wonton-3.jpg — LN9267 · CC BY-SA 4.0 · https://commons.wikimedia.org/wiki/File:The_Peak_Mak%27s_Noodle_Wonton_noodle_soup_09-11-2021.jpg
-- img/wonton-4.jpg — Angeimoarm · CC BY-SA 3.0 · https://commons.wikimedia.org/wiki/File:HK_Sai_Ying_Pun_Centre_Street_%E9%9B%B2%E5%90%9E_Wonton_noodle_July-2012.JPG
-
 ## 芝麻糊
 - img/sesame-1.jpg — bryan... from Taipei, Taiwan · CC BY-SA 2.0 · https://commons.wikimedia.org/wiki/File:Black_sesame_paste.jpg
 - img/sesame-2.jpg — Gnuf from (optional) · CC BY-SA 2.0 · https://commons.wikimedia.org/wiki/File:BlacksesameSoup.jpg
@@ -72,6 +66,12 @@ Photos are from Wikimedia Commons, used under the licenses listed. Click a photo
 
 ## 啫啫煲
 - img/claypot-1.jpg — Chumanchun · CC BY-SA 4.0 · https://commons.wikimedia.org/wiki/File:%E5%95%AB%E5%95%AB%E9%9B%9E%E7%85%B2.jpg
+
+## 云吞面
+- img/wonton-1.jpg — cattan2011 · CC BY 2.0 · https://commons.wikimedia.org/wiki/File:Wonton_noodle-_Sai_Yung_Kee,_Hong_Kong.jpg
+- img/wonton-2.jpg — N509FZ · CC BY-SA 4.0 · https://commons.wikimedia.org/wiki/File:Wonton_noodles_at_Mak_An_Kee,_Chung_Kee_(20180913105025).jpg
+- img/wonton-3.jpg — LN9267 · CC BY-SA 4.0 · https://commons.wikimedia.org/wiki/File:The_Peak_Mak%27s_Noodle_Wonton_noodle_soup_09-11-2021.jpg
+- img/wonton-4.jpg — Angeimoarm · CC BY-SA 3.0 · https://commons.wikimedia.org/wiki/File:HK_Sai_Ying_Pun_Centre_Street_%E9%9B%B2%E5%90%9E_Wonton_noodle_July-2012.JPG
 
 ## haixin
 - img/haixin-1.jpg — Shujianyang · CC0 · https://commons.wikimedia.org/wiki/File:Hai_Xin_Bridge_of_Guangzhou_01.jpg
