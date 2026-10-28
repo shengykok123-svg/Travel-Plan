@@ -1,0 +1,11 @@
+{
+  "name": "gz-trip",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "page": "node scripts/build-page.mjs",
+    "build": "node scripts/build-page.mjs && node scripts/build.mjs",
+    "dev": "npm run build && ../node_modules/.bin/wrangler d1 migrations apply gz-trip --local && ../node_modules/.bin/wrangler pages dev public --binding DEV_MODE=1 --binding DEV_EMAIL=me@example.com",
+    "deploy": "npm run build && ../node_modules/.bin/wrangler d1 migrations apply gz-trip --remote && ../node_modules/.bin/wrangler pages deploy public --project-name gz-trip --branch main --commit-dirty=true"
+  }
+}
