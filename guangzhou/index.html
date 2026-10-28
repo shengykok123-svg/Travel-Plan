@@ -1558,12 +1558,12 @@ function pHotels(){const ppl=Math.max(1,+trip.settings.people||1);
   return `<section class="page" style="display:flex;flex-direction:column;gap:40px"><div>${ph('P.06','住宿','7 晚都住同一家，已经订好了。房号和谁住哪间可以在下面填，行程、地图、预算和订票清单都会跟着改。')}
     <div style="font-size:13px;color:var(--mute);margin-top:-8px">${ppl} 人住 1 间亲子房（家庭房），两张订单连着住。</div></div>${cities}</section>`}
 
-// route stamps on the overview: a stop per city we sleep in, plus day trips (titles with 一日游) and the 长隆 day
+// route stamps on the overview: a stop per city we sleep in, plus day trips (a day spent in another city than the one we sleep in)
 function routeSegs(){const out=[];const nights=c=>trip.days.filter(d=>d.stay===c).length;
   trip.days.forEach((d,k)=>{let key,c,label,sub;
     if(/长隆/.test(d.title)){c=d.cities[0];key='CL';label='长隆';sub='一日'}
-    else if(/一日游/.test(d.title)){c=d.cities[0];key='trip:'+c;label=CITY[c].n;sub='一日游'}
-    else if(d.stay){c=d.stay;key='stay:'+c;label=CITY[c].n;sub=nights(c)+'晚'}
+    else if(/一日游/.test(d.title)||(d.stay&&d.cities&&d.cities[0]&&d.cities[0]!==d.stay)){c=d.cities[0];key='trip:'+c;label=CITY[c].n;sub=dp(d.date).md+' 一日游'}
+    else if(d.stay){c=d.stay;key='stay:'+c;label=CITY[c].n;sub='住'+nights(c)+'晚';if(out.some(o=>o.key===key))return}
     else return;
     const last=out[out.length-1];if(last&&last.key===key)return;
     out.push({key,c,label,sub,k:k===0&&trip.days.length>1?1:k})});
