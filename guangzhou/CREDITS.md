@@ -2,24 +2,24 @@
 
 Photos are from Wikimedia Commons, used under the licenses listed. Click a photo in the site for its source page.
 
+## 艇仔粥
+- img/congee-1.jpg — ZhengZhou · CC BY-SA 4.0 · https://commons.wikimedia.org/wiki/File:Cantonese_Sampan_Congee_(Boat_Congee).jpeg
+- img/congee-2.jpg — EllieWzpp · CC BY-SA 4.0 · https://commons.wikimedia.org/wiki/File:Sampan_Congee.jpg
+- img/congee-3.jpg — DragonSamYU · CC BY-SA 4.0 · https://commons.wikimedia.org/wiki/File:Boat_Congee_-_Whampoa_Anchorage.jpg
+
 ## 肠粉
 - img/cheungfun-1.jpg — ZhengZhou · CC BY-SA 4.0 · https://commons.wikimedia.org/wiki/File:Dried_shrimp_rice_noodle_roll.jpg
 - img/cheungfun-2.jpg — DragonSamYU · CC BY-SA 4.0 · https://commons.wikimedia.org/wiki/File:Rice_Noodle_Roll_-_Chaozhou_-_20170302_(2).jpg
 - img/cheungfun-3.jpg — No machine-readable author provided. GS417~commonswiki assum · CC BY-SA 2.5 · https://commons.wikimedia.org/wiki/File:GD_Rice_Product_1.JPG
 - img/cheungfun-4.jpg — Eukbimga · CC BY-SA 3.0 · https://commons.wikimedia.org/wiki/File:HK_Food_Rice_Noodle_Roll_with_Sesame.JPG
 
-## 艇仔粥
-- img/congee-1.jpg — ZhengZhou · CC BY-SA 4.0 · https://commons.wikimedia.org/wiki/File:Cantonese_Sampan_Congee_(Boat_Congee).jpeg
-- img/congee-2.jpg — EllieWzpp · CC BY-SA 4.0 · https://commons.wikimedia.org/wiki/File:Sampan_Congee.jpg
-- img/congee-3.jpg — DragonSamYU · CC BY-SA 4.0 · https://commons.wikimedia.org/wiki/File:Boat_Congee_-_Whampoa_Anchorage.jpg
+## 姜撞奶
+- img/gingermilk-1.jpg — Chika · CC BY 2.0 · https://commons.wikimedia.org/wiki/File:Ginger_Milk_Pudding.jpg
 
 ## 双皮奶
 - img/doubleskin-1.jpg — Guanlin (Gary) He · CC BY-SA 4.0 · https://commons.wikimedia.org/wiki/File:Double_skin_milk.jpg
 - img/doubleskin-2.jpg — Pauloleong2002 · CC BY-SA 4.0 · https://commons.wikimedia.org/wiki/File:Double_skin_milk_with_mango.jpg
 - img/doubleskin-3.jpg — ZhengZhou · CC BY-SA 4.0 · https://commons.wikimedia.org/wiki/File:Double_skin_milk_with_red_beans.jpg
-
-## 姜撞奶
-- img/gingermilk-1.jpg — Chika · CC BY 2.0 · https://commons.wikimedia.org/wiki/File:Ginger_Milk_Pudding.jpg
 
 ## 早茶点心
 - img/dimsum-1.jpg — sfllaw of Flickr · CC BY-SA 2.0 · https://commons.wikimedia.org/wiki/File:Xiajiao.jpg
